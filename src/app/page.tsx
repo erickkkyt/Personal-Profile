@@ -7,6 +7,7 @@ import ProjectsSection from '@/components/ProjectsSection';
 import AIToolsSection from '@/components/AIToolsSection';
 import Footer from '@/components/Footer';
 import { useThemeStore } from '@/lib/store';
+import Script from 'next/script';
 
 export default function Home() {
   const { theme, setTheme } = useThemeStore();
@@ -37,6 +38,24 @@ export default function Home() {
 
   return (
     <main className="min-h-screen">
+      {/* Google Analytics */}
+      <Script
+        strategy="afterInteractive"
+        src="https://www.googletagmanager.com/gtag/js?id=G-9TQ3NWGFC9"
+      />
+      <Script
+        id="google-analytics"
+        strategy="afterInteractive"
+        dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-9TQ3NWGFC9');
+          `,
+        }}
+      />
+      
       <Navbar />
       
       {/* 个人自我介绍 */}
