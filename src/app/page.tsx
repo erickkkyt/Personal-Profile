@@ -17,10 +17,12 @@ export default function Home() {
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     
-    if (savedTheme) {
+    if (savedTheme === 'light' || savedTheme === 'dark') {
       setTheme(savedTheme);
     } else if (prefersDark) {
       setTheme('dark');
+    } else {
+      setTheme('light');
     }
   }, [setTheme]);
 
