@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.scss';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: 'KKKK AI Space',
@@ -43,8 +44,33 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-9TQ3NWGFC9"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-9TQ3NWGFC9');
+            `,
+          }}
+        />
       </head>
       <body className="dark-transition">
+        {/* Google Analytics - Next.js 推荐的方式 */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-9TQ3NWGFC9"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-9TQ3NWGFC9');
+          `}
+        </Script>
         {children}
       </body>
     </html>

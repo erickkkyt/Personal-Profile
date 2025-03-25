@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.scss';
-import GoogleAnalytics from '@/components/GoogleAnalytics';
+import Script from 'next/script';
 
 export const metadata: Metadata = {
   title: '个人专业主页',
@@ -55,9 +55,20 @@ export default function RootLayout({
             `,
           }}
         />
-        <GoogleAnalytics />
       </head>
       <body className="dark-transition">
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-9TQ3NWGFC9"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-9TQ3NWGFC9');
+          `}
+        </Script>
         {children}
       </body>
     </html>
