@@ -6,7 +6,7 @@ export default function Head() {
       <meta name="description" content="我的个人专业主页，展示我的技能、项目和博客" />
       <link rel="icon" href="/favicon.ico" />
       {/* Google tag (gtag.js) */}
-      <script async src="https://www.googletagmanager.com/gtag/js?id=G-XSV0VDCENG"></script>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=G-9TQ3NWGFC9"></script>
       <script
         dangerouslySetInnerHTML={{
           __html: `
@@ -14,7 +14,7 @@ export default function Head() {
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
-  gtag('config', 'G-XSV0VDCENG');
+  gtag('config', 'G-9TQ3NWGFC9');
           `,
         }}
       />
