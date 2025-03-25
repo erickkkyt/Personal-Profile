@@ -1,4 +1,4 @@
-// File: D:\桌面\AI编程项目概览\Personal Page\app\page.tsx
+// File: D:\桌面\AI编程项目概览\Personal Page\Personal-Profile\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
