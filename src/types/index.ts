@@ -60,7 +60,8 @@ export interface Project {
   id: string;
   title: string;
   description: string;
-  updateTime: string;  // 更新时间
+  updateTime?: string;  // 更新时间 (可选)
+  launchDate?: string; // 项目上线时间 (可选)
   image: string;
   tags: string[];
   demoUrl: string;

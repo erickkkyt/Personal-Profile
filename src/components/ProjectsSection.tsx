@@ -8,33 +8,33 @@ import { Project } from '@/types';
 const projects: Project[] = [
   {
     id: '1',
-    title: '长文本转小红书卡片',
-    description: '万字长文秒变爆款卡片\n让深度思考也能拥有轻盈表达',
-    updateTime: '待更新 to be updated\n预计上线时间为2025.03.27',
+    title: '乾坤时空解析',
+    description: '通过先进的人工智能技术，基于您的生辰八字提供个性化的命理分析报告',
     image: '',
     tags: ['Web应用'],
-    demoUrl: '#',
-    sourceUrl: '#'
+    demoUrl: 'https://www.fourpillars.info/',
+    sourceUrl: 'https://github.com/erickkkyt/Personal-Profile',
+    launchDate: '2025.04.11'
   },
   {
     id: '2',
-    title: '命理分析类应用',
-    description: '运用中国传统命理分析方法\n为你的未来提供另一个视角',
-    updateTime: '待更新 to be updated\n预计上线时间为2025.03.31',
+    title: 'K-Downloader',
+    description: '快速下载YouTube视频及音频，并生成快速摘要',
     image: '',
-    tags: ['Web应用', '微信小程序'],
-    demoUrl: '#',
-    sourceUrl: '#'
+    tags: ['Web应用', '即将上线'],
+    demoUrl: 'https://kdownloader.it.com/',
+    sourceUrl: 'https://github.com/erickkkyt/Downloader',
+    launchDate: '2025.04.13'
   },
   {
     id: '3',
     title: '海外高质量内容知识库',
     description: '打破海外高质量内容信息差\n用深度阅读代替碎片阅读',
-    updateTime: '待更新 to be updated\n预计上线时间为2025.04.03',
     image: '',
-    tags: ['Web应用'],
+    tags: ['Web应用', '即将上线'],
     demoUrl: '#',
-    sourceUrl: '#'
+    sourceUrl: '#',
+    launchDate: '2024.04.15'
   }
 ];
 
@@ -170,13 +170,25 @@ const ProjectsSection = ({ id }: ProjectsSectionProps) => {
                     </div>
                     
                     <div className="text-center relative z-10">
-                      <h4 className="text-base text-gray-500 dark:text-gray-300 text-center font-medium mb-3">更新时间</h4>
+                      <h4 className="text-base text-gray-500 dark:text-gray-300 text-center font-medium mb-3">
+                        {project.launchDate ? '项目上线时间' : '更新时间'}
+                      </h4>
                       <p className="text-sm text-gray-600 dark:text-gray-100 text-center whitespace-pre-line">
                         <span className="inline-block">
-                          预计上线时间为
-                          <span className="ml-1 text-primary dark:text-blue-300 font-semibold px-3 py-0.5 bg-primary/10 dark:bg-blue-900/50 rounded-full border border-primary/20 dark:border-blue-700/40 shadow-sm">
-                            {project.updateTime.split('为')[1].trim()}
-                          </span>
+                          {project.launchDate ? (
+                            <span className="ml-1 text-green-600 dark:text-green-400 font-semibold px-3 py-0.5 bg-green-100 dark:bg-green-900/50 rounded-full border border-green-200 dark:border-green-700/40 shadow-sm">
+                              {project.launchDate}
+                            </span>
+                          ) : project.updateTime ? (
+                            <>
+                              预计上线时间为
+                              <span className="ml-1 text-primary dark:text-blue-300 font-semibold px-3 py-0.5 bg-primary/10 dark:bg-blue-900/50 rounded-full border border-primary/20 dark:border-blue-700/40 shadow-sm">
+                                {project.updateTime?.split('为')[1].trim()}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-gray-400">待定</span>
+                          )}
                         </span>
                       </p>
                     </div>
