@@ -18,23 +18,23 @@ const projects: Project[] = [
   },
   {
     id: '2',
+    title: 'Knowledge Card Generator',
+    description: '将长文本转化为精美的知识卡片，便于学习和分享',
+    image: '',
+    tags: ['Web应用'],
+    demoUrl: 'https://www.knowledgecard.pro/',
+    sourceUrl: 'https://github.com/erickkkyt/knowledge-card',
+    launchDate: '2025.04.13'
+  },
+  {
+    id: '3',
     title: 'K-Downloader',
     description: '快速下载YouTube视频及音频，并生成快速摘要',
     image: '',
     tags: ['Web应用', '即将上线'],
     demoUrl: 'https://kdownloader.it.com/',
     sourceUrl: 'https://github.com/erickkkyt/Downloader',
-    launchDate: '2025.04.13'
-  },
-  {
-    id: '3',
-    title: '海外高质量内容知识库',
-    description: '打破海外高质量内容信息差\n用深度阅读代替碎片阅读',
-    image: '',
-    tags: ['Web应用', '即将上线'],
-    demoUrl: '#',
-    sourceUrl: '#',
-    launchDate: '2024.04.15'
+    launchDate: '2025.04.15'
   }
 ];
 
