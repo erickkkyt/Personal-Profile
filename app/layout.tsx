@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.scss';
 import Script from 'next/script';
+import SplashCursor from '@/components/SplashCursor';
 
 export const metadata: Metadata = {
   title: 'KKKK AI Space',
@@ -58,6 +59,7 @@ export default function RootLayout({
         />
       </head>
       <body className="dark-transition">
+        <SplashCursor />
         {/* Google Analytics - Next.js 推荐的方式 */}
         <Script
           strategy="afterInteractive"

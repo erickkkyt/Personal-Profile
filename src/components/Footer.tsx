@@ -79,6 +79,71 @@ const Footer = () => {
                 </div>
                 <span className="text-sm font-medium">小红书</span>
               </a>
+              {/* Cal.com */}
+              <a 
+                href="https://cal.com/kkkkeric" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors flex flex-col items-center"
+                aria-label="Cal.com"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                </div>
+                <span className="text-sm font-medium">Cal</span>
+              </a>
+              {/* Linktree */}
+              <a 
+                href="https://linktr.ee/kkkkeric" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors flex flex-col items-center"
+                aria-label="Linktree"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                </div>
+                <span className="text-sm font-medium">Linktree</span>
+              </a>
+              {/* Creem */}
+              <a 
+                href="https://www.creem.io/bip/kkkkeric" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors flex flex-col items-center"
+                aria-label="Creem"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/><text x="12" y="16" textAnchor="middle" fontSize="10" fill="#fff" fontFamily="Arial">C</text></svg>
+                </div>
+                <span className="text-sm font-medium">Creem</span>
+              </a>
+              {/* Substack */}
+              <a 
+                href="https://substack.com/@kkkk282763" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors flex flex-col items-center"
+                aria-label="Substack"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><polyline points="3 7 12 13 21 7"/></svg>
+                </div>
+                <span className="text-sm font-medium">Substack</span>
+              </a>
+              {/* Medium */}
+              <a 
+                href="https://medium.com/@kh844257437" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors flex flex-col items-center"
+                aria-label="Medium"
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-gray-700 mb-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 1043.63 592.71"><g><path d="M588.67 296.14c0 163.61-131.62 296.13-294.33 296.13S0 459.75 0 296.14 131.62 0 294.34 0s294.33 132.53 294.33 296.14" fill="#12100e"/><path d="M1027.63 296.14c0 154.19-66.13 279.13-147.7 279.13s-147.7-124.94-147.7-279.13S798.36 17 879.93 17s147.7 125 147.7 279.14" fill="#12100e"/><path d="M841.29 296.14c0 129.5-58.41 234.44-130.41 234.44s-130.41-104.94-130.41-234.44S638.88 61.7 710.88 61.7s130.41 104.94 130.41 234.44" fill="#fff"/></g></svg>
+                </div>
+                <span className="text-sm font-medium">Medium</span>
+              </a>
             </div>
           </div>
           

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion, useAnimation, useInView } from 'framer-motion';
 import { Project } from '@/types';
+import CircularGallery from './CircularGallery';
 
 // AI项目数据
 const projects: Project[] = [
@@ -10,7 +11,7 @@ const projects: Project[] = [
     id: '1',
     title: '乾坤时空解析',
     description: '通过先进的人工智能技术，基于您的生辰八字提供个性化的命理分析报告',
-    image: '',
+    image: 'https://picsum.photos/seed/qiankun/800/600',
     tags: ['Web应用'],
     demoUrl: 'https://www.fourpillars.info/',
     sourceUrl: 'https://github.com/erickkkyt/Personal-Profile',
@@ -20,7 +21,7 @@ const projects: Project[] = [
     id: '2',
     title: 'Knowledge Card Generator',
     description: '将长文本转化为精美的知识卡片，便于学习和分享',
-    image: '',
+    image: 'https://picsum.photos/seed/knowledge/800/600',
     tags: ['Web应用'],
     demoUrl: 'https://www.knowledgecard.pro/',
     sourceUrl: 'https://github.com/erickkkyt/knowledge-card',
@@ -28,22 +29,32 @@ const projects: Project[] = [
   },
   {
     id: '3',
-    title: 'K-Downloader',
-    description: '快速下载YouTube视频及音频，并生成快速摘要',
-    image: '',
-    tags: ['Web应用', '即将上线'],
-    demoUrl: 'https://kdownloader.it.com/',
-    sourceUrl: 'https://github.com/erickkkyt/Downloader',
-    launchDate: '2025.04.15'
+    title: 'AI Baby Generator',
+    description: 'AI视频生成，快速生成爆火的BabyPodcast短视频，支持一键播客、配音和多平台导出，助力创作者变现。',
+    image: 'https://picsum.photos/seed/baby/800/600',
+    tags: ['Web应用', 'AI内容生成', '短视频工具'],
+    demoUrl: 'https://www.babypodcast.pro/',
+    sourceUrl: '',
+    launchDate: '2025.05.26'
   }
 ];
+
+// 为圆形画廊准备数据（文字模式）
+const galleryItems = projects.map(project => ({
+  text: project.title,
+  projectData: {
+    title: project.title,
+    description: project.description,
+    demoUrl: project.demoUrl,
+    sourceUrl: project.sourceUrl
+  }
+}));
 
 interface ProjectsSectionProps {
   id: string;
 }
 
 const ProjectsSection = ({ id }: ProjectsSectionProps) => {
-  const [activeProject, setActiveProject] = useState<string | null>(null);
   const ref = useRef(null);
   const isInView = useInView(ref, { once: false, amount: 0.2 });
   const controls = useAnimation();
@@ -77,8 +88,8 @@ const ProjectsSection = ({ id }: ProjectsSectionProps) => {
         border: 3px solid transparent;
         border-radius: 0.375rem;
         background: linear-gradient(45deg, #2E3192, #00AEEF) border-box;
-        -webkit-mask: 
-          linear-gradient(#fff 0 0) padding-box, 
+        -webkit-mask:
+          linear-gradient(#fff 0 0) padding-box,
           linear-gradient(#fff 0 0);
         -webkit-mask-composite: destination-out;
         mask-composite: exclude;
@@ -114,15 +125,6 @@ const ProjectsSection = ({ id }: ProjectsSectionProps) => {
     }
   }, []);
 
-  // 鼠标悬停处理
-  const handleMouseEnter = (projectId: string) => {
-    setActiveProject(projectId);
-  };
-
-  const handleMouseLeave = () => {
-    setActiveProject(null);
-  };
-
   return (
     <section id={id} className="section bg-white dark:bg-gray-800" ref={ref}>
       <div className="container-custom">
@@ -136,105 +138,27 @@ const ProjectsSection = ({ id }: ProjectsSectionProps) => {
           </p>
         </div>
 
-        {/* 项目网格 */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-24 mb-48">
-          {projects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              className="card overflow-hidden bg-gray-50 dark:bg-gray-900/90 shadow-sm hover:shadow-lg transition-all duration-300 rounded-xl noise-texture relative dark:border dark:border-gray-700/50"
-              initial={{ opacity: 0, y: 20 }}
-              animate={controls}
-              variants={{
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5, delay: index * 0.1 } }
-              }}
-              onMouseEnter={() => handleMouseEnter(project.id)}
-              onMouseLeave={handleMouseLeave}
-              whileHover={{ 
-                y: -8,
-                transition: { duration: 0.3 }
-              }}
-            >
-              {/* 项目信息 */}
-              <div className="p-16 flex flex-col h-full space-y-5">
-                <div className="flex-grow space-y-6">
-                  <h3 className="text-xl sm:text-2xl font-heading font-bold text-center leading-relaxed text-gray-900 dark:text-white">
-                    {project.title}
-                  </h3>
-                  
-                  {/* 产品简介和更新时间 - 无边框版本 */}
-                  <div className="space-y-6">
-                    <div>
-                      <p className="text-base text-gray-600 dark:text-gray-100 text-center whitespace-pre-line leading-relaxed bg-gray-100 dark:bg-gray-800/90 p-4 rounded-lg shadow-sm border border-gray-200/40 dark:border-gray-600/50 mx-2 relative z-10">
-                        {project.description || ''}
-                      </p>
-                    </div>
-                    
-                    <div className="text-center relative z-10">
-                      <h4 className="text-base text-gray-500 dark:text-gray-300 text-center font-medium mb-3">
-                        {project.launchDate ? '项目上线时间' : '更新时间'}
-                      </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-100 text-center whitespace-pre-line">
-                        <span className="inline-block">
-                          {project.launchDate ? (
-                            <span className="ml-1 text-green-600 dark:text-green-400 font-semibold px-3 py-0.5 bg-green-100 dark:bg-green-900/50 rounded-full border border-green-200 dark:border-green-700/40 shadow-sm">
-                              {project.launchDate}
-                            </span>
-                          ) : project.updateTime ? (
-                            <>
-                              预计上线时间为
-                              <span className="ml-1 text-primary dark:text-blue-300 font-semibold px-3 py-0.5 bg-primary/10 dark:bg-blue-900/50 rounded-full border border-primary/20 dark:border-blue-700/40 shadow-sm">
-                                {project.updateTime?.split('为')[1].trim()}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-gray-400">待定</span>
-                          )}
-                        </span>
-                      </p>
-                    </div>
-                  </div>
+        {/* 圆形画廊 */}
+        <motion.div
+          className="mb-48"
+          initial={{ opacity: 0, y: 20 }}
+          animate={controls}
+          variants={{
+            visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+          }}
+        >
+          <div style={{ height: '600px', position: 'relative' }}>
+            <CircularGallery
+              items={galleryItems}
+              bend={3}
+              textColor="#ffffff"
+              borderRadius={0.05}
+              isTextMode={true}
+            />
+          </div>
+        </motion.div>
 
-                  {/* 标签 */}
-                  <div className="flex flex-wrap justify-center gap-8 p-3 rounded-lg mt-2 relative z-10">
-                    {project.tags.map((tag) => (
-                      <span 
-                        key={tag} 
-                        className="badge bg-gray-100/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-100 backdrop-blur-sm text-sm px-3 py-1 rounded-full border border-gray-200/40 dark:border-gray-700/50"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
 
-                {/* 链接按钮 */}
-                <div className="pt-6 mt-4 border-t border-gray-200 dark:border-gray-700/40 relative z-10">
-                  <div className="flex justify-center items-center gap-12 py-2">
-                    <a
-                      href={project.demoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary dark:text-secondary transition-all font-medium relative overflow-hidden group px-4 py-1.5 rounded-md hover:bg-primary/5 dark:hover:bg-secondary/5"
-                    >
-                      <span className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-y-[-2px]">直达项目</span>
-                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/60 via-primary/40 to-secondary/60 transform origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
-                    <div className="h-6 w-[1px] bg-gradient-to-b from-gray-200/60 via-gray-300/80 to-gray-200/60 dark:from-gray-600/40 dark:via-gray-500/60 dark:to-gray-600/40"></div>
-                    <a
-                      href={project.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary dark:text-secondary transition-all font-medium relative overflow-hidden group px-4 py-1.5 rounded-md hover:bg-primary/5 dark:hover:bg-secondary/5"
-                    >
-                      <span className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-y-[-2px]">Github源码</span>
-                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/60 via-primary/40 to-secondary/60 transform origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></span>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
