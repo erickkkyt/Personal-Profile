@@ -23,9 +23,12 @@ function SplashCursor({
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) { 
+    if (!canvas) {
+      console.log('SplashCursor: Canvas未找到');
       return;
     }
+
+    console.log('SplashCursor: 初始化开始', canvas);
 
     function pointerPrototype(this: any) {
       this.id = -1;
