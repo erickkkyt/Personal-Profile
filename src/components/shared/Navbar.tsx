@@ -8,7 +8,8 @@ import { useThemeStore } from '@/lib/store';
 const navLinks = [
   { href: '#home', label: '个人介绍' },
   { href: '#projects', label: 'AI项目' },
-  { href: '#tools', label: 'AI工具' }
+  { href: '#tools', label: 'AI工具' },
+  { href: '/course', label: 'N8N课程' }
 ];
 
 const Navbar = () => {
@@ -46,14 +47,13 @@ const Navbar = () => {
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm' : 'bg-transparent'
-    }`}>
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-sm' : 'bg-transparent'
+      }`}>
       <div className="container-custom py-16">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <a 
-            href="#home" 
+          <a
+            href="#home"
             className="text-xl font-heading font-bold text-gray-900 dark:text-white"
           >
             <span className="gradient-text">{mounted ? "KKKK AI Space" : "AI个人主页"}</span>
@@ -67,11 +67,11 @@ const Navbar = () => {
                 href={link.href}
                 className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-secondary transition-colors"
               >
-                {link.href === '#projects' && mounted ? '项目作品' : 
-                 link.href === '#tools' && mounted ? '常用工具' : link.label}
+                {link.href === '#projects' && mounted ? '项目作品' :
+                  link.href === '#tools' && mounted ? '常用工具' : link.label}
               </a>
             ))}
-            
+
             {/* 主题切换按钮 */}
             <button
               onClick={toggleTheme}
@@ -127,11 +127,11 @@ const Navbar = () => {
                   className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-secondary transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  {link.href === '#projects' && mounted ? '项目作品' : 
-                   link.href === '#tools' && mounted ? '常用工具' : link.label}
+                  {link.href === '#projects' && mounted ? '项目作品' :
+                    link.href === '#tools' && mounted ? '常用工具' : link.label}
                 </a>
               ))}
-              
+
               {/* 主题切换按钮 */}
               <div className="flex items-center">
                 <button

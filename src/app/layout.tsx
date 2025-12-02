@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
 import '@/styles/globals.scss';
 import Script from 'next/script';
-import { StagewiseToolbar } from '@stagewise/toolbar-next';
-import SplashCursor from '@/components/SplashCursor';
-
-const stagewiseConfig = { plugins: [] };
+import SplashCursor from '@/components/shared/SplashCursor';
 
 export const metadata: Metadata = {
   title: '个人专业主页',
@@ -75,10 +72,7 @@ export default function RootLayout({
           `}
         </Script>
         {children}
-        {process.env.NODE_ENV === 'development' && (
-          <StagewiseToolbar config={stagewiseConfig} />
-        )}
       </body>
     </html>
   );
-} 
+}

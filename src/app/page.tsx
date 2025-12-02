@@ -1,11 +1,17 @@
 'use client';
 
 import { useEffect } from 'react';
-import Navbar from '@/components/Navbar';
-import HeroSection from '@/components/HeroSection';
-import ProjectsSection from '@/components/ProjectsSection';
-import AIToolsSection from '@/components/AIToolsSection';
-import Footer from '@/components/Footer';
+import Navbar from '@/components/shared/Navbar';
+import HeroSection from '@/components/home/HeroSection';
+import {
+  CapabilitiesSection,
+  ScenariosSection,
+  OfferingsSection,
+  CaseStudiesSection,
+  ContentSection,
+  CommunitySection,
+} from '@/components/home/HomeNewSections';
+import Footer from '@/components/shared/Footer';
 import { useThemeStore } from '@/lib/store';
 import Script from 'next/script';
 
@@ -17,7 +23,7 @@ export default function Home() {
     // 从localStorage获取主题，如果没有则使用系统偏好
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
+
     if (savedTheme === 'light' || savedTheme === 'dark') {
       setTheme(savedTheme);
     } else if (prefersDark) {
@@ -55,19 +61,21 @@ export default function Home() {
           `,
         }}
       />
-      
+
       <Navbar />
-      
+
       {/* 个人自我介绍 */}
       <HeroSection id="home" />
-      
-      {/* 我的AI项目作品 */}
-      <ProjectsSection id="projects" />
-      
-      {/* 我的常用AI工具 */}
-      <AIToolsSection id="tools" />
-      
+
+      {/* 能力与产品 */}
+      <CapabilitiesSection />
+      <ScenariosSection />
+      <OfferingsSection />
+      <CaseStudiesSection />
+      <ContentSection />
+      <CommunitySection />
+
       <Footer />
     </main>
   );
-} 
+}

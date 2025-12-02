@@ -8,4 +8,4 @@ export default function Head() {
       {/* Google Analytics 代码已移至 layout.tsx */}
     </>
   );
-} 
+}

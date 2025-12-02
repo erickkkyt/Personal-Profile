@@ -1,0 +1,96 @@
+import { COURSE_STRUCTURE, getPostBySlug } from '@/lib/course';
+import { MDXRemote } from 'next-mdx-remote/rsc';
+import { notFound } from 'next/navigation';
+import { VideoPlayer } from '@/components/course/VideoPlayer';
+import { Breadcrumb, BreadcrumbItem } from '@/components/course/Breadcrumb';
+import rehypeSlug from 'rehype-slug';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
+
+// Define custom components available in MDX
+const components = {
+    VideoPlayer,
+};
+
+// 目录标题映射，确保一级目录与二级目录显示一致
+const directoryTitles: Record<string, string> = {
+    guide: '如何高效使用和学习本课程',
+    '如何高效使用和学习本课程': '如何高效使用和学习本课程',
+    demand2workflow: 'Demand to Workflow',
+    'Demand to Workflow': 'Demand to Workflow',
+    resources: 'n8n资源中心',
+    'n8n资源中心': 'n8n资源中心',
+};
+
+export default async function CoursePage({ params }: { params: { slug: string[] } }) {
+    const post = getPostBySlug(params.slug);
+
+    if (!post) {
+        notFound();
+    }
+
+    // 生成面包屑导航
+    const breadcrumbItems: BreadcrumbItem[] = [
+        { label: 'n8n课程', href: '/course' }
+    ];
+
+    const matchedSection = COURSE_STRUCTURE.find(
+        (section) =>
+            section.introSlug === params.slug[0] ||
+            section.directory === params.slug[0] ||
+            section.id === params.slug[0]
+    );
+
+    // 如果是一级目录页面
+    if (params.slug.length === 1) {
+        const categoryTitle =
+            matchedSection?.title || directoryTitles[params.slug[0]] || params.slug[0];
+        breadcrumbItems.push({ label: categoryTitle });
+    }
+    // 如果是二级页面
+    else if (params.slug.length > 1) {
+        const categoryTitle =
+            matchedSection?.title || directoryTitles[params.slug[0]] || params.slug[0];
+        const categoryHref = matchedSection
+            ? `/course/${matchedSection.introSlug}`
+            : `/course/${params.slug[0]}`;
+
+        breadcrumbItems.push({
+            label: categoryTitle,
+            href: categoryHref,
+        });
+        // 当前页面
+        breadcrumbItems.push({ label: post.title });
+    }
+
+    return (
+        <>
+            <Breadcrumb items={breadcrumbItems} />
+
+            <article className="prose prose-slate max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-a:text-blue-600 dark:prose-a:text-blue-400">
+                <div className="mb-8 border-b border-gray-200 pb-8 dark:border-gray-800">
+                    <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+                        {post.title}
+                    </h1>
+                    {post.description && (
+                        <p className="text-xl text-gray-500 dark:text-gray-400">
+                            {post.description}
+                        </p>
+                    )}
+                </div>
+
+                <MDXRemote
+                    source={post.content}
+                    components={components}
+                    options={{
+                        mdxOptions: {
+                            rehypePlugins: [
+                                rehypeSlug,
+                                [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+                            ],
+                        },
+                    }}
+                />
+            </article>
+        </>
+    );
+}
