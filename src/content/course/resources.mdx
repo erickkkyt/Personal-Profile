@@ -1,33 +1,103 @@
 ---
-title: 'n8n资源中心'
+title: 'n8n 能力扩展工具库'
 description: 'n8n 学习资源、模板库、API 汇总'
 ---
 
-# n8n 资源中心 💎
+<div className="guide-rich demand-rich">
 
-这里汇集了丰富的 n8n 学习资源，帮助你更好地掌握和使用 n8n。
+## 🚀 内容导览
 
-## 📚 资源分类
+<table>
+  <thead>
+    <tr>
+      <th className="col-mod">核心模块</th>
+      <th className="col-desc">内容概述</th>
+      <th className="col-ref">参考文档</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>n8n 优质学习资源</strong></td>
+      <td>课程有终点，但学习无止境。本模块为你精选了 n8n 官方文档、活跃社区、以及海外顶尖专家的博客与教程，是你毕业后继续保持知识迭代、与世界顶尖玩家同步的“充电站”。</td>
+      <td><a href="/course/resources/01-learning-resources">♠️ n8n 优质学习资源</a></td>
+    </tr>
+    <tr>
+      <td><strong>n8n 开源模板库（8000+）</strong></td>
+      <td>面对新需求毫无头绪？这里是你激发创作灵感的“火花库”。我为大家汇集了超过 8000+ 的官方及社区工作流模板，覆盖各类场景。你可以通过拆解和借鉴，快速启动自己的项目，彻底解决“从 0 到 1”的难题。</td>
+      <td><a href="/course/resources/02-templates">❤️ n8n 灵感与模板库</a></td>
+    </tr>
+    <tr>
+      <td><strong>n8n 高质量 API 汇总</strong></td>
+      <td><strong>n8n 的超能力，在于连接万物。</strong> 这里是我为你精心筛选和验证过的高质量 API “弹药库”。每一个 API 都是你构建强大、有趣工作流的关键“原料”。善用这份列表，它将十倍、百倍地放大你的创造力。</td>
+      <td><a href="/course/resources/03-api-collection">♦️ n8n 高质量 API 汇总 (★)</a></td>
+    </tr>
+    <tr>
+      <td><strong>n8n 百问百答汇总</strong></td>
+      <td>学习路上遇到的所有“拦路虎”，这里都有答案。本模块将持续汇集课程中学员们提出的高频问题、常见错误和实用技巧，形成一个动态更新的“n8n 百科全书”。遇到问题先查这里，能为你节省 90% 的解决时间。</td>
+      <td><a href="/course/resources/04-faq">♣️ n8n 百问百答汇总</a></td>
+    </tr>
+  </tbody>
+</table>
 
-### 🎓 学习资源
-精选的 n8n 学习资料，包括官方文档、社区教程、优质文章等。
+</div>
 
-### 📦 模板库（8000+）
-n8n 官方和社区提供的海量工作流模板，涵盖各种使用场景，可以直接导入使用。
-
-### 🔌 API 汇总 ⭐
-精心整理的高质量 API 资源，适合在 n8n 中使用，包括 AI、内容平台、工具服务等。
-
-### ❓ 百问百答
-收集了学员在学习 n8n 过程中的常见问题及详细解答。
-
-## 💡 使用建议
-
-1. **先学后用**：建议先完成主课程学习，再来查阅资源
-2. **善用模板**：遇到类似需求时，先在模板库中搜索
-3. **收藏 API**：将常用的 API 收藏起来，方便随时调用
-4. **查阅 FAQ**：遇到问题先查看百问百答，可能已有解决方案
-
-## 🔍 快速导航
-
-点击左侧菜单，选择你需要的资源类型开始探索！
+<style>
+{`
+  .guide-rich.demand-rich {
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich h1, .guide-rich.demand-rich h2 {
+    color: #0f172a;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .guide-rich.demand-rich h1 {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.4rem;
+  }
+  .guide-rich.demand-rich a {
+    color: #0f766e;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    text-decoration-color: #99f6e4;
+    font-weight: 600;
+  }
+  .guide-rich.demand-rich a:hover {
+    color: #0d9488;
+    text-decoration-color: #5eead4;
+  }
+  .guide-rich.demand-rich table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 40px rgba(15, 118, 110, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .guide-rich.demand-rich .col-mod { width: 18%; min-width: 140px; }
+  .guide-rich.demand-rich .col-desc { width: 48%; }
+  .guide-rich.demand-rich .col-ref { width: 34%; }
+  .guide-rich.demand-rich thead th {
+    background: linear-gradient(90deg, #ecfeff 0%, #e0f2fe 100%);
+    color: #0f172a;
+    font-weight: 700;
+    padding: 14px 16px;
+  }
+  .guide-rich.demand-rich th, .guide-rich.demand-rich td {
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    vertical-align: top;
+    background: #ffffff;
+  }
+  .guide-rich.demand-rich th:first-child,
+  .guide-rich.demand-rich td:first-child {
+    width: 18%;
+    min-width: 140px;
+  }
+  .guide-rich.demand-rich tbody tr:nth-child(odd) td {
+    background: #f8fafc;
+  }
+`}
+</style>

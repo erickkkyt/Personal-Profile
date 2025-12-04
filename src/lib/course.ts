@@ -37,19 +37,31 @@ export type CourseSection = {
 export const COURSE_STRUCTURE: CourseSection[] = [
     {
         id: 'guide',
-        title: '如何高效使用和学习本课程',
+        title: '课程整体概览',
         introSlug: 'guide',
         directory: '如何高效使用和学习本课程',
     },
     {
         id: 'demand2workflow',
-        title: 'Demand to Workflow',
+        title: 'n8n 基础与底层逻辑',
         introSlug: 'demand2workflow',
         directory: 'Demand to Workflow',
     },
     {
+        id: 'core-skills',
+        title: 'n8n 核心节点与功能',
+        introSlug: 'core-skills',
+        directory: 'n8n 核心技能',
+    },
+    {
+        id: 'advanced-cases',
+        title: 'n8n 高阶工作流案例',
+        introSlug: 'advanced-cases',
+        directory: 'n8n高阶实战工作流案例',
+    },
+    {
         id: 'resources',
-        title: 'n8n资源中心',
+        title: 'n8n 能力扩展工具库',
         introSlug: 'resources',
         directory: 'n8n资源中心',
     },

@@ -1,18 +1,115 @@
 ---
-title: '模块四：n8n核心节点精通'
-description: 'n8n 常用节点详解'
+title: '模块四：n8n 搭建底层逻辑 (★)'
+description: 'n8n 工作流构建的核心思维方式：这是课程的核心模块，将帮助你建立正确的工作流思维。'
 ---
 
-# 模块四：n8n核心节点精通
+<div className="guide-rich intro-rich">
 
-深入学习 n8n 的核心节点及其使用方法。
+## 4.1 解构需求：先画靶，再射箭
 
-## 学习目标
+- 核心：任何复杂工作，本质是有序小任务的组合。  
+- 做什么：从最终输出倒推，将任务拆成可执行子步骤。  
+- 竞对监控示例  
+  - 最终目标：自动监控竞对并把选题存入表格。  
+  - 触发器：每天 22:00 定时启动。  
+  - 步骤拆解：  
+    - 获取待监控的公众号列表。  
+    - 需要的外部信息/工具：文章查询 API、爬取正文的工具。  
+    - AI 阅读并总结文章。  
+    - 决策：根据 IP/定位判断是否有价值并打分。  
+    - 结果：将有价值的选题写入 Google Sheets。  
 
-- 掌握常用节点的功能
-- 学会组合使用不同节点
-- 理解数据流转机制
+## 4.2 寻找积木：不重复造轮子
 
-## 内容大纲
+- 核心：为每个子步骤找到节点或 API。  
+- 竞对监控示例  
+  - Trigger：Schedule Trigger（每日 22:00）。  
+  - Action：Code 节点维护竞对列表。  
+  - Action：HTTP Request 循环调用第三方 API 获取当日文章链接。  
+  - Action：Firecrawl 抓取每篇文章正文。  
+  - Action：Agent 节点总结核心内容、标题、标签。  
+  - Action：汇总后交给更高阶 Agent（选题初筛），基于 IP/读者画像做相关性与潜力评分并给切入点。  
+  - Action：Google Sheets 追加高质量选题到“内容选题库”。  
 
-内容待补充...
+## 4.3 连接数据：让数据流动起来
+
+- 核心：确保上游 Output 能被下游 Input 正确引用，必要时清洗/映射。  
+- 典型问题  
+  - 结构不匹配：Firecrawl 输出在 `data.markdown`，下游 AI 只需要 `content`。  
+  - 格式不匹配：上游是复杂对象，下游只需其中一个 URL。  
+  - 数量不匹配：上游 10 items，下游 API 只能单条处理。  
+- 解决方案示例  
+  - 在两节点间插入 Set/Code，新增 `content` 字段：`{{ $json.data.markdown }}`。  
+  - 下游 AI 直接用 `{{ $json.content }}`，无需关心原始结构。  
+
+## 3.4 精炼优化：从“能用”到“好用”
+
+- 核心：反复调试，让产出接近理想。  
+- 优化重点  
+  - Prompt 工程：补充背景、角色、格式约束与范例，让结果从 60 分到 90+。  
+  - 逻辑优化：IF 条件是否严谨？Merge 合并是否正确？是否需分支处理特例？  
+  - 效率优化：慢 API 可替换或并行批处理。  
+- 竞对监控示例  
+  - 初版问题：AI 结论空泛。  
+  - 精炼过程：  
+    1. System Prompt 定位为“公众号首席内容策略官”，注入 IP 支柱与读者画像。  
+    2. 量化标准：潜力评分 = 价值深度(4) + 时效性(3) + 爆款潜力(3)。  
+    3. 思考框架：分析“核心价值 + 人性钩子”（恐惧/贪婪/懒惰等分类）。  
+    4. 输出格式：提供严格 Markdown 模板，强制结构化输出。  
+  - 结果：输出变为结构清晰、可直接用的“内容策略简报”。  
+
+## 3.5 加固测试：为意外做准备
+
+- 核心：预见异常，增加容错与监控，确保高频运行稳定。  
+- 关键手段  
+  - 错误处理：对易失败节点开启 “Continue on Fail”，从 Error 端口分支处理。  
+  - 空值判断：关键节点后加 IF 判断空数据，必要时终止或告警。  
+  - 告警与日志：错误分支连接 Gmail/Slack/钉钉 发送告警，并记录到表格。  
+- 竞对监控示例  
+  - 可能意外：监控 API 维护；Firecrawl 被反爬；OpenAI 请求超时。  
+  - 加固策略：  
+    - 在 HTTP Request、Firecrawl 节点开启 Continue on Fail。  
+    - Error 分支：Set 构造 `error_message`，含节点名、业务标识/URL、错误信息。  
+    - 发送邮件告警，并可写入表格做错误日志。  
+  - 效果：局部失败不影响整体，早上能看到成功结果，并收到精准错误告警，便于排查迭代。  
+
+</div>
+
+<style>
+{`
+  .guide-rich.intro-rich {
+    color: #0f172a;
+  }
+  .guide-rich.intro-rich h1, .guide-rich.intro-rich h2, .guide-rich.intro-rich h3 {
+    color: #0f172a;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .guide-rich.intro-rich h1 {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.4rem;
+  }
+  .guide-rich.intro-rich a {
+    color: #0f766e;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    text-decoration-color: #99f6e4;
+    font-weight: 600;
+  }
+  .guide-rich.intro-rich a:hover {
+    color: #0d9488;
+    text-decoration-color: #5eead4;
+  }
+  .guide-rich.intro-rich .intro-lead {
+    margin: 0.5rem 0 1.25rem;
+    color: #334155;
+    font-weight: 500;
+  }
+  .guide-rich.intro-rich .intro-divider {
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    margin: 0 0 1.25rem;
+  }
+`}
+</style>

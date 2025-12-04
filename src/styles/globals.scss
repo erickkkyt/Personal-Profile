@@ -26,7 +26,8 @@
 
 @layer components {
   .container-custom {
-    @apply px-4 mx-auto max-w-7xl;
+    @apply px-4 mx-auto;
+    max-width: 1440px;
   }
 
   .btn {

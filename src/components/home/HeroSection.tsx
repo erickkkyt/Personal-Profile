@@ -40,25 +40,25 @@ const HeroSection = ({ id }: HeroSectionProps) => {
   const tags = ["AI 工作流", "n8n 自动化", "智能体", "无代码产品", "内容运营自动化"];
 
   return (
-    <section id={id} className="min-h-screen relative overflow-hidden flex items-center py-28 md:py-36">
+    <section id={id} className="min-h-screen relative overflow-hidden flex items-center py-24 md:py-32 lg:py-40">
       {/* 动态背景 */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] animate-pulse"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[100px] animate-pulse delay-1000"></div>
-        <div className="absolute top-[40%] left-[20%] w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px] animate-pulse delay-2000"></div>
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px] animate-pulse"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px] animate-pulse delay-1000"></div>
+        <div className="absolute top-[40%] left-[20%] w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] animate-pulse delay-2000"></div>
       </div>
 
-      <div className="container-custom relative z-10 mx-auto px-4 md:px-10 lg:px-14 flex flex-col md:flex-row items-start md:items-stretch justify-between gap-12 lg:gap-16">
-        <div className="md:w-7/12 lg:w-7/12 md:pr-10 flex flex-col justify-center gap-7">
+      <div className="container-custom max-w-[1600px] relative z-10 mx-auto flex flex-col md:flex-row items-center md:items-start justify-start gap-14 lg:gap-20">
+        <div className="md:w-7/12 lg:w-7/12 flex flex-col justify-center gap-10">
           {/* 标签 */}
           <motion.div
-            className="flex flex-wrap gap-2 mb-7"
+            className="flex flex-wrap gap-3 mb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
             {tags.map((tag, index) => (
-              <span key={index} className="px-4 py-1.5 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-primary/10 text-primary dark:text-secondary rounded-full text-sm font-medium tracking-wide shadow-sm hover:shadow-md transition-all cursor-default">
+              <span key={index} className="px-4 py-1.5 bg-white/60 dark:bg-gray-800/60 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 text-gray-700 dark:text-gray-300 rounded-full text-sm font-medium tracking-wide shadow-sm hover:shadow-md transition-all cursor-default hover:-translate-y-0.5">
                 {tag}
               </span>
             ))}
@@ -66,7 +66,7 @@ const HeroSection = ({ id }: HeroSectionProps) => {
 
           {/* 标题 */}
           <motion.h1
-            className="text-3xl md:text-4xl lg:text-[2.75rem] font-heading font-bold mb-7 text-gray-900 dark:text-white leading-[1.12] tracking-tight max-w-2xl"
+            className="text-4xl md:text-5xl lg:text-[4rem] font-heading font-bold text-gray-900 dark:text-white leading-[1.15] tracking-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
@@ -80,7 +80,7 @@ const HeroSection = ({ id }: HeroSectionProps) => {
 
           {/* 副标题 */}
           <motion.p
-            className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl leading-relaxed"
+            className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-xl leading-relaxed tracking-wide"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
@@ -90,21 +90,21 @@ const HeroSection = ({ id }: HeroSectionProps) => {
 
           {/* 按钮 */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4"
+            className="flex flex-col sm:flex-row gap-5 mt-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.6 }}
           >
             <Link
               href="/course"
-              className="btn-primary flex items-center justify-center px-8 py-4 text-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1"
+              className="btn-primary flex items-center justify-center px-8 py-4 text-base font-semibold shadow-xl shadow-primary/20 hover:shadow-primary/30 transition-all hover:-translate-y-1 rounded-xl"
             >
               立即学习 n8n 实战课
               <ArrowRight className="ml-2 w-5 h-5" />
             </Link>
             <a
               href="#"
-              className="btn-outline flex items-center justify-center px-8 py-4 text-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hover:-translate-y-1"
+              className="btn-outline flex items-center justify-center px-8 py-4 text-base font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-all hover:-translate-y-1 rounded-xl border-gray-300 dark:border-gray-700"
             >
               领取免费 1.5w 字 n8n 入门资料包
               <Download className="ml-2 w-5 h-5" />
@@ -112,43 +112,46 @@ const HeroSection = ({ id }: HeroSectionProps) => {
           </motion.div>
         </div>
 
-        <div className="md:w-5/12 lg:w-5/12 flex justify-center md:justify-end relative">
+        <div className="md:w-4/12 lg:w-4/12 flex justify-center md:justify-end relative mt-10 md:mt-0">
           {/* 头像 */}
           <motion.div
-            className="relative w-72 h-72 md:w-96 md:h-96"
-            initial={{ opacity: 0, scale: 0.9 }}
+            className="relative w-72 h-72 md:w-[380px] md:h-[380px] lg:w-[420px] lg:h-[420px]"
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
           >
             <motion.div
               className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/20 to-secondary/20 blur-3xl"
-              animate={{ scale: [1, 1.1, 1], opacity: [0.5, 0.8, 0.5] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              animate={{ scale: [1, 1.05, 1], opacity: [0.5, 0.7, 0.5] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             ></motion.div>
 
             <motion.div
-              className="relative w-full h-full rounded-full p-3 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm border border-white/20 shadow-2xl"
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              className="relative w-full h-full rounded-full p-2 bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm border border-white/40 dark:border-white/10 shadow-2xl"
+              animate={{ y: [0, -15, 0] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
             >
               <img
                 src="/avatar.jpg"
                 alt="KKKK AI Space"
-                className="w-full h-full object-cover rounded-full"
+                className="w-full h-full object-cover rounded-full shadow-inner"
               />
             </motion.div>
 
             {/* 装饰元素 */}
             <motion.div
-              className="absolute -bottom-6 -left-6 bg-white dark:bg-gray-800 p-5 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-4 z-20"
+              className="absolute bottom-10 -left-4 md:-left-10 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md p-4 md:p-5 rounded-2xl shadow-xl border border-gray-100 dark:border-gray-700 flex items-center gap-4 z-20"
               initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0, y: [0, -5, 0] }}
-              transition={{ delay: 0.8, y: { duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 } }}
+              animate={{ opacity: 1, x: 0, y: [0, -8, 0] }}
+              transition={{ delay: 0.8, y: { duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 } }}
             >
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-ping"></div>
+              <div className="relative">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <div className="absolute inset-0 w-3 h-3 bg-green-500 rounded-full animate-ping opacity-75"></div>
+              </div>
               <div>
-                <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">Status</p>
-                <p className="text-sm font-bold text-gray-900 dark:text-white">Open to Work</p>
+                <p className="text-[10px] md:text-xs text-gray-500 font-semibold uppercase tracking-wider mb-0.5">Status</p>
+                <p className="text-sm md:text-base font-bold text-gray-900 dark:text-white">Open to Work</p>
               </div>
             </motion.div>
           </motion.div>

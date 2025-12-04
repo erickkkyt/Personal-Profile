@@ -13,12 +13,25 @@ const components = {
 
 // 目录标题映射，确保一级目录与二级目录显示一致
 const directoryTitles: Record<string, string> = {
-    guide: '如何高效使用和学习本课程',
-    '如何高效使用和学习本课程': '如何高效使用和学习本课程',
-    demand2workflow: 'Demand to Workflow',
-    'Demand to Workflow': 'Demand to Workflow',
-    resources: 'n8n资源中心',
-    'n8n资源中心': 'n8n资源中心',
+    guide: '课程整体概览',
+    '如何高效使用和学习本课程': '课程整体概览',
+    '课程整体概览': '课程整体概览',
+    demand2workflow: 'n8n 基础与底层逻辑',
+    'Demand to Workflow': 'n8n 基础与底层逻辑',
+    'n8n基础与底层逻辑': 'n8n 基础与底层逻辑',
+    'n8n 基础与底层逻辑': 'n8n 基础与底层逻辑',
+    'core-skills': 'n8n 核心节点与功能',
+    'n8n 核心技能': 'n8n 核心节点与功能',
+    'n8n核心节点与功能': 'n8n 核心节点与功能',
+    'n8n 核心节点与功能': 'n8n 核心节点与功能',
+    'advanced-cases': 'n8n 高阶工作流案例',
+    'n8n高阶实战工作流案例': 'n8n 高阶工作流案例',
+    'n8n高阶工作流案例': 'n8n 高阶工作流案例',
+    'n8n 高阶工作流案例': 'n8n 高阶工作流案例',
+    resources: 'n8n 能力扩展工具库',
+    'n8n资源中心': 'n8n 能力扩展工具库',
+    'n8n能力扩展工具库': 'n8n 能力扩展工具库',
+    'n8n 能力扩展工具库': 'n8n 能力扩展工具库',
 };
 
 export default async function CoursePage({ params }: { params: { slug: string[] } }) {
@@ -30,7 +43,7 @@ export default async function CoursePage({ params }: { params: { slug: string[] 
 
     // 生成面包屑导航
     const breadcrumbItems: BreadcrumbItem[] = [
-        { label: 'n8n课程', href: '/course' }
+        { label: 'n8n 课程', href: '/course' }
     ];
 
     const matchedSection = COURSE_STRUCTURE.find(
@@ -66,7 +79,7 @@ export default async function CoursePage({ params }: { params: { slug: string[] 
         <>
             <Breadcrumb items={breadcrumbItems} />
 
-            <article className="prose prose-slate max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-a:text-blue-600 dark:prose-a:text-blue-400">
+            <article className="prose prose-slate max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-h2:text-emerald-700 prose-h2:font-extrabold prose-h3:text-indigo-800 prose-h3:underline prose-h3:decoration-indigo-400 prose-h3:decoration-2 prose-h3:underline-offset-4 prose-h4:text-slate-600 prose-h4:font-semibold">
                 <div className="mb-8 border-b border-gray-200 pb-8 dark:border-gray-800">
                     <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
                         {post.title}

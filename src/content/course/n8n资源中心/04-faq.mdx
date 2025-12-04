@@ -1,30 +1,54 @@
 ---
-title: 'n8n百问百答汇总'
+title: 'n8n 百问百答汇总'
 description: 'n8n 常见问题解答'
 ---
 
-# n8n百问百答汇总
+<div className="guide-rich demand-rich">
 
-收集了学员在学习 n8n 过程中的常见问题及解答。
+### 1. 云端 n8n 如何连接飞书 / Notion / Google Sheet？
+**核心原则：** 云端部署通常用 OAuth2 或 API Token，确保回调地址与凭据一致。  
+- **飞书**：使用 Feishu (App) 凭据，设置事件回调/重定向为你的云端域名，权限申请消息/文档读写等，节点里选择对应凭据。  
+- **Notion**：在 Notion 创建 Internal Integration，记录 Token，将数据库/页面 Share 给该集成。n8n 中创建 Notion 凭据填入 Token。  
+- **Google Sheet**：推荐 OAuth2（需要配置 Redirect URL 为 `https://你的域名/rest/oauth2-credential/callback`）或 Service Account（生成 JSON Key，表格共享给 service account 邮箱）。选择 Sheets 节点，选中凭据即可。
 
-## 安装部署
+### 2. 本地 n8n 如何连接 Google Sheet？
+本地环境没有公网回调时，首选 **Service Account**：  
+1) 在 GCP 创建 Service Account，生成 JSON Key。  
+2) 将目标 Sheet 共享给 `xxx@project.iam.gserviceaccount.com`。  
+3) 在 n8n 新建 Google Sheets (Service Account) 凭据，粘贴 JSON。  
+4) Sheet 节点选择该凭据，指定 Spreadsheet ID/表名即可。  
+如必须用 OAuth2，本地需提供可公网访问的回调（如 `ngrok`），并将暴露的 URL 写入 OAuth Redirect。
 
-**Q: 如何安装 n8n？**
+</div>
 
-A: 内容待补充...
-
-## 使用问题
-
-**Q: 如何调试工作流？**
-
-A: 内容待补充...
-
-## 进阶问题
-
-**Q: 如何处理大量数据？**
-
-A: 内容待补充...
-
-## 更多问题
-
-如果你有其他问题，欢迎在社区提问或联系我。
+<style suppressHydrationWarning>
+{`
+  .guide-rich.demand-rich {
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich h2, .guide-rich.demand-rich h3 {
+    margin-top: 1.3rem;
+    margin-bottom: 0.6rem;
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich p {
+    margin: 0 0 0.5rem 0;
+    line-height: 1.6;
+  }
+  .guide-rich.demand-rich strong {
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich a {
+    color: #0f766e;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    text-decoration-color: #99f6e4;
+    font-weight: 600;
+  }
+  .guide-rich.demand-rich a:hover {
+    color: #0d9488;
+    text-decoration-color: #5eead4;
+  }
+`}
+</style>

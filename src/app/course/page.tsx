@@ -9,7 +9,7 @@ export default function CourseIndexPage() {
 
     return (
         <>
-            <Breadcrumb items={[{ label: 'n8n课程' }]} />
+            <Breadcrumb items={[{ label: 'n8n 课程' }]} />
 
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-16">

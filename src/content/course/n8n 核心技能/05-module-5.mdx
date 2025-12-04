@@ -1,0 +1,168 @@
+---
+title: '模块五：n8n 核心节点精通'
+description: 'n8n 常用节点详解：深入学习 n8n 的核心节点及其使用方法，聚焦数据处理、控制流与触发器。'
+---
+
+<div className="guide-rich intro-rich">
+
+## 5.1 数据处理核心节点
+
+本节介绍最基础、最核心的两个数据操作节点：从无代码的 Set 节点起步，再到灵活无限的 Code 节点。
+
+### 5.1.1 Set 节点（Edit Fields）
+
+- 核心功能：添加/移除/修改字段  
+  - 数据清洗、过滤只保留需要字段  
+  - 格式转换，适配下游系统  
+  - 动态生成新字段（时间戳、随机数等）  
+  - 组合多节点数据，统一输出格式  
+- 节点配置概述  
+  - Mode：Manual Mapping（手动映射）/ JSON Output  
+  - Fields to Set：定义键值，值可为固定值或表达式  
+  - Keep Only Set Fields：只输出本节点设置的字段  
+  - Include in Output：选择保留哪些输入数据  
+  - Include Binary Data：是否包含二进制  
+  - Support Dot Notation：默认点号生成嵌套，可关闭保持原样  
+- 使用案例：标准化输入数据  
+  - 场景：Webhook 输入 `{ "fName": "Jane", "lName": "Doe", "contact_email": "jane.doe@example.com" }`  
+  - 步骤：  
+    1) 添加 Set 节点  
+    2) firstName = `{{ $json.fName }}`  
+    3) lastName = `{{ $json.lName }}`  
+    4) email = `{{ $json.contact_email }}`  
+    5) 开启 Keep Only Set Fields  
+    6) 输出 `{ "firstName": "Jane", "lastName": "Doe", "email": "jane.doe@example.com" }`  
+- 核心意义：在不可预测输入之后放置 Set，建立干净、可预期的数据结构，是健壮工作流的基础。  
+
+### 5.1.2 Code 节点
+
+- 核心功能：用 JavaScript 完成复杂数据处理/清洗。  
+- 配置概述  
+  - Execution Modes：Run Once for Each Item（默认逐项） vs Run Once for All Items（整体数组）。  
+  - 读取输入：  
+    - 逐项模式：`$input.item.json` 或 `$json`  
+    - 全量模式：`$input.all()` 或 `$items()`  
+  - 返回结构：必须返回对象数组，形如 `return [{ json: { ... } }]`。  
+- 输出代码方法论：输入/期望输出 → 首版代码 → 错误反馈给 AI → 迭代直至稳定。  
+- 使用案例：复杂数据转换  
+  - 场景：产品列表含价格和类别，需计算含税价格并生成描述。  
+  - 步骤：  
+    1) 模式设为 Run Once for Each Item  
+    2) 读取价格/类别：`const price = $json.price; const category = $json.category;`  
+    3) 条件逻辑应用税率，得 `finalPrice`  
+    4) 构建描述：``const description = `Product: ${$json.name}, Final Price: ${finalPrice}`;``  
+    5) 返回：`return [{ json: { ...$json, finalPrice, description } }];`  
+
+## 5.2 数据流管理与控制
+
+### 5.2.1 Merge 节点
+
+- 核心：统一多个分支。  
+- 模式  
+  - Append：等待所有输入，顺序堆叠成单列表。  
+  - Combine（By Matching Fields / By Position）：按键或按索引配对合并，类似 JOIN 或按序对齐。  
+  - SQL Query：将 input1、input2 视为表，写 SQL 自定义合并。  
+  - Choose Branch：等待全部，但仅传递指定分支数据。  
+- 用例示例：丰富客户数据  
+  - 输入1：订单列表（含 customer_id）  
+  - 输入2：客户列表（含 id、name）  
+  - Combine by Matching Fields：customer_id ↔ id，输出含订单 + 客户名。  
+
+### 5.2.2 Split in Batches 节点（Loop Over Items）
+
+- 核心：批次处理大数据，避免超限。  
+- 配置：  
+  - Batch Size：每轮处理数量，1 表示逐条。  
+  - Reset：控制状态在执行间是否清除。  
+- 用例：API 速率限制  
+  - 200 条数据，需要每分钟 10 条：Batch Size=10 → Wait 60s → 循环回批次输入，遵守限速。  
+
+## 5.3 触发器节点
+
+触发器是工作流起点，分主动（定期检查）和被动（监听外部调用）。  
+
+- Schedule：定时触发。  
+- Webhook：生成 URL，监听外部 HTTP 请求。  
+- App Event：内置应用触发（可轮询或 webhook）。  
+- Manual：编辑器手动触发，便于测试。  
+- When called by another workflow：子工作流触发。  
+
+### 5.3.1 手动触发
+- 用途：开发/测试时手动运行。  
+
+### 5.3.2 定时触发
+- 用途：按设定时间/间隔运行。  
+
+### 5.3.3 Webhook 触发
+- 作用：外部请求触发工作流，并携带数据。  
+- 使用案例：捕获 Web 表单数据  
+  - 1) Webhook 节点接受 POST  
+  - 2) 复制 Test URL  
+  - 3) 用 Postman/curl/HTTP Request 节点发送示例 JSON（如 `{ "name": "John", "email": "john@example.com" }`）  
+  - 4) 在编辑器查看捕获数据。  
+
+## 5.4 HTTP Request 节点 ★
+
+- 核心：与任意 API 交互，是自由编排的关键。  
+- 配置概述  
+  - Method：GET/POST/PUT/PATCH/DELETE。  
+  - URL：API 端点。  
+  - Authentication：选择凭证。  
+  - Query Parameters：GET 查询过滤。  
+  - Body：POST/PUT/PATCH 载荷（JSON/Form-Data/Raw）。  
+  - Headers：如 Content-Type、自定义认证头。  
+- 使用案例：与公共 API 交互  
+  - GET 用户列表：`https://jsonplaceholder.typicode.com/users`  
+  - POST 创建用户：Body JSON `{ "name": "n8n User", "email": "test@n8n.io" }`，查看响应包含新 ID。  
+- 提效：Import cURL，粘贴文档提供的 cURL 自动填充配置。  
+
+## 5.5 逻辑处理节点
+
+### 5.5.1 IF 节点
+- 功能：二元分支，AND/OR 组合条件。  
+- 用例：订单金额 > 100 则发 Slack，大于分支连 Slack，false 保持空。  
+
+### 5.5.2 Switch 节点
+- 功能：多路分支，基于单字段值路由，含 fallback。  
+- 用例：按 `department` 路由工单（Sales/Support/Billing），无匹配走 fallback。  
+
+</div>
+
+<style>
+{`
+  .guide-rich.intro-rich {
+    color: #0f172a;
+  }
+  .guide-rich.intro-rich h1, .guide-rich.intro-rich h2, .guide-rich.intro-rich h3 {
+    color: #0f172a;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .guide-rich.intro-rich h1 {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.4rem;
+  }
+  .guide-rich.intro-rich a {
+    color: #0f766e;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    text-decoration-color: #99f6e4;
+    font-weight: 600;
+  }
+  .guide-rich.intro-rich a:hover {
+    color: #0d9488;
+    text-decoration-color: #5eead4;
+  }
+  .guide-rich.intro-rich .intro-lead {
+    margin: 0.5rem 0 1.25rem;
+    color: #334155;
+    font-weight: 500;
+  }
+  .guide-rich.intro-rich .intro-divider {
+    border: none;
+    border-bottom: 1px solid #e2e8f0;
+    margin: 0 0 1.25rem;
+  }
+`}
+</style>

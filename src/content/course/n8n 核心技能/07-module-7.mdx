@@ -1,0 +1,75 @@
+---
+title: '模块七：n8n 辅助技能深化'
+description: '调试技巧、错误处理、模块化思维，作品从“玩具”升级为“产品”。'
+---
+
+<div className="guide-rich intro-rich">
+
+## 7.1 n8n 工作流良好搭建习惯
+
+- 节点命名：为什么一定要给每个节点起一个有意义的名字？
+- 添加笔记 (Sticky Note)：如何使用便利贴功能，为复杂逻辑或关键参数做注释？
+- 善用“停用节点 (Deactivate Node)”：在调试时，如何优雅地跳过某些步骤？
+- 保存与版本快照：养成随时保存的习惯，并了解 n8n 的自动版本保存机制。
+- 错误处理的初步认知：Continue On Fail——在节点设置中“即使失败也继续执行”的作用，为后续健壮性开发打基础。
+- 版本控制的理解：n8n 如何自动保存工作流的不同版本，以及如何查看历史版本。
+
+---
+
+## 7.2 n8n 系统性的 Debug（调试）方法论
+
+- 读懂执行日志 (Executions Log)：查看每个节点的输入/输出数据，这是定位问题的根本。
+- 数据锁定 (Pin Data) 的妙用：锁定上游节点的数据，专注调试单个节点，避免重复跑全流程。
+- 节点禁用 (Deactivate Node)：在复杂流程中，通过禁用节点做“二分法”排查问题环节。
+- 常见错误解读：分析表达式错误、数据路径错误、认证失败等常见错误，并给出解决方案。
+
+---
+
+## 7.3 n8n 健壮性设计方法论
+
+- 错误处理的基石（Continue On Fail）：详细讲解节点设置中的 Continue on Fail 选项，以及它如何创造出 Error Output 分支。
+- 构建错误处理分支：使用 IF 节点，判断上一步是否出错，如果出错则执行告警流程（钉钉/飞书/邮件等）。
+- 空值与异常值判断：在关键步骤后增加 IF 节点，检查数据是否为空或不符合预期，提前规避下游节点执行错误。
+
+---
+
+## 7.4 n8n 常用快捷键
+
+- Tab：快速添加节点
+- 空格：快速为节点重命名
+- Ctrl+S：快速保存节点
+- 0 和 1：快速视角切换
+- Shift + S：快速添加便签
+- P：快速锁定 / 解锁数据
+- D：快速禁用节点 / 解除节点禁用
+
+</div>
+
+<style>
+{`
+  .guide-rich.intro-rich {
+    color: #0f172a;
+  }
+  .guide-rich.intro-rich h1, .guide-rich.intro-rich h2, .guide-rich.intro-rich h3 {
+    color: #0f172a;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .guide-rich.intro-rich h1 {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.4rem;
+  }
+  .guide-rich.intro-rich a {
+    color: #0f766e;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    text-decoration-color: #99f6e4;
+    font-weight: 600;
+  }
+  .guide-rich.intro-rich a:hover {
+    color: #0d9488;
+    text-decoration-color: #5eead4;
+  }
+`}
+</style>

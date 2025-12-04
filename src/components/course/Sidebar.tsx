@@ -136,9 +136,9 @@ export function Sidebar({ items }: { items: CourseTreeItem[] }) {
             <div className="mb-8 px-2 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <Link
                     href="/course"
-                    className="inline-flex items-center text-xl font-bold text-gray-900 transition-colors hover:text-primary dark:text-white"
+                    className="inline-flex w-full justify-center items-center text-xl font-bold text-gray-900 transition-colors hover:text-primary dark:text-white text-center"
                 >
-                    课程目录
+                    Demand to Workflow
                 </Link>
             </div>
             <div className="space-y-2">

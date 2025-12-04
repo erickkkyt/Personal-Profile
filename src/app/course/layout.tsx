@@ -27,7 +27,7 @@ export default function CourseLayout({
                     <Link href="/" className="mr-4 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                         &larr; Back
                     </Link>
-                    <span className="font-semibold text-gray-900 dark:text-white">n8n课程</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">n8n 课程</span>
                 </div>
 
                 <div className="mx-auto max-w-4xl px-8 py-10">

@@ -1,26 +1,141 @@
 ---
-title: 'n8n开源模板库 (8000+)'
+title: 'n8n 开源模板库 (8000+)'
 description: 'n8n 官方和社区提供的海量模板'
 ---
 
-# n8n开源模板库 (8000+)
+<div className="guide-rich demand-rich">
 
-n8n 拥有超过 8000 个开源工作流模板，涵盖各种使用场景。
+## 模板与节点资源
 
-## 如何使用模板
+<ol className="link-list">
+  <li>
+    <p className="link-title">1. n8n 官方模板（5400+）</p>
+    <div className="card">
+      <div className="card-url">
+        <span className="dot dot-green"></span>
+        <a href="https://n8n.io/workflows/" target="_blank" rel="noreferrer">https://n8n.io/workflows/</a>
+      </div>
+      <p className="card-desc">Official n8n workflows。5400+ 场景覆盖，直接导入、一键跑通。</p>
+    </div>
+  </li>
+  <li>
+    <p className="link-title">2. n8n 开源模板（3000+）</p>
+    <div className="card">
+      <div className="card-url">
+        <span className="dot dot-blue"></span>
+        <a href="https://github.com/Zie619/n8n-workflows" target="_blank" rel="noreferrer">https://github.com/Zie619/n8n-workflows</a>
+      </div>
+      <p className="card-desc">Community templates by Zie619。精选工作流集合。</p>
+    </div>
+    <div className="card">
+      <div className="card-url">
+        <span className="dot dot-indigo"></span>
+        <a href="https://github.com/enescingoz/awesome-n8n-templates" target="_blank" rel="noreferrer">https://github.com/enescingoz/awesome-n8n-templates</a>
+      </div>
+      <p className="card-desc">Awesome n8n templates list。多场景灵感库，便于拆解复用。</p>
+    </div>
+  </li>
+  <li>
+    <p className="link-title">3. n8n 官方社区节点</p>
+    <div className="card">
+      <div className="card-url">
+        <span className="dot dot-orange"></span>
+        <a href="https://www.npmjs.com/search?q=keywords%3An8n-community-node-package" target="_blank" rel="noreferrer">
+          https://www.npmjs.com/search?q=keywords%3An8n-community-node-package
+        </a>
+      </div>
+      <p className="card-desc">Community node packages on npm。查找扩展节点，覆盖常用服务与工具。</p>
+    </div>
+  </li>
+  <li>
+    <p className="link-title">4. n8n Github精选节点库（100+）</p>
+    <div className="card">
+      <div className="card-url">
+        <span className="dot dot-purple"></span>
+        <a href="https://github.com/restyler/awesome-n8n" target="_blank" rel="noreferrer">https://github.com/restyler/awesome-n8n</a>
+      </div>
+      <p className="card-desc">Awesome n8n curated list。100+ 节点与资源索引，快速定位高质量扩展。</p>
+    </div>
+  </li>
+</ol>
 
-1. 访问 n8n 官方模板库
-2. 搜索你需要的功能
-3. 一键导入到你的 n8n 实例
-4. 根据需求调整参数
+</div>
 
-## 热门模板分类
-
-- 内容自动化
-- 数据同步
-- 通知提醒
-- API 集成
-
-## 模板推荐
-
-内容待补充...
+<style suppressHydrationWarning>
+{`
+  .guide-rich.demand-rich {
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #0f766e;
+  }
+  .guide-rich.demand-rich h3 {
+    color: #0b5fad;
+  }
+  .guide-rich.demand-rich h4 {
+    color: #6b7280;
+    font-weight: 700;
+  }
+  .guide-rich.demand-rich a {
+    color: #0f766e;
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 2px;
+    text-decoration-color: #99f6e4;
+    font-weight: 600;
+  }
+  .guide-rich.demand-rich a:hover {
+    color: #0d9488;
+    text-decoration-color: #5eead4;
+  }
+  .guide-rich.demand-rich .link-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .guide-rich.demand-rich .link-list > li {
+    margin-bottom: 1.4rem;
+  }
+  .guide-rich.demand-rich .link-list > li .card + .card {
+    margin-top: 18px;
+  }
+  .guide-rich.demand-rich .link-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich .card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    box-shadow: 0 10px 30px rgba(15, 118, 110, 0.08);
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich .card-url {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .guide-rich.demand-rich .card-desc {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: inherit;
+  }
+  .guide-rich.demand-rich .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .guide-rich.demand-rich .dot-green { background: #10b981; }
+  .guide-rich.demand-rich .dot-purple { background: #8b5cf6; }
+  .guide-rich.demand-rich .dot-blue { background: #2563eb; }
+  .guide-rich.demand-rich .dot-indigo { background: #6366f1; }
+  .guide-rich.demand-rich .dot-orange { background: #f97316; }
+`}
+</style>
