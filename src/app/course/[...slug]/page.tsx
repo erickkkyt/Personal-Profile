@@ -14,9 +14,10 @@ const components = {
 // 目录标题映射，确保一级目录与二级目录显示一致
 const directoryTitles: Record<string, string> = {
     guide: '课程整体概览',
+    overview: '课程整体概览',
     '如何高效使用和学习本课程': '课程整体概览',
     '课程整体概览': '课程整体概览',
-    demand2workflow: 'n8n 基础与底层逻辑',
+    'basic-intro': 'n8n 基础与底层逻辑',
     'Demand to Workflow': 'n8n 基础与底层逻辑',
     'n8n基础与底层逻辑': 'n8n 基础与底层逻辑',
     'n8n 基础与底层逻辑': 'n8n 基础与底层逻辑',

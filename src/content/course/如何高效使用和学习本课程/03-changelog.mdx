@@ -3,6 +3,64 @@ title: '课程更新日志'
 description: '查看课程与资源的最新更新记录'
 ---
 
-# 课程更新日志
+<div className="guide-rich changelog">
 
-最新的课程更新记录请参考「课程更新日志」总览页：/course/changelog
+<ul className="changelog-list">
+  <li>
+    <div className="date">2025-12-05</div>
+    <div className="content">
+      <p className="title">飞书知识库完成迁移</p>
+      <p>已将飞书知识库内容迁移至站内，优化了课程导航与资源页排版，确保后续更新集中在本站统一维护。</p>
+    </div>
+  </li>
+</ul>
+
+</div>
+
+<style>
+{`
+  .guide-rich.changelog {
+    color: #0f172a;
+  }
+  .guide-rich.changelog h1, .guide-rich.changelog h2 {
+    color: #0f172a;
+    margin-top: 1.3rem;
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.35rem;
+  }
+  .changelog-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+  }
+  .changelog-list li {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.9rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    box-shadow: 0 8px 24px rgba(15,118,110,0.08);
+  }
+  .changelog-list .date {
+    font-weight: 800;
+    color: #0b5fad;
+  }
+  .changelog-list .title {
+    margin: 0 0 0.25rem 0;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .changelog-list .content p {
+    margin: 0;
+    line-height: 1.6;
+    color: #1f2937;
+  }
+`}
+</style>

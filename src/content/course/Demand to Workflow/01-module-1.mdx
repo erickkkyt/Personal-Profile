@@ -7,20 +7,42 @@ description: 'n8n 基础概念和入门指南：本模块将帮助你建立对 n
 
 ## 1.1 AI 自动化的分级与应用，以及 n8n 所处的环节
 - **L1 - 基础自动化 (Basic Automation)**  
-  - 定义：基于固定规则的流程自动化（RPA），处理重复、明确规则的任务。  
-  - 应用：财务报销流程中自动识别发票信息并填入系统。  
-  - 局限：缺乏灵活性，无法处理非结构化数据和异常情况。  
+  - **定义**：基于固定规则的流程自动化（RPA），处理重复、明确规则的任务。  
+  - **应用**：财务报销流程中自动识别发票信息并填入系统。  
+  - **局限**：缺乏灵活性，无法处理非结构化数据和异常情况。  
 - **L2 - 增强自动化 (Enhanced Automation)**——结合 AI 能力  
-  - 定义：在基础自动化之上集成 NLP 等 AI 能力，可处理半结构化或非结构化数据。  
-  - 应用：自动读取音频转录为文字，并总结会议纪要。  
-  - 局限：AI 能力偏工具化，流程主逻辑仍由预设规则驱动。  
+  - **定义**：在基础自动化之上集成 NLP 等 AI 能力，可处理半结构化或非结构化数据。  
+  - **应用**：自动读取音频转录为文字，并总结会议纪要。  
+  - **局限**：AI 能力偏工具化，流程主逻辑仍由预设规则驱动。  
+
+<div style={{ marginLeft: '1.5rem', marginTop: '0.75rem' }}>
+  <img
+    src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/6bfcacba-9c7d-4053-7605-c3521ca4cd00/public"
+    alt="AI 自动化分级示意"
+    style={{ borderRadius: '8px', maxWidth: '520px' }}
+  />
+</div>
 - **L3 - 认知自动化 (Cognitive Automation)**——RAG 赋能  
-  - 定义：结合 ML/DL，系统可学习、预测和决策，具备一定“认知”能力。  
-  - 应用：智能客服理解意图并基于知识库历史数据回复；风控根据行为模式预测欺诈。  
-  - 局限：多为特定领域认知，跨领域通用能力有限。  
+  - **定义**：结合 ML/DL，系统可学习、预测和决策，具备一定“认知”能力。  
+  - **应用**：智能客服理解意图并基于知识库历史数据回复；风控根据行为模式预测欺诈。  
+  - **局限**：多为特定领域认知，跨领域通用能力有限。  
+    <div style={{ marginLeft: '1.5rem', marginTop: '0.75rem' }}>
+      <img
+        src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/cdf283f5-b50e-4073-ceea-3c107d3fbd00/public"
+        alt="认知自动化示意"
+        style={{ borderRadius: '8px', maxWidth: '520px' }}
+      />
+    </div>
 - **L4 - 自主智能体 (Autonomous Agents)**——母 Agent 调度、子 Agent 执行  
   - 定义：具备目标设定、自主规划、工具调用、执行反思和长期记忆，像虚拟员工。  
-  - 应用：给定预算与目的地，Agent 自主搜索、预订、规划并输出完整行程计划。  
+  - 应用：给定“为下周的团队夏威夷之旅制定一个预算不超过$5000的行程计划”这样的目标，AI Agent 能自主上网搜索航班、预订酒店、规划活动、整合信息并生成一份完整的计划。  
+    <div style={{ marginLeft: '1.5rem', marginTop: '0.75rem' }}>
+      <img
+        src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/98f25201-1114-4257-78c9-3711a1539300/public"
+        alt="AI Agent 行程规划示意"
+        style={{ borderRadius: '8px', maxWidth: '520px' }}
+      />
+    </div>
 
 - **n8n 的定位：AI 时代的“中枢神经系统”**  
   - 贯穿 L2–L4 的核心编排层。  
@@ -51,25 +73,76 @@ description: 'n8n 基础概念和入门指南：本模块将帮助你建立对 n
   - Coze：适配国内平台，可拓展性弱，海外适配低，上手简单。  
   - Dify：功能多且开源，体验与能力略弱于 n8n。  
   - Zapier：老牌工作流，生态成熟，AI 支持弱于 n8n。  
+
+<div className="compare-table">
+  <table>
+    <thead>
+      <tr>
+        <th>对比维度</th>
+        <th>n8n</th>
+        <th>Coze</th>
+        <th>Dify</th>
+        <th>Zapier</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>核心定位</td>
+        <td>通用型工作流自动化平台，连接万物的“数字粘合剂”</td>
+        <td>AI Bot（机器人）构建和发布平台</td>
+        <td>开源的 LLM 应用开发平台，专注于构建和运营 AI 原生应用</td>
+        <td>商业 SaaS 应用连接器，市场领导者</td>
+      </tr>
+      <tr>
+        <td>开源模式</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>✅</td>
+        <td>❌</td>
+      </tr>
+      <tr>
+        <td>集成广度</td>
+        <td>官方支持 400+ 节点，通过 HTTP 节点可连接无限个应用，还有 2000+ 社区节点</td>
+        <td>主要依赖插件，大模型基本只有国内厂商的，适配国内生态强，国外很弱</td>
+        <td>专注于集成各种 LLM、工具和知识库，而非通用 SaaS 应用</td>
+        <td>超过 6,000 个官方集成应用，生态最成熟</td>
+      </tr>
+      <tr>
+        <td>可扩展性</td>
+        <td>极高。支持 JavaScript 代码、自定义节点、复杂逻辑分支与循环</td>
+        <td>中等。图形化界面配置，主要依赖插件市场</td>
+        <td>高（在 AI 应用层面）。允许自定义复杂的 RAG 流程和 Agent 逻辑</td>
+        <td>中等。提供代码执行器，但自由度受限</td>
+      </tr>
+      <tr>
+        <td>数据主权</td>
+        <td>完全拥有</td>
+        <td>数据托管于厂商</td>
+        <td>完全拥有</td>
+        <td>数据托管于厂商</td>
+      </tr>
+      <tr>
+        <td>使用场景</td>
+        <td>进阶复杂需求，涉及海外业务，具备一定技术与学习能力</td>
+        <td>纯新手小白，聚焦国内市场，对模型能力和复杂流程要求不高</td>
+        <td>—</td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 - **开源优势的商业价值**  
   - 数据主权：可私有化部署，数据留在企业内。  
   - 定制能力：自定义节点接入内部系统。  
   - 成本控制：自托管以固定服务器成本支撑高并发。  
 - **AI 时代的独特价值**：成为 AI Agent 的“神经网络”，越强的 LLM 只会增强 n8n 的编排能力。  
 - **母公司概况**：ARR 约 4000 万美元，25 年搜索量 10 倍增长，累计融资数亿欧元，投资方 Accel 等。  
-
-## 1.4 n8n 的安装与环境配置
-
-- 常见使用方式：官网云、第三方 PaaS、自建云服务器、本地部署。  
-- 部署对比概览：  
-  - 官网云：极低门槛，14 天免费，后续付费。  
-  - PaaS（Zeabur/Clawcloud 等）：低成本一键部署，入门门槛低。  
-  - 云服务器 + Docker：成本低、可 7x24，需基础运维/Docker 知识。  
-  - 本地桌面：零成本，适合学习/测试，依赖本机运行。  
-- 使用方式示例：  
-  - 官网注册（14 天免费）；  
-  - 本地 Docker 部署；  
-  - 云托管平台部署。  
+  - n8n 最新的投资者 Accel Partners 是 X 的早期投资者，投资 X 收益超千倍，资本看好的 AI 平台级机会。  
+    <div style={{ marginLeft: '1.5rem', marginTop: '0.6rem' }}>
+      <img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/7da7e310-43b0-448d-18ea-1bb95e817400/public" alt="投资者信息示意 1" style={{ borderRadius: '10px', maxWidth: '720px', width: '100%', marginBottom: '0.75rem' }} />
+      <img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/c306a1fc-cd68-4584-7977-8ee5a6854f00/public" alt="投资者信息示意 2" style={{ borderRadius: '10px', maxWidth: '720px', width: '100%', marginBottom: '0.75rem' }} />
+      <img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/6cf06c59-58ec-45df-7bdb-f9c99e2e7500/public" alt="投资者信息示意 3" style={{ borderRadius: '10px', maxWidth: '720px', width: '100%' }} />
+    </div>
 
 </div>
 
@@ -103,6 +176,36 @@ description: 'n8n 基础概念和入门指南：本模块将帮助你建立对 n
     margin: 0.25rem 0 0.75rem;
     color: #334155;
     font-weight: 500;
+  }
+  .compare-table table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 40px rgba(15, 118, 110, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .compare-table thead th {
+    background: linear-gradient(90deg, #ecfeff 0%, #e0f2fe 100%);
+    color: #0f172a;
+    font-weight: 700;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+  }
+  .compare-table td {
+    border: 1px solid #e2e8f0;
+    padding: 12px 14px;
+    vertical-align: top;
+    background: #ffffff;
+  }
+  .compare-table tbody tr:nth-child(odd) td {
+    background: #f8fafc;
+  }
+  .compare-table td:first-child {
+    width: 16%;
+    min-width: 140px;
+    font-weight: 700;
   }
 `}
 </style>

@@ -38,13 +38,13 @@ export const COURSE_STRUCTURE: CourseSection[] = [
     {
         id: 'guide',
         title: '课程整体概览',
-        introSlug: 'guide',
+        introSlug: 'overview',
         directory: '如何高效使用和学习本课程',
     },
     {
         id: 'demand2workflow',
         title: 'n8n 基础与底层逻辑',
-        introSlug: 'demand2workflow',
+        introSlug: 'basic-intro',
         directory: 'Demand to Workflow',
     },
     {

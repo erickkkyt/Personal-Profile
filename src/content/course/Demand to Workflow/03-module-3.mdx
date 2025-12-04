@@ -61,9 +61,10 @@ description: 'n8n 界面介绍和核心功能讲解：深入了解 n8n 的界面
 
 ## 3.3 理解 n8n 的数据结构
 
-### 3.3.1 理解 JSON —— 数据流动的关键
+### 3.3.1 理解 JSON：这是理解 n8n 数据流动的关键
 
-在 n8n 中，所有数据都以 JSON 在节点间传递。典型 Item 结构：
+- 在 n8n 中，所有数据都以 JSON (JavaScript Object Notation) 的格式在节点之间传递。请将下面这个结构刻在脑海里，这是理解一切数据操作的基础。  
+- 一个典型的 n8n 数据项 (Item) 结构如下：  
 
 <div className="code-card">
   <div className="code-card__header">
@@ -91,17 +92,26 @@ description: 'n8n 界面介绍和核心功能讲解：深入了解 n8n 的界面
 </code></pre>
 </div>
 
-- 核心概念：对象（{}）、数组（[]）、路径（如 `json.customer.name`，`json.products[1].price`）。  
+- 核心概念：  
+  - 对象 (`{}`)：包含“键: 值”配对，例如 `customer`。  
+  - 数组 (`[]`)：有序列表，例如 `products` 是数组。  
+  - 路径：访问数据的地址。`json.customer.name` 得到 “Alice”；`json.products[1].price` 得到第二个商品的价格（数组从 0 开始）。  
 
-### 2.3.2 理解表达式（Expressions）
+### 3.3.2 理解表达式（Expressions）
 
-- 语法：`{{ ... }}`  
-- 基础：`{{ $json.key }}` 指向上一个节点输出的 json。  
-- 进阶：`{{ $('节点名称').item.json.some_key }}` 跨节点精确取数。  
+- 作用：让节点动态读取上游数据。语法总是 `{{ ... }}`。  
+- 基础用法 (`$json`)：  
+  - 语法：`{{ $json.some_key }}`  
+  - 含义：指向上一个节点输出的 `json`。例如上游输出 `{"name":"Alice"}`，则 `{{ $json.name }}` 得到 “Alice”。  
+- 进阶用法 (`$node`)：  
+  - 语法：`{{ $('节点名称').item.json.some_key }}`  
+  - 含义：跨节点精确取数，不限于紧邻上游。  
+  - 示例：`{{ $('Read From Sheet').item.json.name }}` 直接抓取名为 “Read From Sheet” 的节点输出。  
 
-### 2.3.3 数据处理和清洗：Code 节点示例
+### 3.3.3 数据处理和清洗方法：Code 节点
 
-当 LLM 输出的 JSON 不纯净时，用 Code 节点净化并解析：
+- 当需要解析/转换/重组数据时，用 Code 节点进行结构化加工。  
+- 场景：LLM 输出的 JSON 往往不纯净（被文字包裹），需要先净化再解析。  
 
 <div className="code-card">
   <div className="code-card__header">
@@ -109,36 +119,27 @@ description: 'n8n 界面介绍和核心功能讲解：深入了解 n8n 的界面
     <span className="code-card__copy">复制后粘贴</span>
   </div>
   <pre><code>{
-`// 1. 获取输入：从上一个AI节点获取可能不纯的输出字符串
+`// 1. 获取输入：从上一个 AI 节点获取可能不纯的输出字符串
 // $json.output 会读取名为 'output' 的字段
 const llmOutput = $json.output;
 
-// 2. 净化数据：使用正则表达式，像用筛子一样找出真正的JSON部分
-// 这行代码的意思是：“在这段文本里，找到从第一个'{'开始，到最后一个'}'结束的所有内容”
-// 's' 标志让 . 可以匹配换行符，这对于处理多行JSON至关重要
+// 2. 净化数据：用正则找出最外层 { ... }
 const jsonMatch = llmOutput.match(/{.*}/s);
-
-// 3. 安全检查：如果找不到'{...}'结构，就抛出错误，防止流程继续执行
 if (!jsonMatch || jsonMatch.length === 0) {
-  throw new Error("无法在输入中找到有效的JSON字符串。");
+  throw new Error("无法在输入中找到有效的 JSON 字符串。");
 }
 
-// 提取匹配到的纯净JSON字符串
 const cleanJsonString = jsonMatch[0];
 let parsedData;
 
-// 4. 核心转换：将“文本”形态的JSON，转换为可操作的“对象”
-// JSON.parse() 是JavaScript的核心功能，它将JSON字符串“激活”，变成我们可以用 .key 的方式访问的对象
+// 3. 核心转换：把字符串 JSON 变成对象
 try {
   parsedData = JSON.parse(cleanJsonString);
 } catch (error) {
-  // 如果解析失败（比如JSON格式本身有问题），也抛出错误
-  throw new Error(\`JSON解析失败: \${error.message}.\`);
+  throw new Error(\`JSON 解析失败: \${error.message}.\`);
 }
 
-// 5. 输出结果：将处理好的、结构清晰的数据返回给下一个节点
-// return { ... } 定义了这个代码节点的输出结构
-// 下一个节点就可以用 {{ $json.Title }} 来轻松引用标题了
+// 4. 输出结果：提供结构化数据给下游节点
 return {
   Title: parsedData.Title,
   Summary: parsedData.Summary,
