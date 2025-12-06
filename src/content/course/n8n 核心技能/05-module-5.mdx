@@ -5,164 +5,184 @@ description: 'n8n 常用节点详解：深入学习 n8n 的核心节点及其使
 
 <div className="guide-rich intro-rich">
 
+<VideoPlayer src="30356bda2e3530c11f1d8e60d858d71f" />
+
 ## 5.1 数据处理核心节点
 
-本节介绍最基础、最核心的两个数据操作节点：从无代码的 Set 节点起步，再到灵活无限的 Code 节点。
+本节聚焦两大数据处理节点：Set（零代码结构化）与 Code（JS 级数据加工）。
 
 ### 5.1.1 Set 节点（Edit Fields）
 
-- 核心功能：添加/移除/修改字段  
-  - 数据清洗、过滤只保留需要字段  
-  - 格式转换，适配下游系统  
-  - 动态生成新字段（时间戳、随机数等）  
-  - 组合多节点数据，统一输出格式  
-- 节点配置概述  
-  - Mode：Manual Mapping（手动映射）/ JSON Output  
-  - Fields to Set：定义键值，值可为固定值或表达式  
-  - Keep Only Set Fields：只输出本节点设置的字段  
-  - Include in Output：选择保留哪些输入数据  
-  - Include Binary Data：是否包含二进制  
-  - Support Dot Notation：默认点号生成嵌套，可关闭保持原样  
-- 使用案例：标准化输入数据  
-  - 场景：Webhook 输入 `{ "fName": "Jane", "lName": "Doe", "contact_email": "jane.doe@example.com" }`  
+- **核心功能：** 在数据项中添加、移除或修改字段。  
+  - 数据清洗和过滤，只保留需要的字段  
+  - 数据格式转换，适配下游系统  
+  - 动态生成新字段（如时间戳、随机数等）  
+  - 组合多个节点的数据，统一输出格式  
+- **节点配置概述**  
+  - **Mode (模式)：** Manual Mapping（手动映射）和 JSON Output 两种方式  
+    - Manual Mapping：通过图形界面拖拽字段，设置名称和值，可选择固定值或表达式。  
+    - JSON Output：直接写 JSON，n8n 会将其合并到输入数据中。  
+  - **Fields to Set (设置字段)：** 定义键值对，值可为静态或表达式动态生成。  
+  - **Keep Only Set Fields（仅保留设置的字段）：** 开启后只输出本节点设置的字段，其他输入字段丢弃。  
+  - **Include in Output（输出包含）：** 选择输出中包含哪些输入数据。  
+  - **Include Binary Data（包含二进制数据）：** 输入若有二进制，可选择是否包含。  
+  - **Support Dot Notation（支持点号表示法）：** 默认点号生成嵌套（`number.one` → `{ "number": { "one": 20 } }`），可关闭保持原样。  
+- **使用案例：标准化输入数据**  
+  - 场景：Webhook 接收 `{ "fName": "Jane", "lName": "Doe", "contact_email": "jane.doe@example.com" }`，需要转换为 `firstName/lastName/email`。  
   - 步骤：  
-    1) 添加 Set 节点  
-    2) firstName = `{{ $json.fName }}`  
-    3) lastName = `{{ $json.lName }}`  
-    4) email = `{{ $json.contact_email }}`  
-    5) 开启 Keep Only Set Fields  
-    6) 输出 `{ "firstName": "Jane", "lastName": "Doe", "email": "jane.doe@example.com" }`  
-- 核心意义：在不可预测输入之后放置 Set，建立干净、可预期的数据结构，是健壮工作流的基础。  
+    1. 添加 Set 节点。  
+    2. 新增字段 `firstName`，值为表达式 `{{ $json.fName }}`。  
+    3. 新增字段 `lastName`，值为表达式 `{{ $json.lName }}`。  
+    4. 新增字段 `email`，值为表达式 `{{ $json.contact_email }}`。  
+    5. 启用 “Keep Only Set Fields”。  
+    6. 输出得到 `{ "firstName": "Jane", "lastName": "Doe", "email": "jane.doe@example.com" }`。  
+- **核心意义：** 在任何接收不可预测或杂乱数据的触发器后放置一个 Set 节点，先把数据标准化，为后续节点定义稳定的输入结构。  
 
 ### 5.1.2 Code 节点
 
-- 核心功能：用 JavaScript 完成复杂数据处理/清洗。  
-- 配置概述  
-  - Execution Modes：Run Once for Each Item（默认逐项） vs Run Once for All Items（整体数组）。  
-  - 读取输入：  
-    - 逐项模式：`$input.item.json` 或 `$json`  
-    - 全量模式：`$input.all()` 或 `$items()`  
-  - 返回结构：必须返回对象数组，形如 `return [{ json: { ... } }]`。  
-- 输出代码方法论：输入/期望输出 → 首版代码 → 错误反馈给 AI → 迭代直至稳定。  
-- 使用案例：复杂数据转换  
-  - 场景：产品列表含价格和类别，需计算含税价格并生成描述。  
+- **核心功能：** 使用 JavaScript 处理复杂数据和清洗。  
+- **节点配置概述**  
+  - **Execution Modes (执行模式)：** `Run Once for Each Item`（默认，逐项处理） vs `Run Once for All Items`（整体数组一次处理）。  
+  - **读取输入数据：**  
+    - 逐项模式：`$input.item.json` 或简写 `$json`。  
+    - 全量模式：`$input.all()` 或 `$items()`。  
+  - **返回数据：** 必须返回对象数组，形如 `return [{ json: { newField: 'newValue' } }];`。  
+- **输出 Code 方法论：** 期望输出 & 输入 → 初版代码 → 错误反馈给 AI → 迭代直至稳定。  
+- **使用案例：复杂数据转换**  
+  - 场景：输入是产品列表，含价格和类别；目标是计算含税最终价并生成描述字符串。  
   - 步骤：  
-    1) 模式设为 Run Once for Each Item  
-    2) 读取价格/类别：`const price = $json.price; const category = $json.category;`  
-    3) 条件逻辑应用税率，得 `finalPrice`  
-    4) 构建描述：``const description = `Product: ${$json.name}, Final Price: ${finalPrice}`;``  
-    5) 返回：`return [{ json: { ...$json, finalPrice, description } }];`  
+    1. 设置为 `Run Once for Each Item`。  
+    2. 读取价格/类别：`const price = $json.price; const category = $json.category;`。  
+    3. 用条件逻辑计算 `finalPrice`。  
+    4. 构建描述：``const description = `Product: ${$json.name}, Final Price: ${finalPrice}`;``  
+    5. 返回新对象：`return [{ json: { ...$json, finalPrice, description } }];`。  
 
 ## 5.2 数据流管理与控制
 
 ### 5.2.1 Merge 节点
 
-- 核心：统一多个分支。  
-- 模式  
-  - Append：等待所有输入，顺序堆叠成单列表。  
-  - Combine（By Matching Fields / By Position）：按键或按索引配对合并，类似 JOIN 或按序对齐。  
-  - SQL Query：将 input1、input2 视为表，写 SQL 自定义合并。  
-  - Choose Branch：等待全部，但仅传递指定分支数据。  
-- 用例示例：丰富客户数据  
-  - 输入1：订单列表（含 customer_id）  
-  - 输入2：客户列表（含 id、name）  
-  - Combine by Matching Fields：customer_id ↔ id，输出含订单 + 客户名。  
+- **核心功能：** 统一多个工作流分支。  
+- **四种核心模式：**  
+  - **Append (追加)：** 等待所有输入完成，将每个输入按顺序输出，生成更长的单一列表。用例：收集并行、独立 API 调用的结果。  
+  - **Combine (合并)：** 最常用，根据规则配对两个输入流，含多种子模式：  
+    - **By Matching Fields (按字段匹配 / Merge by Key)：** 依据指定字段（如 email/id）匹配合并，类似数据库 JOIN，常用于数据丰富化。  
+    - **By Position (按位置合并 / Merge by Index)：** 按索引配对，输入1 的第一个与输入2 的第一个合并，以此类推。用例：两个有序列表按顺序关联。  
+  - **SQL Query (SQL 语言)：** 将 input1、input2 视为表，写 SQL 自定义合并逻辑。用例：标准模式不足时的复杂合并。  
+  - **Choose Branch (选择分支)：** 等待全部输入，仅传递指定分支数据，不修改内容。用例：IF/Switch 后重新统一路径但不合并数据。  
+- **模式对照：**  
+  - **Append** → 回答 “如何将多个列表堆叠？”；典型用例：汇总多个 API 结果；输出：包含全部项目的单列表。  
+  - **Combine by Position** → 回答 “如何按位置用一个数据集丰富另一个？”；典型用例：向订单列表添加客户信息；输出：匹配项的合并对象列表。  
+  - **SQL Query** → 回答 “如何用自定义 SQL 精确合并数据？”；典型用例：需要复杂合并的高级场景；输出：由 SQL 结果决定的结构。  
+- **使用案例：丰富客户数据**  
+  - 场景：分支1 获取订单列表（含 customer_id），分支2 获取客户列表（id、name），目标是把客户 name 加到订单。  
+  - 步骤：  
+    1. 将两个分支连接到一个 Merge 节点。  
+    2. 设置 Mode 为 Combine。  
+    3. 设置 Combine by 为 Matching Fields。  
+    4. 设置 Input 1 Field 为 customer_id。  
+    5. 设置 Input 2 Field 为 id。  
+    6. 执行节点，输出含订单详情和相应客户名称。  
 
 ### 5.2.2 Split in Batches 节点（Loop Over Items）
 
-- 核心：批次处理大数据，避免超限。  
-- 配置：  
-  - Batch Size：每轮处理数量，1 表示逐条。  
-  - Reset：控制状态在执行间是否清除。  
-- 用例：API 速率限制  
-  - 200 条数据，需要每分钟 10 条：Batch Size=10 → Wait 60s → 循环回批次输入，遵守限速。  
+- **核心功能：** 规模化处理数据，将大数组拆成可管理的批次循环处理，避免崩溃或触达 API 速率限制。  
+- **节点配置概述：**  
+  - **Batch Size (批次大小)：** 每轮处理多少项；设为 1 表示逐条。  
+  - **Reset (重置)：** 控制循环状态在两次工作流执行间是否清除。  
+- **使用案例：API 速率限制**  
+  - 场景：有 200 条数据，但后续 API 每分钟只允许 10 个请求。  
+  - 步骤：  
+    1. 工作流输出 200 个联系人。  
+    2. 添加 Split in Batches，Batch Size 设为 10。  
+    3. 在其后添加下游节点，使其每次接收 10 个项目。  
+    4. 在下游节点后添加 Wait，设置等待 60 秒。  
+    5. 将 Wait 输出回连到 Split in Batches 输入。  
+    6. 循环一次处理 10 条，等待 60 秒，再处理下一批，遵守速率限制。  
 
 ## 5.3 触发器节点
 
-触发器是工作流起点，分主动（定期检查）和被动（监听外部调用）。  
+触发器节点永远是工作流的第一个节点，负责启动工作流。分主动（按计划检查）与被动（等待外部调用）。
 
-- Schedule：定时触发。  
-- Webhook：生成 URL，监听外部 HTTP 请求。  
-- App Event：内置应用触发（可轮询或 webhook）。  
-- Manual：编辑器手动触发，便于测试。  
-- When called by another workflow：子工作流触发。  
+- **触发器类型详解：**  
+  - **Schedule (定时触发)：** 预定义时间或间隔运行（主动）。  
+  - **Webhook (网络钩子)：** 提供唯一 URL 监听外部 HTTP 请求（被动）。  
+  - **App Event (应用事件)：** 内置应用触发器，可轮询或 webhook。  
+  - **Manual (手动触发)：** 编辑器点击按钮启动，便于测试开发。  
+  - **When called by another workflow (子工作流触发)：** 作为子工作流被调用，便于复用与模块化。  
 
 ### 5.3.1 手动触发
-- 用途：开发/测试时手动运行。  
+- **Manual (手动触发)：** 编辑器点击按钮启动，常用于测试/开发。  
 
 ### 5.3.2 定时触发
-- 用途：按设定时间/间隔运行。  
+- **Schedule (定时触发)：** 按预定义时间/间隔运行工作流。  
+
+<img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/704802fe-04ab-46ae-ac4f-5843557fff00/public" alt="定时触发示意" style={{ borderRadius: '8px', margin: '0.5rem 0 1rem', maxWidth: '780px', width: '100%' }} />
 
 ### 5.3.3 Webhook 触发
-- 作用：外部请求触发工作流，并携带数据。  
-- 使用案例：捕获 Web 表单数据  
-  - 1) Webhook 节点接受 POST  
-  - 2) 复制 Test URL  
-  - 3) 用 Postman/curl/HTTP Request 节点发送示例 JSON（如 `{ "name": "John", "email": "john@example.com" }`）  
-  - 4) 在编辑器查看捕获数据。  
+- **Webhook (网络钩子)：** 生成专属 URL，任何外部应用/服务向其发送 HTTP 请求（常见 POST/GET）即触发工作流，并携带请求数据。  
+- **使用案例：Webhook 节点捕获 Web 表单数据**  
+  - 场景：网站联系表单需把提交数据发送到 n8n。  
+  - 步骤：  
+    1) 创建以 Webhook 节点开头的工作流。  
+    2) 配置为接受 POST 请求。  
+    3) 复制 Test URL。  
+    4) 用 Postman/curl 或另一 n8n HTTP Request 节点向 Test URL 发送示例 JSON（如 `{ "name": "John", "email": "john@example.com" }`）。  
+    5) 在编辑器中查看捕获数据。  
+
+<img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/2d89fbf4-f02b-42c7-cc97-5c99136f1b00/public" alt="Webhook 捕获数据示意" style={{ borderRadius: '8px', margin: '0.5rem 0 1rem', maxWidth: '780px', width: '100%' }} />
 
 ## 5.4 HTTP Request 节点 ★
 
-- 核心：与任意 API 交互，是自由编排的关键。  
-- 配置概述  
-  - Method：GET/POST/PUT/PATCH/DELETE。  
-  - URL：API 端点。  
-  - Authentication：选择凭证。  
-  - Query Parameters：GET 查询过滤。  
-  - Body：POST/PUT/PATCH 载荷（JSON/Form-Data/Raw）。  
-  - Headers：如 Content-Type、自定义认证头。  
-- 使用案例：与公共 API 交互  
-  - GET 用户列表：`https://jsonplaceholder.typicode.com/users`  
-  - POST 创建用户：Body JSON `{ "name": "n8n User", "email": "test@n8n.io" }`，查看响应包含新 ID。  
-- 提效：Import cURL，粘贴文档提供的 cURL 自动填充配置。  
+<VideoPlayer src="385eabda8c935eab352e6140ff8e3cca" />
+
+- **这是 n8n 中最强大、最通用的节点：** 与几乎任何 API 交互，是自由化编排的核心。  
+
+### 5.4.1 节点配置概述：阅读不同 API 文档按需配置
+- **Request Method (请求方法)：** 说明 GET（检索）与 POST（创建/发送）差异。  
+- **URL：** 目标 API 端点。  
+- **Authentication (认证)：** 选择 n8n 凭据库中的凭证。  
+- **Query Parameters (查询参数)：** GET 的键值过滤。  
+- **Body (请求体)：** POST/PUT/PATCH 的载荷；说明 JSON（常用）、Form-Data（上传）、Raw。  
+- **Headers (请求头)：** 元数据，如 Content-Type、自定义认证头。  
+
+### 5.4.2 使用案例：与公共 API 交互
+- 场景：用 JSON Placeholder 获取用户列表并创建新用户。  
+- 步骤 (GET)：  
+  1) 添加 HTTP Request，Method=GET，URL=`https://jsonplaceholder.typicode.com/users`。  
+  2) 执行并查看用户数组。  
+- 步骤 (POST)：  
+  1) 添加 HTTP Request，Method=POST，URL 同上。  
+  2) Send Body 选 JSON，填 `{ "name": "n8n User", "email": "test@n8n.io" }`。  
+  3) 执行并查看响应（包含新建 ID）。  
+
+### 5.4.3 提效方式：Import cURL
+- **Import cURL：** 粘贴 API 文档的 cURL 示例，自动填充 URL、方法、Headers、Body。  
+
+<img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/2d89fbf4-f02b-42c7-cc97-5c99136f1b00/public" alt="Webhook 触发示意" style={{ borderRadius: '8px', margin: '0.5rem 0 1rem', maxWidth: '780px', width: '100%' }} />
 
 ## 5.5 逻辑处理节点
 
+- **IF 与 Switch 节点：** 进行工作流的不同逻辑判断，使工作流能根据输入数据采取不同行为，将项目流引导到不同分支。  
+
 ### 5.5.1 IF 节点
-- 功能：二元分支，AND/OR 组合条件。  
-- 用例：订单金额 > 100 则发 Slack，大于分支连 Slack，false 保持空。  
+- **IF 节点概述：** 提供一个简单的二元（双向）分割，评估一个或多个条件，将项目路由到 true 或 false 输出；支持 AND/OR 组合多个条件。  
+- **IF 节点使用案例：**  
+  - 场景：处理订单；如果 `order_total` 大于 100，则向“大额订单”频道发 Slack 消息，否则不操作。  
+  - 步骤：  
+    1) 添加 IF 节点。  
+    2) 设置 Number 条件：`{{ $json.order_total }} | is greater than | 100`。  
+    3) 将 Slack 节点连接到 true 输出，false 输出留空。  
+
+<img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/e702835a-235d-4d6f-bde1-b59d30f7a000/public" alt="IF 节点示意" style={{ borderRadius: '8px', margin: '0.5rem 0 1rem', maxWidth: '780px', width: '100%' }} />
 
 ### 5.5.2 Switch 节点
-- 功能：多路分支，基于单字段值路由，含 fallback。  
-- 用例：按 `department` 路由工单（Sales/Support/Billing），无匹配走 fallback。  
+- **Switch 节点概述：** 根据单字段值提供多路分割，含多个输出分支及 fallback（默认）。  
+- **Switch 节点使用案例：**  
+  - 场景：按 `department` 字段（Sales/Support/Billing）路由支持工单。  
+  - 步骤：  
+    1) 添加 Switch，Input Field=`{{ $json.department }}`。  
+    2) 规则：Value Sales -> Output Sales；Value Support -> Output Support；Value Billing -> Output Billing；其余走 fallback。  
+
+<img src="https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/d92793e4-00b1-4306-d1c0-b0a778d48200/public" alt="Switch 节点示意" style={{ borderRadius: '8px', margin: '0.5rem 0 1rem', maxWidth: '780px', width: '100%' }} />
 
 </div>
-
-<style>
-{`
-  .guide-rich.intro-rich {
-    color: #0f172a;
-  }
-  .guide-rich.intro-rich h1, .guide-rich.intro-rich h2, .guide-rich.intro-rich h3 {
-    color: #0f172a;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-  }
-  .guide-rich.intro-rich h1 {
-    border-bottom: 1px solid #e2e8f0;
-    padding-bottom: 0.4rem;
-  }
-  .guide-rich.intro-rich a {
-    color: #0f766e;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 2px;
-    text-decoration-color: #99f6e4;
-    font-weight: 600;
-  }
-  .guide-rich.intro-rich a:hover {
-    color: #0d9488;
-    text-decoration-color: #5eead4;
-  }
-  .guide-rich.intro-rich .intro-lead {
-    margin: 0.5rem 0 1.25rem;
-    color: #334155;
-    font-weight: 500;
-  }
-  .guide-rich.intro-rich .intro-divider {
-    border: none;
-    border-bottom: 1px solid #e2e8f0;
-    margin: 0 0 1.25rem;
-  }
-`}
-</style>

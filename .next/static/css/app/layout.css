@@ -959,6 +959,41 @@ h1,
           background-clip: text;
   color: transparent;
 }
+/* 强化在 prose 内的代码样式，避免被 prose 覆盖 */
+.prose .guide-rich code {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 2px 6px;
+    font-size: 0.92em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+.prose .guide-rich pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+/* 通用 guide-rich 标题样式（含非 intro-rich 页面，如 module-3） */
+/* 防止自动生成的标题锚点变成蓝色下划线链接 */
+/* 提升优先级，覆盖 prose 的默认标题与链接颜色 */
+.prose .guide-rich h1,
+  .prose .guide-rich h2,
+  .prose .guide-rich h3 {
+    color: #0f4c81 !important;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 800 !important;
+  }
+.prose .guide-rich h1 {
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 0.4rem;
+  }
+.prose .guide-rich h1 a,
+  .prose .guide-rich h2 a,
+  .prose .guide-rich h3 a {
+    color: #0f4c81;
+    text-decoration: none;
+  }
 .pointer-events-none{
   pointer-events: none;
 }
@@ -1234,6 +1269,12 @@ h1,
 }
 .w-full{
   width: 100%;
+}
+.w-64{
+  width: 64px;
+}
+.w-80{
+  width: 20rem;
 }
 .max-w-3xl{
   max-width: 48rem;
@@ -2194,20 +2235,9 @@ html body{
 .prose-h2\:font-extrabold :is(:where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *))){
   font-weight: 800;
 }
-.prose-h2\:text-primary :is(:where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *))){
-  --tw-text-opacity: 1;
-  color: rgb(42 92 130 / var(--tw-text-opacity, 1));
-}
 .prose-h2\:text-emerald-700 :is(:where(h2):not(:where([class~="not-prose"],[class~="not-prose"] *))){
   --tw-text-opacity: 1;
   color: rgb(4 120 87 / var(--tw-text-opacity, 1));
-}
-.prose-h3\:font-semibold :is(:where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *))){
-  font-weight: 600;
-}
-.prose-h3\:text-blue-700 :is(:where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *))){
-  --tw-text-opacity: 1;
-  color: rgb(29 78 216 / var(--tw-text-opacity, 1));
 }
 .prose-h3\:text-indigo-800 :is(:where(h3):not(:where([class~="not-prose"],[class~="not-prose"] *))){
   --tw-text-opacity: 1;

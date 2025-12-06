@@ -5,44 +5,87 @@ description: '手把手完成 n8n 的安装、基础配置与首次运行，为�
 
 <div className="guide-rich intro-rich">
 
-## 2.1 常见使用方式
+## 2.1 常见部署 & 使用方式
 
-- 官网云：极低门槛，14 天免费，后续付费。  
-- 第三方 PaaS（Zeabur/Clawcloud 等）：低成本一键部署，入门门槛低。  
-- 云服务器 + Docker：成本低、可 7x24，需基础运维/Docker 知识。  
-- 本地桌面：零成本，适合学习/测试，依赖本机运行。  
+- 官网云托管：注册即用，最省心的官方方案  
+- PaaS（Zeabur）：几步一键部署，低成本托管  
+- 云服务器部署 (VPS)：自管服务器，低成本且 7x24 稳定  
+- 本地桌面部署 (Local)：本机运行，零成本，适合学习测试
 
-## 2.2 部署对比概览
+<table>
+  <thead>
+    <tr>
+      <th>部署方式</th>
+      <th>官网云托管</th>
+      <th>云托管平台 (PaaS) 如 Zeabur</th>
+      <th>云服务器部署 (VPS)</th>
+      <th>本地桌面部署 (Local)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>部署实体</strong></td>
+      <td>官方提供的 SaaS 云服务</td>
+      <td>在第三方 PaaS 平台上通过代码仓库一键部署</td>
+      <td>在云服务器上通过 Docker 进行部署</td>
+      <td>在个人电脑 (Windows/macOS) 上运行</td>
+    </tr>
+    <tr>
+      <td><strong>成本模型</strong></td>
+      <td>前 14 天免费，后续成本较高，最低 24 欧元/月</td>
+      <td>成本低，初期 5 美元/月</td>
+      <td>低，仅服务器固定月租（性价比极高）</td>
+      <td>免费</td>
+    </tr>
+    <tr>
+      <td><strong>技术门槛</strong></td>
+      <td><strong>极低</strong>，注册账号即可使用</td>
+      <td><strong>较低</strong>，无需服务器管理知识，按部署流程即可</td>
+      <td><strong>中等</strong>，需要基础的 Docker 知识和一定的服务器知识</td>
+      <td><strong>中等</strong>，需要基础的 Docker 知识</td>
+    </tr>
+    <tr>
+      <td><strong>数据主权</strong></td>
+      <td>数据由官方平台托管</td>
+      <td><strong>较高</strong>，应用和数据逻辑由用户控制，但运行环境由平台管理</td>
+      <td><strong>完全私有</strong>，数据 100% 在自己的服务器</td>
+      <td><strong>完全私有</strong>，数据 100% 在本地电脑</td>
+    </tr>
+    <tr>
+      <td><strong>运行稳定性</strong></td>
+      <td><strong>高</strong>，由官方团队负责运维保障</td>
+      <td><strong>高</strong>，平台通常提供自动扩缩容和故障恢复</td>
+      <td><strong>高</strong>，可实现 7x24 小时不间断运行</td>
+      <td><strong>低</strong>，依赖电脑开机和联网，无法 7x24 小时运行</td>
+    </tr>
+    <tr>
+      <td><strong>限制</strong></td>
+      <td>不同付费级别对应的并行数量有限制</td>
+      <td>主要是服务器算力限制，影响并行和用户数量</td>
+      <td>主要是服务器算力限制，影响并行和用户数量</td>
+      <td>无法直接接入公网，需要 ngrok 等工具</td>
+    </tr>
+    <tr>
+      <td><strong>适用场景</strong></td>
+      <td><strong>快速体验</strong>、无技术背景，追求省心稳定，快速初期测试</td>
+      <td><strong>部署简便与低成本平衡</strong>的开发者、快速原型验证</td>
+      <td><strong>生产环境</strong>、中小型企业，需要数据私有和低成本的严肃用户</td>
+      <td><strong>学习/测试/开发调试</strong>，运行非关键性个人任务</td>
+    </tr>
+  </tbody>
+</table>
 
-- 官网云：最快速上手，免运维。  
-- PaaS：便宜省心，适合不想自己管服务器的同学。  
-- 云服务器 + Docker：可控、稳定，适合长期运行与定制。  
-- 本地桌面：学习/演示友好，不适合生产。  
+## 2.2 官网注册使用（14 天免费）
 
-## 2.3 使用方式示例
+<VideoPlayer src="596e57471a773fd5625be69b77f20146" />
 
-- 官网注册（14 天免费体验）  
-- 本地 Docker 部署  
-- 云托管平台部署  
+## 2.3 本地 Docker 部署
 
-## 2.4 安装与部署基础
+<VideoPlayer src="30bad720eda4ee3032e1779392d01ff8" />
 
-- **手把手完成 n8n 的安装、基础配置与首次运行。**  
-- 本地安装：Docker / npm / 桌面版三种方式概览。  
-- 云端部署：官方 Cloud 版或自托管（Docker Compose）。  
-- 首次登录与基本设置：时区、语言、Webhook URL 校验。  
+## 2.4 云托管平台部署（Zeabur）
 
-## 2.5 凭据与安全
-
-- 创建首个用户并配置基础凭据存储。  
-- 环境变量与敏感信息管理要点。  
-
-## 2.6 首次运行与验证
-
-- 创建第一个 Hello World 工作流并成功执行。  
-- 查看执行记录，确认日志与输入输出。  
-
-> 详细步骤与截图待补充，将在后续完善。
+<VideoPlayer src="78ba7faa2a67b861b0dd91e6fc539ca7" />
 
 </div>
 
@@ -71,6 +114,46 @@ description: '手把手完成 n8n 的安装、基础配置与首次运行，为�
   .guide-rich.intro-rich a:hover {
     color: #0d9488;
     text-decoration-color: #5eead4;
+  }
+  .guide-rich.intro-rich table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.25rem 0;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 10px 40px rgba(15, 118, 110, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .guide-rich.intro-rich thead th {
+    background: linear-gradient(90deg, #ecfeff 0%, #e0f2fe 100%);
+    color: #0f172a;
+    font-weight: 700;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+  }
+  .guide-rich.intro-rich th, .guide-rich.intro-rich td {
+    border: 1px solid #e2e8f0;
+    padding: 12px 14px;
+    vertical-align: top;
+    background: #ffffff;
+  }
+  .guide-rich.intro-rich th:first-child,
+  .guide-rich.intro-rich td:first-child {
+    width: 18%;
+    min-width: 140px;
+  }
+  .guide-rich.intro-rich th:nth-child(2),
+  .guide-rich.intro-rich th:nth-child(3),
+  .guide-rich.intro-rich th:nth-child(4),
+  .guide-rich.intro-rich th:nth-child(5),
+  .guide-rich.intro-rich td:nth-child(2),
+  .guide-rich.intro-rich td:nth-child(3),
+  .guide-rich.intro-rich td:nth-child(4),
+  .guide-rich.intro-rich td:nth-child(5) {
+    width: 20.5%;
+  }
+  .guide-rich.intro-rich tbody tr:nth-child(odd) td {
+    background: #f8fafc;
   }
 `}
 </style>

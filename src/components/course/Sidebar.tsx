@@ -5,6 +5,16 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { CourseTreeItem } from '@/lib/course';
 
+// 视频时长映射（路径相对于 /course/）
+const VIDEO_DURATIONS: Record<string, string> = {
+    'overview/01-intro': "26'56",
+    'basic-intro/01-module-1': "26'27",
+    'basic-intro/02-module-2': "11'58",
+    'basic-intro/03-module-3': "21'32",
+    'basic-intro/04-module-4': "35'34",
+    'core-skills/05-module-5': "36'35",
+};
+
 // Simple Icons
 const ChevronRight = ({ className }: { className?: string }) => (
     <svg
@@ -66,6 +76,7 @@ function SidebarItem({ item, level = 0 }: { item: CourseTreeItem; level?: number
     // The route is /course/[slug]
     const href = item.type === 'file' ? `/course/${item.path}` : '#';
     const isActive = item.type === 'file' && pathname === href;
+    const duration = VIDEO_DURATIONS[item.path];
 
     // 判断是否为一级目录
     const isTopLevel = level === 0;
@@ -126,6 +137,11 @@ function SidebarItem({ item, level = 0 }: { item: CourseTreeItem; level?: number
         >
             <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isActive ? 'bg-blue-600 dark:bg-blue-400' : 'bg-gray-400'}`}></span>
             <span className="truncate leading-tight">{item.title || item.name}</span>
+            {duration && (
+                <span className="ml-auto text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+                    {duration}
+                </span>
+            )}
         </Link>
     );
 }
