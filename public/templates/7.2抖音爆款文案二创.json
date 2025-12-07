@@ -1,0 +1,506 @@
+{
+  "name": "抖音文案二创",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY",
+          "mode": "list",
+          "cachedResultName": "自媒体内容爬取&生成",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "抖音",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        -80
+      ],
+      "id": "b07a20ad-b7da-4e07-923b-d7ca14a99393",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "dndBiaKLXpjDgjfV",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f6d74f07-c28a-4d99-b367-cba680844054",
+              "leftValue": "={{ $json['改写状态'] }}",
+              "rightValue": "未完成",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "eac611e5-9b1d-4c50-bd44-5f8dd738d194",
+              "leftValue": "={{ $json['点赞数'] }}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "a059b8ff-51a3-4a1a-ae31-840620b81ba4",
+              "leftValue": "={{ $json['评论数'] }}",
+              "rightValue": 10,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            },
+            {
+              "id": "18d21e25-05c7-4157-8339-d637975e0fbb",
+              "leftValue": "={{ $json['原始视频时长'] }}",
+              "rightValue": 120000,
+              "operator": {
+                "type": "number",
+                "operation": "lt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -256,
+        -80
+      ],
+      "id": "1f576b69-3cf8-4560-a45c-d3e7d0533693",
+      "name": "爆款筛选"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17d8c547-5538-4cab-b905-fe6fbf9670da",
+              "name": "APP_ID",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "e68b4cc9-66d6-4621-a133-269962228469",
+              "name": "APP_SECRET",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -32,
+        -80
+      ],
+      "id": "27f27a63-5730-4524-9d5d-3ef526ac6708",
+      "name": "配置密钥"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://www.mxnzp.com/api/douyin_pro/video_to_text/v2?app_id={{ $json.APP_ID }}&app_secret={{ $json.APP_SECRET }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $('爆款筛选').item.json['视频链接'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "310935a9-1345-4415-a125-b5221a215045",
+      "name": "抖音视频文案爬取",
+      "retryOnFail": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=原文案如下：\n {{ $json.data.audioInfo }}",
+        "options": {
+          "systemMessage": "=【抖音文案优化指令】\n1. 原始文案：\n根据原始文案进行二创\n2. 目标用户画像：\n核心人群： 程序员、开发者、运营人员、市场营销人员、独立开发者、创业公司团队。\n次要人群： 任何需要处理重复性电脑操作的“效率控”，如电商卖家、数据分析师、HR等。\n共同痛点： 被大量重复性、机械性的“复制粘贴”工作所困扰，希望找到一个灵活、强大的工具来解放生产力。\n3. 期望风格与情绪：\n风格： 干货满满、节奏快速、极客范儿、有“发现神器”的惊喜感。\n情绪： 从“天啊，这太烦了！”（展示痛点）到“哇塞，竟然可以这样！”（展示n8n解决方案）的爽感和豁然开朗的感觉。\n4. 输出限制：\n唯一版本： 根据以上要求，仅生成一个你认为最佳的二创文案版本。\n纯净输出： 最终结果只输出文案本身，不要包含任何标题、前言、解释或其他任何多余的文字。\n\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        -80
+      ],
+      "id": "13f28955-4212-4f3b-8681-dfdb7073fc4e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        336,
+        128
+      ],
+      "id": "4fc75610-27c0-476d-bd84-77252bd45ebe",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1tvGSNZ1pAphoDqT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY",
+          "mode": "list",
+          "cachedResultName": "自媒体内容爬取&生成",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "抖音",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "原文内容": "={{ $('抖音视频文案爬取').item.json.data.audioInfo }}",
+            "二创内容": "={{ $json.output }}",
+            "改写状态": "已完成",
+            "视频链接": "={{ $('爆款筛选').item.json['视频链接'] }}"
+          },
+          "matchingColumns": [
+            "视频链接"
+          ],
+          "schema": [
+            {
+              "id": "视频标题",
+              "displayName": "视频标题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "视频链接",
+              "displayName": "视频链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "博主名称",
+              "displayName": "博主名称",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "博主主页",
+              "displayName": "博主主页",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "点赞数",
+              "displayName": "点赞数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "收藏数",
+              "displayName": "收藏数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "评论数",
+              "displayName": "评论数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "分享数",
+              "displayName": "分享数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "发布时间",
+              "displayName": "发布时间",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "视频时长",
+              "displayName": "视频时长",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "原始视频时长",
+              "displayName": "原始视频时长",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "原文内容",
+              "displayName": "原文内容",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "二创内容",
+              "displayName": "二创内容",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "改写状态",
+              "displayName": "改写状态",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        752,
+        -80
+      ],
+      "id": "2e0deae8-bb0d-4926-821f-40ce42cfdc26",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "up6NQNj3Wvcic09t",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "抖音视频文案爬取": [
+      {
+        "json": {
+          "data": {
+            "douyinInfo": {
+              "title": "宝藏资源<n8n的2000多个稀缺工作流源码>",
+              "desc": "宝藏资源<n8n的2000多个稀缺工作流源码> Github上挖到的宝藏级资源，n8n的2000多个稀缺工作流源码，稍作修改就能复用，最少能省一半以上的时间#n8n  #n8n工作流  #智能体  #ai智能体  #ai  #agent #n8n源代码",
+              "cover": "https://p9-pc-sign.douyinpic.com/tos-cn-p-0015/oEiZVIiX5g5KwcBAiQMGBnaSBAlAxImPDIPSl~tplv-dy-360p.jpeg?lk3s=138a59ce&x-expires=1762959600&x-signature=708%2BcHY5Vfo53s4jnNLysUlopME%3D&from=327834062&s=PackSourceEnum_AWEME_DETAIL&se=false&sc=origin_cover&biz_tag=pcweb_cover&l=20251029233434F01417EA8FBE24A7A1ED",
+              "videoUrl": "https://www.douyin.com/aweme/v1/play/?video_id=v0200fg10000d1h9oi7og65gigcp5hcg&line=0&file_id=844c62c9b53048038befe14264703005&sign=c55b5fdfea741b0f1005b9a1b944ed52&is_play_url=1&source=PackSourceEnum_AWEME_DETAIL",
+              "videoWidth": 1666,
+              "videoHeight": 1080,
+              "videoDataSize": 6240367,
+              "videoDuration": 56167,
+              "audioUrl": "https://www.douyin.com/aweme/v1/play/?video_id=v0200fg10000d1h9oi7og65gigcp5hcg&line=0&file_id=c98f01dc7cdc460e986696d98ba00914&sign=f60b4e1ae1918a39466511169882048d&is_play_url=1&source=PackSourceEnum_AWEME_DETAIL",
+              "diggCount": 5077,
+              "commentCount": 35,
+              "shareCount": 942,
+              "collectCount": 6268,
+              "nickName": "AI樟榆树",
+              "isAnalyseVideo": true,
+              "postTime": "2025-07-01 08:34:00"
+            },
+            "audioInfo": "我在get hu上挖到了宝藏级的资源啊，朋友们，这个开源项目呢能让我们用N 8做工作流的时间最少减少一半以上。它里边包含了各行各业，我们最常用的两千多个工作流的节省源代码。我们一键就可以复制啊，我们在get up上搜索N 8n work plus这个关键词啊，看就是这个啊，我们打开点击这个绿色的code按钮，点击down了的zip，这样它的整个包我们就下载下来了。我们打开这个文件夹，点击work flow看, 这就是它里边所有工作流的源码。我随便用编辑器打开一个给朋友们看看啊。我们复制回到N 8N直接粘贴啊，看完整的工作流就过来了啊。我点开这个http节点execu一下看，直接通过。接下来啊其实只需要根据我们自己的需求进行节点删减或者节点增加，然后进行一下简单的配置，这样属于我们自己的一个工作流就完成了，是不是很简单？如果觉得这样看着吃力，那它还可以本地部署。部署好之后，他就是这样的。这个时候我们是不是就能很轻松的查看他这个工作流是干嘛的了。比如说这个看他就是干这个事的简单吧。"
+          },
+          "msg": "自2025年09月14日17:30:00起，此接口付费规则由原来的每次扣除10次次数变更为根据视频时长梯次扣除次数，具体规则为视频时长10分钟以内扣除10次，10-20分钟扣除20次，20-30分钟扣除30次，依次类推。",
+          "code": 1
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "爆款筛选",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "爆款筛选": {
+      "main": [
+        [
+          {
+            "node": "配置密钥",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "配置密钥": {
+      "main": [
+        [
+          {
+            "node": "抖音视频文案爬取",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "抖音视频文案爬取": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "dee4bc04-f3a3-4320-bffe-cefe4f9f4b08",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "vqrDvTRkNESAbdWy",
+  "tags": []
+}

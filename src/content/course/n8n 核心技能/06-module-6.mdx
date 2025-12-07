@@ -5,19 +5,167 @@ description: '贴近真实需求的案例，走完分析到搭建的全过程。
 
 <div className="guide-rich intro-rich">
 
-## 6.1 实战案例概览
+## 6.1 公众号内容二创
 
-- 本模块将通过一个贴近真实的业务需求，带你从需求拆解到工作流落地。  
-- 重点掌握：需求分析、节点选择、数据流设计、调试与发布。  
+- <VideoPlayer src="5b813d156d20126bdeae6c026f206d9a" />
 
-## 6.2 关键步骤
+- 场景：从监控到二创，再写回谷歌表格，形成可复用模板；示例可用 **孟浩然** 诗文等素材做验证。  
+- 重点：触发、抓取、Agent 二创、结构化清洗、状态回写。
 
-1) 明确目标与输入输出  
-2) 选择触发器与关键节点  
-3) 设计数据结构与字段映射  
-4) 调试、监控与发布  
+### 6.1.1 工作流概览
 
-> 详细案例内容待补充。
+- Google Sheets Trigger 监听新增内容。  
+- Firecrawl 抓取文章正文。  
+- Agent 二创，返回结构化文本。  
+- Code 节点提取 title 与 summary。  
+- Google Sheets 更新/追加结果。
+
+### 6.1.2 节点详细配置
+
+- **Google Sheets Trigger（新增内容触发）**  
+  - 一键配置：在浏览器已登录谷歌账号、n8n 登录后，可直接一键授权。  
+  - 手动配置：按提示填写 OAuth/Service Account 信息。  
+- **Google Sheets（状态管理）**：更新处理状态。  
+- **Firecrawl**：根据链接获取正文内容。  
+- **内容二创 Agent**：对抓取结果进行改写输出。  
+- **Code 节点**：提取 JSON 中的 `Title` 与 `Summary`。  
+
+<div className="code-card">
+  <div className="code-card__header">
+    <span>Code 节点示例</span>
+    <span className="code-card__copy">复制后粘贴</span>
+  </div>
+  <pre><code>{
+`// 1) 获取当前项
+const inputString = $input.item.json.output;
+
+// 2) 提取 JSON 片段
+const jsonMatch = inputString.match(/\\{[\\s\\S]*\\}/);
+if (!jsonMatch) {
+  throw new Error("在输入字符串中没有找到有效的 JSON 对象。");
+}
+const jsonString = jsonMatch[0];
+
+// 3) 解析并提取字段
+const dataObject = JSON.parse(jsonString);
+const title = dataObject.Title;
+const summary = dataObject.Summary;
+
+// 4) 返回结构化结果
+return { json: { title, summary } };
+`}
+</code></pre>
+</div>
+
+- **Google Sheets Append Row**：将二创结果写回表格。
+
+### 6.1.3 工作流模板
+
+- 查看：<a href="/templates/6.1%20%E5%85%AC%E4%BC%97%E5%8F%B7%E5%86%85%E5%AE%B9%E4%BA%8C%E5%88%9B.json" target="_blank">6.1 公众号内容二创.json</a>  
+- 下载：<a href="/templates/6.1%20%E5%85%AC%E4%BC%97%E5%8F%B7%E5%86%85%E5%AE%B9%E4%BA%8C%E5%88%9B.json" download>点击下载</a>
+
+---
+
+## 6.2 自动搜集生成匹配 IP 风格的选题
+
+- <VideoPlayer src="d2b9e5cae41c8b7a4a83b37b44ff0e0f" />
+
+- 构建监控-抓取-分析的闭环，生成匹配个人 IP 的选题池。
+
+### 6.2.1 工作流概览
+
+- 获取监控账号/链接列表 → 定时抓取 → 文章正文分析 → 选题初筛 → 输出到表格/数据库。
+
+### 6.2.2 节点详细配置
+
+- **效果示例**：抓取后输出选题摘要与标签（可配合截图展示）。  
+- **获取监控账号的信息**：读取待监控账号或链接。  
+- **监控竞对公众号的每日内容**：定时抓取最新文章。  
+- **爬取文章正文内容**：使用模板提示，引导 LLM 提炼摘要与标签。  
+
+<div className="code-card">
+  <div className="code-card__header">
+    <span>爬取正文提示词</span>
+    <span className="code-card__copy">复制后粘贴</span>
+  </div>
+  <pre><code>{
+`请根据以下文章正文内容进行分析：
+## 正文
+{{ $json.content }}
+
+以下文章标题和 url 进行保留：
+## 标题
+{{ $json.title }}
+## url
+{{ $json.url }}
+# 角色
+你是一个专业的中文内容分析师。
+
+# 任务
+1. 保留标题。
+2. 生成不超过 200 字的摘要。
+3. 提取 3-5 个兴趣标签。
+
+# 输出格式
+{
+  "title": "原文标题",
+  "summary": "文章摘要",
+  "url": "原文 url",
+  "tags": ["标签一", "标签二", "标签三"]
+}
+`}
+</code></pre>
+</div>
+
+- **选题初筛**：依据输出做相关性与爆款潜力评分，产出选题方向。  
+- **内容战略定位**：按“引流层 / 筛选层 / 转化层”三层策略，结合用户画像给出定位与目标。
+
+### 6.2.3 工作流模板
+
+- 查看：<a href="/templates/6.2%20%E8%87%AA%E5%8A%A8%E6%90%9C%E9%9B%86%E7%94%9F%E6%88%90%E5%8C%B9%E9%85%8DIP%E9%A3%8E%E6%A0%BC%E7%9A%84%E9%80%89%E9%A2%98.json" target="_blank">6.2 自动搜集生成匹配IP风格的选题.json</a>  
+- 下载：<a href="/templates/6.2%20%E8%87%AA%E5%8A%A8%E6%90%9C%E9%9B%86%E7%94%9F%E6%88%90%E5%8C%B9%E9%85%8DIP%E9%A3%8E%E6%A0%BC%E7%9A%84%E9%80%89%E9%A2%98.json" download>点击下载</a>
+
+---
+
+## 6.3 一键生成爆款 AI 视频并自动拼接
+
+- <VideoPlayer src="1a9034456b97355928fc890d6e280342" />
+
+- 目标：生成爆款“Oddly Satisfying”视频概念，自动提交生成、查询进度并拼接。
+
+### 6.3.1 工作流概览
+
+- Manual Trigger → AI Agent 生成创意 → HTTP Request 提交生成 → Wait → HTTP Request 查询 → If 判断完成 → 追加表格/拼接。
+
+### 6.3.2 节点详细配置
+
+- **Manual Trigger**：手动启动。  
+- **AI Agent（Deepseek）**：调用大模型生成创意，限制结构化输出。  
+- **Structured Output Parser**：约束模型输出。  
+- **视频概念提示词（示例）**：  
+
+<div className="code-card">
+  <div className="code-card__header">
+    <span>AI 视频概念提示词</span>
+    <span className="code-card__copy">复制后粘贴</span>
+  </div>
+  <pre><code>{
+`Generate a new "Oddly Satisfying" slicing video concept designed for maximum virality and loop-watching. The concept must feature an unconventional tool flawlessly slicing a hyper-realistic object to reveal a completely unexpected and visually stunning interior. Invent and concisely describe: 1) The Object (familiar item with impossible quality), 2) The Tool (not a simple knife), 3) The Surprise Interior (mesmerizing material/miniature scene). Describe the tool flawlessly slicing the object, revealing the interior, with crisp high-fidelity ASMR sounds and clean, satisfying physics. Your entire output must be ONLY this single paragraph assigned to a prompt variable; no extra words, formatting, labels, or explanations.`
+}
+</code></pre>
+</div>
+- **HTTP Request1**：提交生成任务到目标 API（示例：kie.ai）。  
+- **Wait**：设置等待时间。  
+- **HTTP Request2**：查询任务结果。  
+- **If**：判断视频是否生成完成。  
+- **Date & Time**：打时间戳。  
+- **Google Sheet Append row in sheet**：写回生成记录。  
+- **剪辑合并视频**：按 API 文档调用合成。
+
+### 6.3.3 工作流模板
+
+- 查看：<a href="/templates/6.3%20%E4%B8%80%E9%94%AE%E7%94%9F%E6%88%90%E7%88%86%E6%AC%BEAI%E8%A7%86%E9%A2%91%E5%B9%B6%E8%87%AA%E5%8A%A8%E6%8B%BC%E6%8E%A5.json" target="_blank">6.3 一键生成爆款AI视频并自动拼接.json</a>  
+- 下载：<a href="/templates/6.3%20%E4%B8%80%E9%94%AE%E7%94%9F%E6%88%90%E7%88%86%E6%AC%BEAI%E8%A7%86%E9%A2%91%E5%B9%B6%E8%87%AA%E5%8A%A8%E6%8B%BC%E6%8E%A5.json" download>点击下载</a>
 
 </div>
 
@@ -46,6 +194,41 @@ description: '贴近真实需求的案例，走完分析到搭建的全过程。
   .guide-rich.intro-rich a:hover {
     color: #0d9488;
     text-decoration-color: #5eead4;
+  }
+  .code-card {
+    margin: 1rem 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    box-shadow: 0 6px 18px rgba(15, 118, 110, 0.08);
+    overflow: hidden;
+  }
+  .code-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.65rem 0.9rem;
+    background: #0f766e;
+    color: #ecfeff;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+  .code-card__copy {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.92;
+  }
+  .code-card pre {
+    margin: 0;
+    padding: 1rem;
+    background: transparent;
+    color: #0f172a;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+  .code-card code {
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 `}
 </style>

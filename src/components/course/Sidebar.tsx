@@ -13,6 +13,13 @@ const VIDEO_DURATIONS: Record<string, string> = {
     'basic-intro/03-module-3': "21'32",
     'basic-intro/04-module-4': "35'34",
     'core-skills/05-module-5': "36'35",
+    'core-skills/06-module-6': "55'56",
+    'core-skills/07-module-7': "26'36",
+    'advanced-cases/01-case-1': "44'16",
+    'advanced-cases/02-case-2': "30'18",
+    'advanced-cases/03-case-3': "23'34",
+    'advanced-cases/04-case-4': "36'54",
+    'resources/04-faq': "18'45",
 };
 
 // Simple Icons

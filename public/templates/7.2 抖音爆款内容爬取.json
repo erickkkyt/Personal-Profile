@@ -1,0 +1,763 @@
+{
+  "name": "抖音内容爬取-谷歌表格",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        336
+      ],
+      "id": "302741e4-e934-453f-b977-b577c990482e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- 辅助函数：将毫秒转换为 \"分:秒\" 格式 ---\n// (这部分代码保持不变)\nfunction formatDuration(ms) {\n  // 检查输入是否有效，无效则返回 'N/A'\n  if (!ms || typeof ms !== 'number' || ms < 0) {\n    return \"N/A\"; \n  }\n  \n  // 1. 将毫秒转换为总秒数\n  const totalSeconds = Math.floor(ms / 1000);\n  \n  // 2. 从总秒数中计算分钟数\n  const minutes = Math.floor(totalSeconds / 60);\n  \n  // 3. 计算剩余的秒数\n  const seconds = totalSeconds % 60;\n  \n  // 4. 格式化：确保分钟和秒都是两位数 (例如 05:09)\n  const formattedMinutes = String(minutes).padStart(2, '0');\n  const formattedSeconds = String(seconds).padStart(2, '0');\n  \n  // 5. 返回 \"MM:SS\" 格式的字符串\n  return `${formattedMinutes}:${formattedSeconds}`;\n}\n\n// --- 主脚本 ---\n\n// 1. 获取上一个节点传来的 items 数组\nconst allItems = $json.data.items;\n\n// 2. 创建一个新数组来存放处理后的结果\nconst outputItems = [];\n\n// 3. 遍历 allItems 数组中的每一个 item\nfor (const item of allItems) {\n  \n  // 4. 构建你想要的干净数据结构\n  const newItem = {\n    json: {\n      \"视频标题\": item.title,\n      \"视频链接\": item.shareUrl,\n      \"博主名称\": item.nickname,\n      \"博主主页\": item.userShareUrl,\n      \"点赞数\": item.digg_count,\n      \"收藏数\": item.collect_count,\n      \"评论数\": item.comment_count,\n      \"分享数\": item.share_count,\n      \"发布时间\": item.post_time,\n      \n      // --- 这里是为你修改的字段 ---\n      \"视频时长\": formatDuration(item.duration), // 1. 保留格式化后的 \"MM:SS\" 时长\n      \"原始视频时长\": item.duration // 2. 新增：加回原始的毫秒数时长\n    }\n  };\n  \n  // 5. 将这个新 item 添加到输出数组中\n  outputItems.push(newItem);\n}\n\n// 6. 把包含10个 item 的新数组返回给 n8n\nreturn outputItems;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        256
+      ],
+      "id": "41403a0d-04b1-4369-8523-b5099c10816e",
+      "name": "数据清洗"
+    },
+    {
+      "parameters": {
+        "jsCode": "/*\n * ----------------------------------------------------\n * n8n \"Code\" 节点：数据清理 (N-to-N 流程)\n * ----------------------------------------------------\n * 功能：\n * 1. 接收上一个节点传来的 10 个抖音 item。\n * 2. 对指定的文本字段进行“清理”（转义特殊字符）。\n * 3. 返回 *同样多的* (10个) 清理后的 item。\n * ----------------------------------------------------\n */\n\n// 1. 获取上一个节点传入的所有 (10个) 数据项\nconst items = $input.all();\n\n// 2. --- 在这里指定需要处理的字段名 ---\n// (你上一个节点输出的字段名)\nconst fieldsToClean = [\n  '视频标题',\n  '博主名称',\n  '博主主页',\n  '发布时间'\n  // '视频链接' 和 '视频时长' 不是纯文本，通常不需要清理\n];\n\n// 3. 使用 .map() 来遍历所有 item\n//    这是你 V2 代码中的逻辑，n8n v1+ 会自动将返回的数组“展开”为 10 个 item\nreturn items.map(item => {\n  \n  // 4. 遍历需要清理的字段\n  for (const field of fieldsToClean) {\n    \n    // 5. 检查字段是否存在并且它是一个字符串\n    if (item.json[field] && typeof item.json[field] === 'string') {\n      \n      // 6. 这是你提供的“清理”逻辑，完全正确！\n      //    它会转义 \"、\\n (换行) 等\n      item.json[field] = JSON.stringify(item.json[field]).slice(1, -1);\n    }\n  }\n  \n  // 7. 返回这个被修改过的 item\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        256
+      ],
+      "id": "b1822da9-ebb4-4b19-8621-510268140d4a",
+      "name": "数据结构化"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "460b63c1-4f56-4c36-9ad7-584095c48ea9",
+              "name": "count",
+              "value": "={{ $json.count }}",
+              "type": "string"
+            },
+            {
+              "id": "bab81a46-dfc3-48f8-9769-7a76ea20f1aa",
+              "name": "search_id",
+              "value": "={{ $json.search_id }}",
+              "type": "string"
+            },
+            {
+              "id": "7def1c4a-b950-48c9-af84-5a92b7bb5bd5",
+              "name": "offset",
+              "value": "={{ $json.offset }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1120,
+        336
+      ],
+      "id": "4c6d0ca3-121f-4b2e-add7-6f2f9d9b9d1b",
+      "name": "循环参数"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "88f3b941-97e0-4c04-b1cd-88f17812ead4",
+              "leftValue": "={{ $('循环参数').item.json.count }}",
+              "rightValue": "={{ $('配置搜索参数').item.json.search_account }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2240,
+        256
+      ],
+      "id": "139e5506-0d0e-488d-82e4-19f9613d2ea7",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        256
+      ],
+      "id": "d3936dcd-6927-4e31-9f60-2373761a03bf",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8cce8ad3-ff1e-466b-b161-ca06fa93ee03",
+              "name": "count",
+              "value": "={{ $('循环参数').item.json.count }}",
+              "type": "string"
+            },
+            {
+              "id": "3854e198-d956-429d-9090-db1192425f9e",
+              "name": "search_id",
+              "value": "={{ $('抖音关键词搜索').item.json.data.searchId }}",
+              "type": "string"
+            },
+            {
+              "id": "9337e5c0-6fa3-4314-8800-df00fbdc0489",
+              "name": "offset",
+              "value": "={{ $('抖音关键词搜索').item.json.data.cursor }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2688,
+        256
+      ],
+      "id": "2de152d0-baa2-4799-a687-460c1c066285",
+      "name": "检查循环状态"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 获取所有输入项目\nconst items = $input.all();\n\n// 遍历所有项目 (在您的情况下，只有一个控制项目)\nreturn items.map(item => {\n  \n  let newCount;\n  \n  // 从 item.json 中获取当前的 count 值 (它可能是 \"10\")\n  const currentCount = item.json.count;\n\n  // 1. 检查 'count' 字段是否存在 (无论是数字还是字符串)\n  if (item.json && currentCount !== undefined) {\n    \n    // 2. 将其强制转换为数字，然后加 10\n    // Number(\"10\") 会得到 10\n    // Number(10) 也会得到 10\n    // 10 + 10 = 20\n    newCount = Number(currentCount) + 10;\n\n  } else {\n    // 3. 如果 count 字段不存在 (即第一次循环)，则起始值为 10\n    newCount = 10;\n  }\n  \n  // 4. 将计算出的新值 (例如 20) 写回 'count' 字段\n  item.json.count = newCount;\n  \n  // 5. 返回修改后的项目\n  return item;\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        336
+      ],
+      "id": "3af3d4bd-7cde-44d0-9b57-a0953ad319c9",
+      "name": "循环次数迭代"
+    },
+    {
+      "parameters": {
+        "url": "https://www.mxnzp.com/api/douyin_pro/video/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "keyword",
+              "value": "={{ $('配置搜索参数').item.json.keyword }}"
+            },
+            {
+              "name": "app_id",
+              "value": "={{ $('配置密钥').item.json.APP_ID }}"
+            },
+            {
+              "name": "app_secret",
+              "value": "={{ $('配置密钥').item.json.APP_SECRET }}"
+            },
+            {
+              "name": "offset",
+              "value": "={{ $json.offset }}"
+            },
+            {
+              "name": "search_id",
+              "value": "={{ $json.search_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        256
+      ],
+      "id": "618bacd2-c1bf-40db-8147-4fb627cd44b0",
+      "name": "抖音关键词搜索",
+      "retryOnFail": false,
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "eed1e4b9-3b60-4ac1-90d8-509b41966c08",
+              "name": "keyword",
+              "value": "n8n",
+              "type": "string"
+            },
+            {
+              "id": "2569f33d-4700-405f-a246-2c493e8ee806",
+              "name": "search_account",
+              "value": "20",
+              "type": "string"
+            },
+            {
+              "id": "d010a6b6-9f93-400b-b281-b6e99472003c",
+              "name": "count",
+              "value": "10",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        336
+      ],
+      "id": "430bc39d-44d4-4332-b927-5f67299fa89c",
+      "name": "配置搜索参数"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17d8c547-5538-4cab-b905-fe6fbf9670da",
+              "name": "APP_ID",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "e68b4cc9-66d6-4621-a133-269962228469",
+              "name": "APP_SECRET",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        672,
+        336
+      ],
+      "id": "10712566-cd1e-4719-af51-c8cc0c104e80",
+      "name": "配置密钥"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY",
+          "mode": "list",
+          "cachedResultName": "自媒体内容爬取&生成",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "抖音",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "视频标题": "={{ $json['视频标题'] }}",
+            "视频链接": "={{ $json['视频链接'] }}",
+            "博主名称": "={{ $json['博主名称'] }}",
+            "博主主页": "={{ $json['博主主页'] }}",
+            "点赞数": "={{ $json['点赞数'] }}",
+            "收藏数": "={{ $json['收藏数'] }}",
+            "评论数": "={{ $json['评论数'] }}",
+            "分享数": "={{ $json['分享数'] }}",
+            "发布时间": "={{ $json['发布时间'] }}",
+            "视频时长": "={{ $json['视频时长'] }}",
+            "原始视频时长": "={{ $json['原始视频时长'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "视频标题",
+              "displayName": "视频标题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "视频链接",
+              "displayName": "视频链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "博主名称",
+              "displayName": "博主名称",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "博主主页",
+              "displayName": "博主主页",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "点赞数",
+              "displayName": "点赞数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "收藏数",
+              "displayName": "收藏数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "评论数",
+              "displayName": "评论数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "分享数",
+              "displayName": "分享数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "发布时间",
+              "displayName": "发布时间",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "视频时长",
+              "displayName": "视频时长",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "原始视频时长",
+              "displayName": "原始视频时长",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "原文内容",
+              "displayName": "原文内容",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "二创内容",
+              "displayName": "二创内容",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "改写状态",
+              "displayName": "改写状态",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2016,
+        256
+      ],
+      "id": "d873c695-a63b-4499-ba57-1f0fc480960f",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "up6NQNj3Wvcic09t",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "抖音关键词搜索": [
+      {
+        "json": {
+          "code": 1,
+          "msg": "数据返回成功！",
+          "data": {
+            "hasMore": "1",
+            "cursor": "12",
+            "searchId": "2025102923100301517699490D391D57AD",
+            "items": [
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7503894677641284904",
+                "title": "最强开源AI工作流n8n，上千插件+模板，效率起飞 这是近期热度最高的开源AI工作流平台n8n，在github上已经斩获九万star。使用n8n，可以通过拖拽节点的方式，轻松构建出复杂的AI工作流。并且每个节点都有上千种工具、插件可供选择使用。借助这些插件，可以把任意外部系统接入工作流，实现了数据在不同的系统里的自由流动。n8n有着极高的自由度与可靠性，被誉为德国工匠打造的“工作流乐高”。本期视频是一个完整教程，我们先看看如何本地部署n8n，然后用5个实战案例来全方面体验下。  #AI #人工智能 #Coze #教程 #ai新星计划",
+                "nickname": "技术爬爬虾",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAFSp1EdCLJkoMieKaEVgSj2uoZpVw9ZDyymICRsuR3SQ",
+                "duration": 1193717,
+                "digg_count": 22320,
+                "share_count": 2604,
+                "collect_count": 22137,
+                "comment_count": 332,
+                "post_time": "2025-05-13 19:49:25"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7548386896313929023",
+                "title": "最强AI工作流工具n8n终极入门教学｜从业余小白到职业高手 这个视频的目的 是让任何不懂n8n的小白 跟完视频之后 有能力实现所有这些AI自动化系统 ，稍加练习，变成能去接单给客户做AI自动化系统的职业选手，我会在接下来的时间中尽全力做到这一点。\n我是木子，图卢兹大学的机器学习博士，一直工作在在航空航天，金融软件等行业，致力于将AI系统用的生意，工作和生活中。\n废话不多说 我们直接开始教程。 \n0:00 开头\n0:18 介绍-什么是n8n?\n2:02 介绍-n8n能做到什么?\n3:54 介绍-为什么选择n8n?\n4:50 介绍-如何部署n8n?\n6:54 介绍-如何官方云部署?\n7:38 介绍-如何子托管云服务器?\n9:52 介绍-如何本地部署?\n12:58 理论-认识界面\n14:50 理论-认识触发节点\n19:32 理论-认识AI Agent和外部应用节点\n24:49 一起做第一个工作流\n28:39 理论-熟悉API\n34:03 理论-设置http request节点\n37:42 理论-数据结构\n46:15 理论-数据处理节点\n59:03 实战-构建AI自动化工作流 \n#2025开学季  #AI新星计划  #这可能是抖音AI学习资源的天花板  #开学的精选",
+                "nickname": "木子不写代码",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAy_5W-LNi-cp7QbySyzEm3PskTDnDMUF34XijUKmZvywSej4Pm4UtLhQHiY_7Fryj",
+                "duration": 4500051,
+                "digg_count": 11929,
+                "share_count": 1181,
+                "collect_count": 8883,
+                "comment_count": 81,
+                "post_time": "2025-09-10 17:16:28"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7546987249532013864",
+                "title": "最强免费工作流N8N，搭建爬虫工作流1 #工作流 #n8n #coze #ai #ai编程",
+                "nickname": "王赛博",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAALWTbEk-XEnIbNxVoelwfJfwb2bBNXFc3zfwzYf4g_VU",
+                "duration": 539889,
+                "digg_count": 3363,
+                "share_count": 194,
+                "collect_count": 3246,
+                "comment_count": 67,
+                "post_time": "2025-09-06 22:45:11"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7527260008854195496",
+                "title": "0基础 n8n 教程，如何让AI自己设计工作流！ 通过与不少朋友讨论，发现大家学习 n8n 最大的痛点不是写代码，而是对官方集成了哪些节点，能实现哪些能力，什么场景用什么节点完全不了解，导致上手慌。经过一个礼拜的研究，我发总结了一个让 AI 来帮你设计 n8n 工作流的方法，全程实操分享。\n#ai新星计划  #agent #ai #智能体 #n8n",
+                "nickname": "废才俱乐部Club",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAogV1bpWj7NeuaY_kjoo5-mygrtBts-YANiztST3lsgg",
+                "duration": 1026717,
+                "digg_count": 3642,
+                "share_count": 568,
+                "collect_count": 4192,
+                "comment_count": 54,
+                "post_time": "2025-07-15 19:15:11"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7517969543269059850",
+                "title": "从0开始“做”一个Agent！【n8n草履虫教程】 #agent #教程 #n8n #AI新星计划 #秋芝2046",
+                "nickname": "秋芝2046",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAwbbVuf1W2DdgRe0xCa0oxg1ZIHbzuiTzyjq3NcOVgBuu6qIidYlMYqbL3ZFY2swu",
+                "duration": 2020414,
+                "digg_count": 33179,
+                "share_count": 5163,
+                "collect_count": 27910,
+                "comment_count": 1039,
+                "post_time": "2025-06-20 18:01:51"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7521747302495702314",
+                "title": "宝藏资源<n8n的2000多个稀缺工作流源码> Github上挖到的宝藏级资源，n8n的2000多个稀缺工作流源码，稍作修改就能复用，最少能省一半以上的时间#n8n  #n8n工作流  #智能体  #ai智能体  #ai  #agent #n8n源代码",
+                "nickname": "AI樟榆树",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAA3n1XyKCkbEGBcBsmg5F7tZrlm0rpqA2AIKl-hosTLnE",
+                "duration": 56167,
+                "digg_count": 5077,
+                "share_count": 942,
+                "collect_count": 6268,
+                "comment_count": 35,
+                "post_time": "2025-07-01 08:34:00"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7523076189821472019",
+                "title": "用n8n实现全自动视频剪辑-批量生成解说视频 这期视频我将带你完整拆解如何使用 N8N 实现一个全自动的视频剪辑工作流，尤其适合影视解说类创作者，或者想做批量内容生成的朋友。\n        \n全流程包括：#\n- 使用大模型提取电影高光时间轴\n- 自动生成旁白脚本并转为 SSML\n- 调用 TTS 接口生成配音\n- 利用 FFmpeg 自动截取并合并视频片段\n- 最终合并音频和视频，生成成品解说视频\n#n8n #自动化剪辑 #批量剪辑 #tts #教程",
+                "nickname": "龙丽坤",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAaYjvbhK8bBGMaYjd55h4BbA7JjEDIRWOtrM7u9i5vmiz-4poy-99bDWllBr0eHTO",
+                "duration": 520191,
+                "digg_count": 1234,
+                "share_count": 244,
+                "collect_count": 1693,
+                "comment_count": 31,
+                "post_time": "2025-07-04 12:18:11"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7554616090144345385",
+                "title": "n8n 各种大模型调用详细说明，新手必看 如何调用各种自动化工具，一篇视频看懂#n8n #n8n自动化工作流 #agent",
+                "nickname": "瓦力AI工作流自习室",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAHeE_4Y-8zHyljPXk7hpmWHBCbKBKKHuPbyYtzOb6t5Jkos-NI8EphyQSh3MNFKoe",
+                "duration": 2044007,
+                "digg_count": 1992,
+                "share_count": 302,
+                "collect_count": 2937,
+                "comment_count": 9,
+                "post_time": "2025-09-27 12:08:55"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7528123086093241643",
+                "title": "零基础入门n8n保姆级教程 一次理清n8n的节点，再把配置弄明白，n8n就上手了#n8n  #工作流  #自动化工作流  #ai智能体 #智能体 #ai #agent  #n8n教程",
+                "nickname": "AI樟榆树",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAA3n1XyKCkbEGBcBsmg5F7tZrlm0rpqA2AIKl-hosTLnE",
+                "duration": 165327,
+                "digg_count": 748,
+                "share_count": 136,
+                "collect_count": 869,
+                "comment_count": 12,
+                "post_time": "2025-07-18 08:34:00"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7564687490322418978",
+                "title": "n8n自动分析股票行情及分析推送报告 这是一个n8n自动化工作流，用于**定时自动分析股票行情推送报告并将当日股票行情和分析报告推送飞书**。手动盯盘、整理数据再分析行情，真的太耗精力了吧？其实用N8N就能搭起自动化流程，实时抓数据、智能分析后还能推关键结论——这份报告就把这套高效方法拆给你看。",
+                "nickname": "Ai自动化研究潘潘",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAeZHltZbL2bwqJCB3Bo8ZbbE9d-RaUPGAi0857Upr9Jg",
+                "duration": 917700,
+                "digg_count": 4,
+                "share_count": 0,
+                "collect_count": 4,
+                "comment_count": 0,
+                "post_time": "2025-10-24 15:31:07"
+              },
+              {
+                "shareUrl": "https://www.iesdouyin.com/share/video/7543576761150213430",
+                "title": "Coze vs N8N vs Dify，实测对比惊现大反转！ #大模型 #AI #ai #人工智能 #科技",
+                "nickname": "白白说大模型",
+                "userShareUrl": "https://www.douyin.com/user/MS4wLjABAAAAfzqvXUICiGTS-Lc6Z7yIIaucTyTeKqURH7r3IOYuXXKss4zpKWw-0tn1SaHwz27W",
+                "duration": 611313,
+                "digg_count": 1580,
+                "share_count": 248,
+                "collect_count": 2069,
+                "comment_count": 62,
+                "post_time": "2025-08-28 18:10:39"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "配置密钥",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据清洗": {
+      "main": [
+        [
+          {
+            "node": "数据结构化",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据结构化": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "循环参数": {
+      "main": [
+        [
+          {
+            "node": "抖音关键词搜索",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "检查循环状态",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "检查循环状态": {
+      "main": [
+        [
+          {
+            "node": "循环次数迭代",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "循环次数迭代": {
+      "main": [
+        [
+          {
+            "node": "循环参数",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "抖音关键词搜索": {
+      "main": [
+        [
+          {
+            "node": "数据清洗",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "配置搜索参数": {
+      "main": [
+        [
+          {
+            "node": "循环参数",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "配置密钥": {
+      "main": [
+        [
+          {
+            "node": "配置搜索参数",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9b73c69d-54db-4607-875c-0e543c2a2856",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "0LoRhGjCaqDnBjzn",
+  "tags": []
+}

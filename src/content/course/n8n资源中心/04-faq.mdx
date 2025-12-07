@@ -6,18 +6,11 @@ description: 'n8n 常见问题解答'
 <div className="guide-rich demand-rich">
 
 ### 1. 云端 n8n 如何连接飞书 / Notion / Google Sheet？
-**核心原则：** 云端部署通常用 OAuth2 或 API Token，确保回调地址与凭据一致。  
-- **飞书**：使用 Feishu (App) 凭据，设置事件回调/重定向为你的云端域名，权限申请消息/文档读写等，节点里选择对应凭据。  
-- **Notion**：在 Notion 创建 Internal Integration，记录 Token，将数据库/页面 Share 给该集成。n8n 中创建 Notion 凭据填入 Token。  
-- **Google Sheet**：推荐 OAuth2（需要配置 Redirect URL 为 `https://你的域名/rest/oauth2-credential/callback`）或 Service Account（生成 JSON Key，表格共享给 service account 邮箱）。选择 Sheets 节点，选中凭据即可。
+<VideoPlayer src="2de52e328954512cefed08763ac153e6" />
 
 ### 2. 本地 n8n 如何连接 Google Sheet？
-本地环境没有公网回调时，首选 **Service Account**：  
-1) 在 GCP 创建 Service Account，生成 JSON Key。  
-2) 将目标 Sheet 共享给 `xxx@project.iam.gserviceaccount.com`。  
-3) 在 n8n 新建 Google Sheets (Service Account) 凭据，粘贴 JSON。  
-4) Sheet 节点选择该凭据，指定 Spreadsheet ID/表名即可。  
-如必须用 OAuth2，本地需提供可公网访问的回调（如 `ngrok`），并将暴露的 URL 写入 OAuth Redirect。
+
+<VideoPlayer src="04f6821431d8645766856cb4734c6f1b" />
 
 </div>
 

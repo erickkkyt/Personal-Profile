@@ -1,0 +1,839 @@
+{
+  "name": "小红书爆款内容分析",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY",
+          "mode": "list",
+          "cachedResultName": "自媒体内容爬取&生成",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 734212906,
+          "mode": "list",
+          "cachedResultName": "探店小红书",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit#gid=734212906"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        0
+      ],
+      "id": "124f8ab5-3b83-498e-9eee-78e921ffff5f",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "dndBiaKLXpjDgjfV",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "375aa78e-321b-47db-b83e-876e570028e4",
+              "leftValue": "={{ $json['状态'] }}",
+              "rightValue": "完成爬取",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "859bf8e6-3ccb-490f-9151-e8cc7fca0d46",
+              "leftValue": "={{ Number($json['点赞数']) }}",
+              "rightValue": 50,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "a9846500-7fbf-4704-b675-410a47204ca0",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        96,
+        0
+      ],
+      "id": "5247ace1-1ad3-4726-b0f1-f737c32e5691",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node（Run Once for All Items）\nconst obj = items[0].json;\n\n// 取出原始值：可能是字符串化的数组，也可能就是数组\nlet raw = obj['图片链接'] ?? obj.images ?? obj.urls ?? obj;\n\n// 统一转成数组\nlet urls;\nif (typeof raw === 'string') {\n  try {\n    urls = JSON.parse(raw);         // 处理 \"[...]\" 这种 JSON 字符串\n  } catch (e) {\n    // 如果是用逗号拼的纯文本，也做个兜底拆分\n    urls = raw.split(/\\s*,\\s*/).filter(Boolean);\n  }\n} else {\n  urls = raw;\n}\n\n// 校验\nif (!Array.isArray(urls)) {\n  throw new Error('输入不是数组，请确认上个节点输出的是图片链接数组或其JSON字符串');\n}\n\n// 拆成多个 item\nreturn urls.map((url, idx) => ({\n  json: {\n    index: idx,\n    image_url: url\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        -128
+      ],
+      "id": "e94222a7-eb63-4663-9650-8102a7a34367",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash-preview-05-20",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash-preview-05-20"
+        },
+        "text": "你是一名小红书探店爆款分析师。\n请基于这张图片，分析它作为“探店内容”可能吸引人的原因。\n\n请输出：\n1）视觉亮点（店铺风格、光线、色调、氛围）\n2）照片为什么好看？（构图、角度、取景、人物/餐食/摆盘元素）\n3）这张图最容易吸引哪类用户？（如咖啡爱好者、文青、情侣约会、闺蜜打卡）\n4）如果我要去这家店拍出同款爆款图，我应该怎么拍？（镜头、角度、道具、时间、姿势等）\n5）社交属性：这家店为什么“值得发朋友圈/小红书打卡”？（独特点、氛围、可复制性）\n\n无需根据图片生成标题或文案，只分析图片本身体现的“爆火要素”。\n请尽量简洁、实用。",
+        "imageUrls": "={{ $json.image_url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        1216,
+        -128
+      ],
+      "id": "17a2b10e-9238-4e46-95c5-dd64c417451b",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hWOYNMU3oFGw727t",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 2
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        992,
+        -128
+      ],
+      "id": "1af62915-76ef-43ac-bfc7-f2c6e2a44b69",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "content.parts[0].text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        1440,
+        -128
+      ],
+      "id": "e222f9bf-bd43-4848-93ee-0ab5619a7205",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "18bce287-d018-4729-b86f-c9b50581c346",
+              "name": "正文文案",
+              "value": "={{ $json['正文'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        320,
+        -128
+      ],
+      "id": "24e98628-f071-4f1e-aa85-2c391cdcb639",
+      "name": "提取文案"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "aa045be9-fe29-4c21-9b4e-38ca8f7a9f09",
+              "name": "图片链接",
+              "value": "={{ $('Loop Over Items').item.json['图片链接'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        544,
+        -128
+      ],
+      "id": "fb615854-ba4c-49e0-9fe0-db5b84c5e646",
+      "name": "提取图片链接"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=需要分析的文案如下：\n {{ $('提取文案').item.json['正文文案'] }}\n",
+        "options": {
+          "systemMessage": "你是一名短内容增长策略专家，擅长分析小红书、抖音、探店类文案爆款背后的原因。\n\n你的任务是：\n基于用户提供的原文案，从传播学、心理学、内容结构与转化逻辑角度，分析它为什么容易成为爆款，并输出明确、可复用的写作策略。\n\n⚠️请避开空泛评价，输出必须是可执行、可模仿、可套用的写法。\n\n分析维度固定如下（必须逐条输出，不得省略）：\n1）情绪触发点：文案引发了哪些心理需求或情绪（如占便宜、社交货币、猎奇、稀缺、美食刺激、从众、体验感等）\n2）利益点呈现：让读者觉得“值得”“超值”“好玩”或“非去不可”的具体细节是什么？\n3）结构拆解：开头如何抓住注意力？中间如何持续提供信息？结尾如何促使行动？\n4）视觉化与代入感：作者如何让读者“脑补现场”？用了哪些形容词、感官细节、数据描述？\n5）差异化卖点：与普通同类探店文案相比，这篇文案有哪些特别、记忆点或反差？\n6）人群与场景：打动的是谁？适用于什么场景？读者能从文案中看到“自己”吗？\n7）可复用写法模板（必须输出）：\n   - 模板标题写法\n   - 模板开头写法\n   - 模板内容结构\n   - 模板结尾召唤行动\n\n最后输出一个 **一句话总结爆款原因** （让人一眼理解为什么它有效）\n\n输出格式必须是 JSON：\n{\n  \"情绪触发点\": \"...\",\n  \"利益点呈现\": \"...\",\n  \"结构拆解\": \"...\",\n  \"视觉与代入感\": \"...\",\n  \"差异化卖点\": \"...\",\n  \"适用人群与场景\": \"...\",\n  \"可复用写法模板\": {\n      \"标题模板\": \"...\",\n      \"开头模板\": \"...\",\n      \"正文结构\": \"...\",\n      \"结尾CTA\": \"...\"\n  },\n  \"一句话总结爆款原因\": \"...\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        1888,
+        -128
+      ],
+      "id": "480e6183-24c8-4dfd-a8d1-373464cd40f9",
+      "name": "文案爆款原因分析"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=多张探店图片的爆款分析内容如下：\n{{ $('Code in JavaScript1').item.json.text }}",
+        "options": {
+          "systemMessage": "你将收到多张探店图片的爆款分析内容，这些内容来源于上一节点的图片识别，但现在过于冗长、重复、啰嗦。\n\n请你将所有图片分析结果进行合并、去重、提炼，总结成一份高度浓缩、可复用的《图片为什么容易成为探店爆款》的总结。\n\n要求输出结构固定、简洁、可落地：\n\n【共同视觉亮点】\n- 用要点列出这些图片最常出现的爆款元素（如光线、色调、构图、摆盘、人物、氛围、招牌、食物特写、环境干净等）\n\n【吸引人的原因】\n- 精炼总结：为什么这些图能让用户停下来？（比如：视觉冲击、性价比暗示、场景感、食欲感、生活气息、真实不做作）\n\n【最容易吸引的人群】\n- 用 3-6 个标签总结：哪些用户最可能被触发想来打卡？（学生党、聚餐党、情侣、小资群体、追求性价比等）\n\n【如果要拍出同款爆款图】\n- 给出统一的、可复制、可执行的拍摄建议（角度、构图、灯光、时间、人和食物的配比、店面招牌等）\n\n【一句话爆款结论】\n- 用一句话总结这些图片共同的爆款密码（满足什么心理 + 用什么画面表现）\n\n注意：\n- 不要长段落\n- 不要解释\n- 用要点和短句即可\n- 输出一份统一结果，而不是分图片描述"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        2464,
+        -128
+      ],
+      "id": "d57146a5-8abe-47c2-9b2a-98a05004e5e2",
+      "name": "图片爆款原因分析"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 获取所有项的 text 字段\nlet allText = items\n  .map(item => {\n    // text 节点输出有时是 text 或 item.json.text，需要兼容\n    return item.json.text || item.json['text[0]'] || item.json['text[1]'] || \"\";\n  })\n  .join(\"\\n\\n\");\n\n// 返回合并后的单个 item\nreturn [{\n  json: {\n    text: allText\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        -128
+      ],
+      "id": "62b58963-7af8-4dbc-929c-91dfc6d9f4b7",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        1968,
+        96
+      ],
+      "id": "2ddd4283-4df4-4f9f-b199-55c6d2f658b5",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 取大模型输出（通常是 items[0].json.text 或 items[0].json.output 等）\n// 请根据你实际节点的字段调整这行：\nconst raw = items[0].json.text || items[0].json.output || items[0].json;\n\n// 去掉可能出现的 ```json  ...  ``` 外壳\nlet clean = raw;\nclean = clean.replace(/```json/gi, '').replace(/```/g, '').trim();\n\n// 尝试解析成对象（确保不是纯字符串）\nlet data;\ntry {\n  data = JSON.parse(clean);\n} catch (error) {\n  throw new Error('⚠️ 无法解析爆款分析 JSON，请检查大模型输出格式是否正确');\n}\n\n// 将 JSON 结构格式化为可阅读文本\nconst readable =\n  `【文案爆款分析】\n📌 情绪触发点：${data[\"情绪触发点\"]}\n\n📌 利益点呈现：${data[\"利益点呈现\"]}\n\n📌 结构拆解：${data[\"结构拆解\"]}\n\n📌 视觉与代入感：${data[\"视觉与代入感\"]}\n\n📌 差异化卖点：${data[\"差异化卖点\"]}\n\n📌 适用人群与场景：${data[\"适用人群与场景\"]}\n\n📌 可复用写法模板：\n   ✅ 标题：${data[\"可复用写法模板\"][\"标题模板\"]}\n   ✅ 开头：${data[\"可复用写法模板\"][\"开头模板\"]}\n   ✅ 正文结构：${data[\"可复用写法模板\"][\"正文结构\"]}\n   ✅ 结尾 CTA：${data[\"可复用写法模板\"][\"结尾CTA\"]}\n\n✅ 一句话总结爆款原因：\n👉 ${data[\"一句话总结爆款原因\"]}\n`;\n\nreturn [\n  {\n    json: {\n      文案爆款: readable\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        -128
+      ],
+      "id": "43929a23-6fe8-487e-937a-3d521aeb5e8d",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        2544,
+        96
+      ],
+      "id": "09f830f7-e2ca-4768-a8cc-dfa8f28ecb7e",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d22774d2-129b-404b-8a47-2a0807b84923",
+              "name": "图片爆款分析",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2816,
+        -128
+      ],
+      "id": "925f3e6c-90ee-4ef4-afad-aa4e0f7b43ed",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY",
+          "mode": "list",
+          "cachedResultName": "自媒体内容爬取&生成",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 734212906,
+          "mode": "list",
+          "cachedResultName": "探店小红书",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H8fwkH6TRhVIFKbM_OM6phrnbmgKCBtLsnmRJgNliSY/edit#gid=734212906"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "笔记链接": "={{ $('Google Sheets Trigger').item.json['笔记链接'] }}",
+            "图片爆款分析": "={{ $json['图片爆款分析'] }}",
+            "文案爆款分析": "={{ $('Code in JavaScript2').item.json['文案爆款'] }}",
+            "状态": "完成爆款分析"
+          },
+          "matchingColumns": [
+            "笔记链接"
+          ],
+          "schema": [
+            {
+              "id": "博主名称",
+              "displayName": "博主名称",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "博主user_id",
+              "displayName": "博主user_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "标题",
+              "displayName": "标题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "正文",
+              "displayName": "正文",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "笔记链接",
+              "displayName": "笔记链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "点赞数",
+              "displayName": "点赞数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "评论数",
+              "displayName": "评论数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "分享数",
+              "displayName": "分享数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "收藏数",
+              "displayName": "收藏数",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "图片链接",
+              "displayName": "图片链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "视频链接",
+              "displayName": "视频链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "状态",
+              "displayName": "状态",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "文案爆款分析",
+              "displayName": "文案爆款分析",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "图片爆款分析",
+              "displayName": "图片爆款分析",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "二创标题",
+              "displayName": "二创标题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "二创文案内容",
+              "displayName": "二创文案内容",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "二创图片链接",
+              "displayName": "二创图片链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "原图展示",
+              "displayName": "原图展示",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "二创图片展示",
+              "displayName": "二创图片展示",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3040,
+        0
+      ],
+      "id": "16c409fc-20f5-4cd6-973d-c9117ef0d352",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "jM20scVaYUtpGdsx",
+          "name": "Google Sheets account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Analyze an image": [
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "好的，这是一份基于你提供的图片进行的探店爆款分析：\n\n---\n\n**1）视觉亮点**\n\n*   **店铺风格：** 现代、休闲、明亮，结合了烤肉和海鲜火锅的元素，通过开放式设计展现内部环境。\n*   **光线：** 室内光线非常充足且温暖（黄色调），与外部商场公共区域形成对比，使店铺显得格外吸引人。招牌的白色霓虹灯效果醒目。\n*   **色调：** 以温暖的黄/橙色调为主，搭配店铺外立面的蓝绿色，以及招牌的白色，整体色彩搭配舒适且有食欲。\n*   **氛围：** 活跃而轻松的用餐氛围，通过玻璃窗可以看到内部食客，给人一种热闹且受欢迎的感觉。\n\n**2）照片为什么好看？**\n\n*   **构图：** 采用了前景（促销海报）、中景（店铺入口、接待台）、远景（店内用餐区）的多层次构图，增加了画面的深度和信息量。招牌在画面上方，起到引导视线的作用。\n*   **角度：** 略低于平视的角度，能完整捕捉到店铺的招牌和门面全貌，同时将地面的促销海报也清晰呈现，展示了丰富的店铺信息。\n*   **取景：** 取景范围宽广，不仅展示了店铺门头，还包含了入口处的促销信息和部分店内环境，让观众对店铺有全面的了解。\n*   **人物/餐食/摆盘元素：**\n    *   **人物：** 人物的出现增加了生活气息和场景感，但不作为画面主体，起到点缀作用。\n    *   **餐食/摆盘：** 实际餐食未出现，但海报上的食物图片（火锅、烤肉）非常诱人，弥补了这一空缺。\n\n**3）这张图最容易吸引哪类用户？**\n\n*   **美食爱好者/探店达人：** 对烤肉和海鲜火锅感兴趣，寻求新店打卡体验的用户。\n*   **朋友聚餐/情侣约会人群：** 店铺的氛围和提供的多种美食选择（烤肉+火锅）适合多人聚餐，海报上的生日免费吃、半价烤肉等优惠也很有吸引力。\n*   **追求性价比的食客：** 海报上明确的积分抵扣、优惠活动等信息，能吸引关注价格和优惠的用户。\n*   **白领/休闲人群：** 适合下班后或周末的日常休闲用餐。\n\n**4）如果我要去这家店拍出同款爆款图，我应该怎么拍？**\n\n*   **镜头：** 手机广角模式或广角镜头，以便捕捉店面全景和前景的促销海报。\n*   **角度：** 保持与原图相似的略低平视角度，确保能同时拍到醒目的招牌和地面的海报。\n*   **道具：**\n    *   **必带：** 拍摄时，最好能搭配店内正在烹煮的烤肉或冒着热气的火锅实物（无论是自己点的还是邻桌的），这会比海报更有冲击力。\n    *   **可选：** 漂亮的饮品、店内特色小吃，或者与朋友开心的互动场景。\n*   **时间：** 傍晚或晚上最佳，此时霓虹灯招牌和店内灯光效果最佳，能营造温暖且有食欲的氛围。\n*   **姿势：** 如果有出镜人物，可以自然地看向店内、指着海报上的菜品、或在店内就餐时轻松聊天的姿势。\n\n**5）社交属性：这家店为什么“值得发朋友圈/小红书打卡”？**\n\n*   **独特点：** 烤肉与海鲜火锅相结合的模式，满足了不同口味的需求，且店内环境明亮舒适，易于出片。招牌的霓虹灯设计也具有一定的辨识度。\n*   **氛围：** 营造了热闹、轻松、适合聚餐的氛围，是与朋友家人分享美食和欢乐的好去处。\n*   **可复制性：** 招牌、门面和促销海报都非常清晰且具有记忆点，用户可以轻松拍出类似的打卡照片。如果能拍到美味的食物特写，更容易引发传播。\n*   **分享理由：** “发现一家同时能吃烤肉和海鲜火锅的店！”、“XX生日聚餐有了新选择”、“这家店的优惠太划算了！”、“环境好，适合朋友小聚”。"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      },
+      {
+        "json": {
+          "content": {
+            "parts": [
+              {
+                "text": "这张图片作为“探店内容”可能吸引人的原因分析如下：\n\n1）**视觉亮点**\n*   **店铺风格：** 现代、明亮、整洁的自助餐风格，融合了中式（如插花、一些菜品）和西式（自助餐形式）元素。整体感觉舒适且有品质感。\n*   **光线：** 充足且均匀的室内照明，使食物看起来新鲜诱人，没有死角，整体画面明亮通透。\n*   **色调：** 以白色桌面和灰蓝色地面为基调，搭配食物的鲜亮色彩（金黄、翠绿、红褐），以及装饰物的鲜艳花朵和绿色花瓶，色彩丰富但不杂乱，营造出活泼而干净的用餐氛围。\n*   **氛围：** 丰盛、干净、明亮、有活力的自助餐氛围，给人一种“选择多、吃得好”的愉悦感。\n\n2）**照片为什么好看？**\n*   **构图：** 采用斜向构图，将自助餐台的长队引入画面深处，形成强烈的引导线和景深感。食物盘子从近到远依次排列，富有节奏感。\n*   **角度：** 略高于平视的角度（可能站在凳子或高处拍摄），能更好地展现餐台的全貌和每道菜的细节，同时捕捉到背景的装饰和环境。\n*   **取景：** 巧妙地将一部分食客（左侧的背影）纳入画面，增加了生活气息和场景感，同时也展示了餐厅的人气。背景的玻璃反光和远处餐区也增加了空间感。\n*   **人物/餐食/摆盘元素：**\n    *   **人物：** 食客的背影自然融入，不抢镜，反而增强了真实感和代入感。\n    *   **餐食：** 各色菜品摆放整齐，份量充足，看起来新鲜热腾，尤其是绿色蔬菜和肉类，色彩对比强烈，非常吸引食欲。\n    *   **摆盘：** 尽管是自助餐，但菜品在保温锅中依然保持着较好的形态，特别是蔬菜的摆放，显示出一定的用心。餐台上的花艺装饰也提升了整体美感。\n\n3）**这张图最容易吸引哪类用户？**\n*   **美食爱好者/吃货：** 对自助餐种类、品质有要求，喜欢尝试各种菜肴的用户。\n*   **家庭聚餐/朋友聚会人群：** 寻找环境舒适、菜品丰富多样、能满足不同口味需求的餐厅。\n*   **追求性价比的食客：** 自助餐往往意味着一次性可以吃到多种菜品，吸引注重用餐体验和“值回票价”感的用户。\n*   **寻找干净整洁用餐环境的用户：** 画面展现的明亮、现代和整洁会吸引注重用餐环境的用户。\n\n4）**如果我要去这家店拍出同款爆款图，我应该怎么拍？**\n*   **镜头：** 手机广角镜头或标准镜头即可，以便捕捉餐台的长度和广度。\n*   **角度：** 站在餐台一侧，略微抬高手机或身体（可借助高处），采用斜向俯拍的角度，让餐台从画面左下角或右下角延伸到远处。\n*   **道具：** 确保餐台上的菜品充足且新鲜（最好在刚上菜时拍摄）。可以等待无人取餐时拍摄纯净的餐台，或巧妙利用食客背影增加氛围。\n*   **时间：**\n    *   选择餐厅光线最佳的时段（通常是午餐或晚餐开始前不久，或非高峰时段）。\n    *   避开用餐高峰，减少画面中干扰的人群，便于捕捉餐台的完整性。\n*   **姿势（拍摄者）：** 保持手机稳定，尝试多角度拍摄，找到最能展现餐台丰富和深度的构图。\n\n5）**社交属性：这家店为什么“值得发朋友圈/小红书打卡”？**\n*   **独特点：** 相比普通自助餐，这家店的整体环境（明亮、现代、装饰）和菜品呈现（整洁、丰盛、有食欲）有明显提升，显得更“高端”或“有格调”，超越了一般对自助餐的刻板印象。\n*   **氛围：** 营造出一种“可以放松享受美食、环境又很美”的氛围感，适合作为日常或特殊场合的用餐推荐。\n*   **可复制性：** 画面中的自助餐场景很容易让观者产生“我也想去体验”的冲动，且照片风格易于模仿，鼓励用户前往打卡并分享自己的体验。\n*   **内容丰富度：** “菜品种类多”、“环境好”、“适合聚餐”等都是用户乐于分享和讨论的社交话题，容易引发互动。"
+              }
+            ],
+            "role": "model"
+          },
+          "finishReason": "STOP",
+          "index": 0
+        }
+      }
+    ],
+    "文案爆款原因分析": [
+      {
+        "json": {
+          "output": "```json\n{\n  \"情绪触发点\": \"占便宜心理（性价比高）、满足感（吃得饱饱的）、包容心态（对品质的宽容接受）\",\n  \"利益点呈现\": \"68元低价自助、品种丰富（东西多多的）、能吃饱的满足感、对得起价格的实际体验\",\n  \"结构拆解\": \"开头用表情和价格吸引注意→中间用客观评价平衡预期→结尾强调实际收获（吃得饱）形成闭环\",\n  \"视觉与代入感\": \"用'东西多多的'营造丰富视觉感，'吃得饱饱滴'强化满足感，[偷笑R]表情增强亲切感\",\n  \"差异化卖点\": \"不吹捧品质，而是坦诚'这个价钱也只能吃到这种肉质'的真实评价，反而增加了可信度\",\n  \"适用人群与场景\": \"预算有限的学生党、工薪族；朋友聚餐、日常解馋等非正式场合；追求性价比的消费者\",\n  \"可复用写法模板\": {\n      \"标题模板\": \"打卡XXX店🤪+价格亮点+简单评价\",\n      \"开头模板\": \"表情符号+店铺类型+价格信息立即抓住眼球\",\n      \"正文结构\": \"客观描述丰富度→理性评价性价比→强调实际收获\",\n      \"结尾CTA\": \"用满足感收尾+表情符号强化积极情绪\"\n  },\n  \"一句话总结爆款原因\": \"用真实不浮夸的性价比评价，精准击中预算有限人群'花小钱办大事'的消费心理\"\n}\n```"
+        }
+      }
+    ],
+    "图片爆款原因分析": [
+      {
+        "json": {
+          "output": "【共同视觉亮点】\n- 明亮充足的光线（暖黄/自然光）\n- 色彩丰富协调（暖色调为主，食物色彩鲜艳）\n- 多层次构图（前景/中景/远景）\n- 整洁干净的环境\n- 诱人的食物特写\n- 醒目的招牌/促销信息\n- 适量的人物点缀\n- 开放式空间设计\n\n【吸引人的原因】\n- 视觉冲击力强\n- 性价比暗示明显\n- 场景感真实生动\n- 食欲感强烈\n- 生活气息浓厚\n- 环境干净舒适\n- 选择丰富多样\n\n【最容易吸引的人群】\n- 美食爱好者\n- 朋友聚餐党\n- 情侣约会\n- 家庭用户\n- 追求性价比者\n- 白领休闲人群\n\n【如果要拍出同款爆款图】\n- 角度：略低平视或轻微俯拍，完整展现场景\n- 构图：多层次构图，包含招牌、环境和细节\n- 灯光：利用自然光或室内暖光，确保画面明亮\n- 时间：傍晚或用餐高峰期，灯光效果最佳\n- 人物配比：少量人物自然点缀，不抢主体\n- 必拍元素：招牌、促销信息、食物特写、环境全景\n- 道具：热气腾腾的食物、精美餐具、特色装饰\n\n【一句话爆款结论】\n用丰富诱人的画面满足用户“想体验美好生活”的心理，通过明亮环境+诱人美食+真实场景的组合制造“我也要去”的冲动。"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "提取文案",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取文案": {
+      "main": [
+        [
+          {
+            "node": "提取图片链接",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取图片链接": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "文案爆款原因分析": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "文案爆款原因分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "文案爆款原因分析",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "图片爆款原因分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "图片爆款原因分析",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "图片爆款原因分析": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "aaa6eab7-0c06-4ec3-a9f6-8e14b9563880",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "xnPvX11oeB39HfYX",
+  "tags": []
+}

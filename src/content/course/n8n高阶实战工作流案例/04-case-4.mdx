@@ -1,0 +1,156 @@
+---
+title: 'AI 虚拟模特换装自动化工作流'
+description: 'n8n + 飞书 + Nanobanana Pro：自动生成真人试穿效果图'
+---
+
+<div className="guide-rich intro-rich">
+
+### 1. 核心价值
+
+- 串联 n8n + 飞书 + Nanobanana Pro，实现“衣服图 + 背景图 + 模特描述”自动生成以假乱真的真人试穿效果图。  
+- 解决痛点：无需昂贵模特拍摄、无需租赁摄影棚、缩短上架周期。  
+- 成本与效率：单张图片成本可压缩至约 0.3–0.4 元，生成时间约 1.5–2 分钟/图。
+
+### 2. 视频展示 & 配置视频
+
+<VideoPlayer src="c61fabf743b4fdd45d1c85639e5a541c" />
+<VideoPlayer src="d79cf8333e7ccfc09470b2666b61b18d" />
+
+### 3. 效果展示
+
+- ![效果示例](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/cd60b959-3f4a-4d46-96e5-09360ce2fc00/public)
+
+### 4. 技术架构 (Tech Stack)
+
+- 涉及多服务协同，请确保相关账号：
+
+<table>
+  <thead>
+    <tr>
+      <th>模块</th>
+      <th>使用工具/服务</th>
+      <th>核心作用</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>中控台</td>
+      <td>飞书多维表格</td>
+      <td>上传素材、管理任务状态、查看最终成图。</td>
+    </tr>
+    <tr>
+      <td>中转站</td>
+      <td><strong>Cloudflare R2</strong></td>
+      <td><strong>(关键)</strong> 将飞书私有图片转为公网链接，供 AI 读取（兼容 S3 协议）。</td>
+    </tr>
+    <tr>
+      <td>视觉大脑</td>
+      <td><strong>Google Gemini</strong></td>
+      <td><strong>(亮点)</strong> 分析背景图的光影与环境，确保合成图不违和。</td>
+    </tr>
+    <tr>
+      <td>逻辑大脑</td>
+      <td>OpenRouter / GPT</td>
+      <td>将视觉分析结果转化为精准的英文绘画提示词（Prompt）。</td>
+    </tr>
+    <tr>
+      <td>绘图引擎</td>
+      <td>Evolink</td>
+      <td>调用 Nano Banana Pro 模型执行图像生成/换装。</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+### 5. 自动化流程拆解
+
+**🟢 第一阶段：素材准备**  
+1. 触发监听：n8n 定时扫描飞书表格。  
+2. 上传素材：按需上传背景图、模特图和产品图。  
+3. 智能筛选：自动提取状态为“未换装”且素材齐全（背景+商品+模特）的任务。  
+4. 图床中转：自动下载飞书附件，上传至 R2 存储桶，生成 AI 可读取的 URL。
+
+**🔵 第二阶段：视觉分析与策略 (AI Agent)**  
+1. 环境理解（Gemini）：分析背景图光线方向、色调冷暖、场景类型，避免光影不贴合。  
+2. 图片打标（Gemini + 豆包）：为每张图片打标签，便于后续理解。  
+3. 提示词工程（LLM）：组合背景分析、商品描述、模特设定，生成英文 Prompt 指挥绘图模型。
+
+**🟠 第三阶段：生成与回传**  
+1. 图像生成：调用 Nanobanana Pro 接口，执行换装任务（约 45–60 秒）。  
+2. 异步轮询：自动循环查询任务进度，直至完成。  
+3. 闭环归档：将高清生成图上传回飞书表格，并将任务状态更新为“已换装”。
+
+---
+
+### 6. 飞书多维表格配置（必填）
+
+- 请新建多维表格并按下表配置字段：
+
+<table>
+  <thead>
+    <tr>
+      <th>字段名称</th>
+      <th>字段类型</th>
+      <th>填写说明/示例</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>状态</td>
+      <td>单选</td>
+      <td>选项：未换装（默认）、已换装、生成中</td>
+    </tr>
+    <tr>
+      <td>参考背景图</td>
+      <td>附件</td>
+      <td>上传希望模特出现的场景底图</td>
+    </tr>
+    <tr>
+      <td>商品图</td>
+      <td>附件</td>
+      <td>上传衣服的平铺图或挂拍图</td>
+    </tr>
+    <tr>
+      <td>模特图</td>
+      <td>附件</td>
+      <td>(可选) 参考模特的脸型或姿势</td>
+    </tr>
+    <tr>
+      <td>商品图描述</td>
+      <td>文本</td>
+      <td>英文描述，如：Red silk dress, vintage style</td>
+    </tr>
+    <tr>
+      <td>模特图描述</td>
+      <td>文本</td>
+      <td>英文描述，如：Asian female, 20 years old</td>
+    </tr>
+    <tr>
+      <td>换装图片</td>
+      <td>附件</td>
+      <td>(留空) 用于接收 AI 生成的结果</td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+### 7. 部署注意事项
+
+- **S3 配置**：默认使用 Cloudflare R2（流量免费）。如需阿里云 OSS / AWS S3，请在 S3 节点替换凭证。  
+- **API 鉴权**：  
+  - Feishu：飞书开放平台创建应用，开启 `bitable:app`、`drive:file` 等权限。  
+  - Evolink / Nanobanana：确保账户有余额。  
+  - Openrouter：确保账户有余额。  
+  - Gemini：可用谷歌赠金。  
+
+### 8. JSON 工作流模板
+
+- 查看：<a href="/templates/7.4%20%E7%94%B5%E5%95%86%E8%A7%86%E8%A7%89%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%9F%E4%BA%A7%E7%BA%BF.json" target="_blank">AI 虚拟模特换装自动化工作流.json</a>｜下载：<a href="/templates/7.4%20%E7%94%B5%E5%95%86%E8%A7%86%E8%A7%89%E8%87%AA%E5%8A%A8%E5%8C%96%E7%94%9F%E4%BA%A7%E7%BA%BF.json" download>点击下载</a>
+
+### 9. 飞书多维表格模板
+
+- 模板链接：[n8n+nanobanana-pro](https://ai.feishu.cn/base/ESCJbARbFaDAtSsvs9bci4hfnIh?from=from_copylink)
+
+</div>

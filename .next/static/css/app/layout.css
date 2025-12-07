@@ -1270,12 +1270,6 @@ h1,
 .w-full{
   width: 100%;
 }
-.w-64{
-  width: 64px;
-}
-.w-80{
-  width: 20rem;
-}
 .max-w-3xl{
   max-width: 48rem;
 }

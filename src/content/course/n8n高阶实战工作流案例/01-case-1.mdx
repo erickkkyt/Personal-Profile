@@ -1,0 +1,40 @@
+---
+title: '公众号全流程自动化工作流'
+description: '从选题策略到上传归档的端到端自动化案例'
+---
+
+<div className="guide-rich intro-rich">
+
+### 1. 工作流核心功能介绍
+
+- **模块一：选题与策略规划 (Ideation & Strategy)**  
+  - **灵感收集**：  
+    - 被动监控：`VX全流程自动化-竞对监控&选题（Sep）.json` 定时抓取竞对公众号的最新文章。  
+    - 主动输入：`VX全流程自动化-主动内容选题（Sep）.json` 支持手动输入文章链接或文字到 Google Sheets 触发分析。  
+  - **内容分析与价值提炼**：自动爬取正文，调用大模型（如 Claude、DeepSeek）生成摘要、标签与关键信息，确保基于内容实质决策。  
+  - **选题决策与战略定位**：结合 IP 定位（n8n / AI / 个人成长）与用户画像，输出潜力评分、人性钩子、选题切入点，并标注战略层级（引流/筛选/转化）及用户画像描述。
+
+- **模块二：自动化内容生成 (Content Generation)**  
+  - **素材搜集与扩充**：`VX全流程自动化-内容创作和上传（Sep）.json` 基于核心主旨调用 Tavily 等搜索工具补充论据、数据与案例。  
+  - **文章初稿撰写**：结合核心主旨与搜集素材，AI 按 IP 人设与写作风格生成逻辑清晰的初稿。
+
+- **模块三：发布与管理 (Publishing & Management)**  
+  - **排版与素材生成**：自动生成标题、摘要，构造 AI 绘画提示词并调用 DALL·E 3 等生成封面/配图；将 Markdown 初稿转为公众号 HTML，插入固定开头、结尾与二维码。  
+  - **上传与归档**：调用公众号官方 API 上传封面、配图与正文到草稿箱，并在 Google Sheets 中同步状态（如“等待执行”→“正在创作”→“创作完成”）。
+
+### 2. 配置视频
+
+<VideoPlayer src="1c96e6b1d428d26e2d32f40467808142" />
+
+### 3. 工作流 JSON 模板
+
+- 模板下载：  
+  - 查看：<a href="/templates/7.1%20VX%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96-%E7%AB%9E%E5%AF%B9%E6%AF%8F%E6%97%A5%E7%9B%91%E6%8E%A7.json" target="_blank">VX全流程自动化-竞对每日监控.json</a>｜下载：<a href="/templates/7.1%20VX%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96-%E7%AB%9E%E5%AF%B9%E6%AF%8F%E6%97%A5%E7%9B%91%E6%8E%A7.json" download>点击下载</a>  
+  - 查看：<a href="/templates/7.1%20VX%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96-%E4%B8%BB%E5%8A%A8%E5%86%85%E5%AE%B9%E9%80%89%E9%A2%98.json" target="_blank">VX全流程自动化-主动内容选题.json</a>｜下载：<a href="/templates/7.1%20VX%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96-%E4%B8%BB%E5%8A%A8%E5%86%85%E5%AE%B9%E9%80%89%E9%A2%98.json" download>点击下载</a>  
+  - 查看：<a href="/templates/7.1%20VX%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96-%E5%86%85%E5%AE%B9%E5%88%9B%E4%BD%9C%E5%92%8C%E4%B8%8A%E4%BC%A0.json" target="_blank">VX全流程自动化-内容创作和上传.json</a>｜下载：<a href="/templates/7.1%20VX%E5%85%A8%E6%B5%81%E7%A8%8B%E8%87%AA%E5%8A%A8%E5%8C%96-%E5%86%85%E5%AE%B9%E5%88%9B%E4%BD%9C%E5%92%8C%E4%B8%8A%E4%BC%A0.json" download>点击下载</a>
+
+### 4. 谷歌表格模板
+
+- 模板链接：[Google Sheets 模板](https://docs.google.com/spreadsheets/d/1Jfgif9q3ld5v_yeeS0QCtdltp914_TvozfsJPNFt62s/edit?gid=0#gid=0)
+
+</div>

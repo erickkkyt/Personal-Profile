@@ -1,0 +1,1133 @@
+{
+  "name": "VX全流程自动化-主动内容选题（Aug）",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-20250514"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        328
+      ],
+      "id": "9160d10f-a1b3-4119-a20a-8b13fd474f73",
+      "name": "claude 4",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "grok-4",
+          "mode": "list",
+          "cachedResultName": "grok-4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1488,
+        328
+      ],
+      "id": "7da71862-006f-4704-92d1-f00758ea5f28",
+      "name": "Grok 4",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "doubao-seed-1-6-flash-250615",
+          "mode": "list",
+          "cachedResultName": "doubao-seed-1-6-flash-250615"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        736,
+        224
+      ],
+      "id": "f7bed9fb-639e-46fe-a137-f68da3188db8",
+      "name": "豆包1.6",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6854199c-e415-4778-84ea-3ce905111a46",
+              "name": "content",
+              "value": "={{ $json.data.markdown }}",
+              "type": "string"
+            },
+            {
+              "id": "cb600911-2d5f-4137-84f1-0cf6e21ab2df",
+              "name": "title",
+              "value": "={{ $json.data.metadata[\"og:title\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "7eaf3c91-362b-453a-a45d-1a1eeefc4672",
+              "name": "url",
+              "value": "={{ $json.data.metadata.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        392,
+        104
+      ],
+      "id": "5cd28cf8-8318-4bf3-92c8-bcb2ecb64edc",
+      "name": "数据清洗"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        864,
+        224
+      ],
+      "id": "f2e5e34d-3e94-46ac-9a66-8350b8d820e2",
+      "name": "DeepSeek V3",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "r8dE74Igj9x0N0Zo",
+          "name": "Deepseek API key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=请根据以下文章正文内容进行分析：\n## 正文\n{{ $json.content }}\n\n以下文章标题和url进行保留：\n## 标题\n{{ $json.title }}\n## url\n{{ $json.url }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# 角色\n你是一个专业的中文内容分析师。\n\n# 任务\n你的任务是接收一篇文章的标题和正文，然后完成以下三项工作：\n1.  **保留标题**: 将原文的标题原封不动地保留下来。\n2.  **内容摘要**: 生成一段不超过 **200字** 的精炼摘要，准确捕捉文章的核心论点、关键信息和主要结论。\n3.  **兴趣标签**: 提取3-5个最能代表文章主题和领域的关键词，作为兴趣标签。\n\n# 输出格式\n请严格按照以下JSON格式返回你的分析结果，不要添加任何额外的解释或说明文字：\n\n{\n  \"title\": \"（这里保留原文的标题）\",\n  \"summary\": \"（这里是生成的文章摘要）\",\n  \"url: \"（这里保留原文的url）\",\n  \"tags\": [\"标签一\", \"标签二\", \"标签三\"]\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        704,
+        0
+      ],
+      "id": "9c0edf90-f8f4-4bec-996a-8de47ecdfe72",
+      "name": "核心内容总结"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ff96ef5f-f758-419d-a249-517fd1651bbd",
+              "name": "output",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1104,
+        104
+      ],
+      "id": "22f9e223-898f-4878-91bc-448491037fd0",
+      "name": "数据清洗1"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-20250514"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -64,
+        624
+      ],
+      "id": "8931a4b4-e1e4-438f-b065-11b5652eb035",
+      "name": "claude ",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "grok-4",
+          "mode": "list",
+          "cachedResultName": "grok-4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        64,
+        624
+      ],
+      "id": "5958dcb0-0b4f-4a12-9b68-106063752eb2",
+      "name": "Grok ",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M",
+          "mode": "list",
+          "cachedResultName": "微信公众号",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 788997600,
+          "mode": "list",
+          "cachedResultName": "2508",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit#gid=788997600"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -992,
+        252
+      ],
+      "id": "fd08b19b-357b-40d0-96ea-b3fcd27aad1e",
+      "name": "谷歌表格新增行触发",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "0H9prvuNcRqtLY38",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "130b1508-73bc-4879-8748-52cc292a955d",
+              "leftValue": "={{ $json['主动内容筛选'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -768,
+        252
+      ],
+      "id": "0d4211c6-bcb3-4cf2-b140-79330c9b2b51",
+      "name": "判断是否为'主动内容筛选'"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9f0a74af-43e1-41d5-9548-d07a24925c03",
+              "leftValue": "={{ $json['主动内容筛选'] }}",
+              "rightValue": "^https?:\\/\\/",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -320,
+        252
+      ],
+      "id": "f60cf7e5-a76c-410b-9741-63dc21cff8b6",
+      "name": "判断输入的是链接还是文本"
+    },
+    {
+      "parameters": {
+        "operation": "scrape",
+        "url": "={{ $json['主动内容筛选'] }}",
+        "requestOptions": {}
+      },
+      "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+      "typeVersion": 1,
+      "position": [
+        -8,
+        104
+      ],
+      "id": "3ff78aef-d580-4b26-bae9-c018e4f270e1",
+      "name": "爬取参考文章正文",
+      "credentials": {
+        "firecrawlApi": {
+          "id": "5iHlnEPLCCXvyoEL",
+          "name": "Firecrawl account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## 需要你分析的原始信息如下：\n{{ $json['主动内容筛选'] }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=## 角色:\n公众号首席内容策略官兼信息分析师\n\n## 背景信息:\n我的内容IP有三个核心支柱，所有内容都必须与至少一个支柱强相关：\n1.  **n8n自动化**：实用教程、高级技巧、工作流模板、效率思维。\n2.  **AI前沿发展**：最新AI工具解读、技术趋势分析、AI在工作生活中的应用。\n3.  **个人成长与创业**：认知升级、搞钱思路、个人品牌、创业复盘。\n\n## 目标读者画像:\n我的目标读者是一群对效率工具和前沿科技充满热情的探索者。他们积极了解并应用n8n和AI技术来提升个人和团队的工作效率，同时也在关注个人成长、创业机会以及全球化（出海）发展趋势，渴望通过技术和认知升级实现自我价值。\n\n## 核心任务:\n你是一个信息处理和内容策略专家。你的任务是接收一段已经过初步筛选的、与我IP定位高度相关的原始信息，并对其进行深度分析，规划出具有爆款潜力的内容策略。\n\n## 工作流程与分析逻辑:\n\n### 第一步：潜力评分\n* 你需要根据以下标准对选题潜力进行综合评分（满分10分）。\n    * **价值深度 (1-4分):** 能否从信息中提炼出有价值、可落地的观点或教程？\n    * **时效性/新颖性 (1-3分):** 是不是最新的新闻、独特的视角或稀缺的信息？\n    * **爆款潜力 (1-3分):** 是否有潜力结合人性钩子进行放大传播？\n* 综合以上几点，给出一个总分并提供简要的打分理由。\n\n### 第二步：价值提炼\n* 问自己一个问题：“这段信息里，最让我的读者眼前一亮、觉得‘有用’或‘有料’的一句话是什么？”\n* 将这个核心信息点提炼出来。\n\n### 第三步：机会分析与选题建议\n* 基于提炼出的核心信息，思考它可以从哪个角度切入，以吸引我的读者。\n* 快速判断这个角度可能触及到哪些人性吸引力钩子并进行简短的分析。常见的钩子包括：**恐惧**（错过浪潮、被淘汰）、**贪婪**（赚钱、搞钱）、**懒惰**（一键操作、效率提升）、**猎奇**（独家内幕、稀缺信息）、**归属感**（找到同类、获得认同）、**好奇心**（悬念、信息差）、**渴望**（美好生活、未来愿景）、**稀缺性**（限时、限量、独家）。\n* 将分析出的切入角度，包装成一个有吸引力的、初步的选题标题或方向。\n\n## 输出格式:\n* 请严格按照以下范例的结构，直接输出分析结果，不要包含任何额外的解释性文字。\n\n---\n### **输出格式范例**\n\n选题：[写入提炼的选题核心信息点]\n\n1. 基础信息\n    **IP 支柱：** [n8n自动化 / AI前沿发展 / 个人成长与创业]\n\n2. 潜力与价值分析\n    **潜力评分：** [例如：9/10]\n    **评分理由：** [基于价值深度、时效性、爆款潜力的简要说明]\n    **核心信息：** [用一句话概括对目标读者最有价值的信息点]\n    **人性钩子：** [恐惧, 懒惰, 贪婪]\n    **钩子分析:** [恐惧（不学习就会被AI淘汰）、贪婪（利用AI搞钱的新思路）]\n\n3. 选题方向\n    选题切入点：[**请基于核心价值，从以下三个维度筛选一个最相关的、最具吸引力的选题创作方向或角度，你的目标是找到最具传播潜力的独特视角（注意只给出一个切入点即可）：\n    A. 观点/洞察视角 (My Perspective):** 如果要针对这个信息发表一篇观点文，最犀利、最能体现我“体系构建师”人设的洞察是什么？\n    B. 实操/教程视角 (Practical Methods):** 如果要将这个信息做成一篇保姆级教程，最能帮用户解决实际问题的n8n自动化流程或实操方法是什么？\n    C. 解读/对比视角 (In-depth Interpretation):** 如果要写一篇深度解读，可以将它与什么工具、趋势或理念进行对比，从而产生新的认知？]\n\n4. 内容升维策略 (Content Elevation Strategy)\n    请回答：如何将这个选题从一个“资讯”升维成一个兼具“稀缺性”和“趣味性”的深度内容？可以从哪些角度补充信息，或者结合什么独特的案例来让它变得无可替代？"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -96,
+        400
+      ],
+      "id": "5c5b1be7-47e1-4e37-811f-02013e0c4670",
+      "name": "文本内容选题方向分析"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=## 需要你分析的原始信息如下：\n{{ $json.output }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=## 角色:\n公众号首席内容策略官兼信息分析师\n\n## 背景信息:\n我的内容IP有三个核心支柱，所有内容都必须与至少一个支柱强相关：\n1.  **n8n自动化**：实用教程、高级技巧、工作流模板、效率思维。\n2.  **AI前沿发展**：最新AI工具解读、技术趋势分析、AI在工作生活中的应用。\n3.  **个人成长与创业**：认知升级、搞钱思路、个人品牌、创业复盘。\n\n## 目标读者画像:\n我的目标读者是一群对效率工具和前沿科技充满热情的探索者。他们积极了解并应用n8n和AI技术来提升个人和团队的工作效率，同时也在关注个人成长、创业机会以及全球化（出海）发展趋势，渴望通过技术和认知升级实现自我价值。\n\n## 核心任务:\n你是一个信息处理和内容策略专家。你的任务是接收一段已经过初步筛选的、与我IP定位高度相关的原始信息，并对其进行深度分析，规划出具有爆款潜力的内容策略。\n\n## 工作流程与分析逻辑:\n\n### 第一步：潜力评分\n* 你需要根据以下标准对选题潜力进行综合评分（满分10分）。\n    * **价值深度 (1-4分):** 能否从信息中提炼出有价值、可落地的观点或教程？\n    * **时效性/新颖性 (1-3分):** 是不是最新的新闻、独特的视角或稀缺的信息？\n    * **爆款潜力 (1-3分):** 是否有潜力结合人性钩子进行放大传播？\n* 综合以上几点，给出一个总分并提供简要的打分理由。\n\n### 第二步：价值提炼\n* 问自己一个问题：“这段信息里，最让我的读者眼前一亮、觉得‘有用’或‘有料’的一句话是什么？”\n* 将这个核心信息点提炼出来。\n\n### 第三步：机会分析与选题建议\n* 基于提炼出的核心信息，快速判断这个角度可能触及到哪些人性吸引力钩子（如：恐惧、贪婪、懒惰、猎奇等）并进行简短分析。\n\n## 输出格式:\n* 请严格按照以下范例的结构，直接输出分析结果，不要包含任何额外的解释性文字。\n\n---\n### **输出格式范例**\n\n**选题：** [此处填写原文的标题]\n\n**1. 基础信息**\n    **原文链接：** [此处粘贴原文的链接]\n    **IP 支柱：** [n8n自动化 / AI前沿发展 / 个人成长与创业]\n\n**2. 潜力与价值分析**\n    **潜力评分：** [例如：9/10]\n    **评分理由：** [基于价值深度、时效性、爆款潜力的简要说明]\n    **核心信息：** [用一句话概括对目标读者最有价值的信息点]\n    **人性钩子：** [恐惧, 懒惰, 贪婪]\n    **钩子分析：** [恐惧（不学习就会被AI淘汰）、贪婪（利用AI搞钱的新思路）]\n\n**3. 选题方向**\n    选题切入点：[**请基于核心价值，从以下三个维度筛选一个最相关的、最具吸引力的选题创作方向或角度，你的目标是找到最具传播潜力的独特视角（注意只给出一个切入点即可）：\n    A. 观点/洞察视角 (My Perspective):** 如果要针对这个信息发表一篇观点文，最犀利、最能体现我“体系构建师”人设的洞察是什么？\n    B. 实操/教程视角 (Practical Methods):** 如果要将这个信息做成一篇保姆级教程，最能帮用户解决实际问题的n8n自动化流程或实操方法是什么？\n    C. 解读/对比视角 (In-depth Interpretation):** 如果要写一篇深度解读，可以将它与什么工具、趋势或理念进行对比，从而产生新的认知？]\n\n**4. 内容升维策略 (Content Elevation Strategy)**\n    请回答：如何将这个选题从一个“资讯”升维成一个兼具“稀缺性”和“趣味性”的深度内容？可以从哪些角度补充信息，或者结合什么独特的案例来让它变得无可替代？"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1328,
+        104
+      ],
+      "id": "4aab210c-bb90-49f4-b3b4-bb718b5ad2af",
+      "name": "链接内容选题方向分析"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "f8ff0043-c478-4842-b66d-150ef4467f62",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -544,
+        252
+      ],
+      "id": "97043474-b659-472f-99b4-d42b8745d251",
+      "name": "判断选题是否执行过"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M",
+          "mode": "list",
+          "cachedResultName": "微信公众号",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 788997600,
+          "mode": "list",
+          "cachedResultName": "2508",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit#gid=788997600"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "日期": "={{$today}}",
+            "核心选题": "={{ $('文本内容选题方向分析').item.json.output }}",
+            "主动内容筛选": "={{ $('判断输入的是链接还是文本').item.json['主动内容筛选'] }}",
+            "Status": "确定选题",
+            "row_number": 0,
+            "战略层级": "={{ $json.StrategicLevel }}",
+            "用户画像": "={{ $json.UserPersona }}"
+          },
+          "matchingColumns": [
+            "主动内容筛选"
+          ],
+          "schema": [
+            {
+              "id": "日期",
+              "displayName": "日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "主动内容筛选",
+              "displayName": "主动内容筛选",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "战略层级",
+              "displayName": "战略层级",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "用户画像",
+              "displayName": "用户画像",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "核心选题",
+              "displayName": "核心选题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "参考链接",
+              "displayName": "参考链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1104,
+        400
+      ],
+      "id": "33fddcd8-1606-45fd-aa86-03168dfa323d",
+      "name": "更新表格状态为'确定选题'",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "drez7unFeg8epr1r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M",
+          "mode": "list",
+          "cachedResultName": "微信公众号",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 788997600,
+          "mode": "list",
+          "cachedResultName": "2508",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit#gid=788997600"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "日期": "={{$today}}",
+            "核心选题": "={{ $('链接内容选题方向分析').item.json.output }}",
+            "Status": "确定选题",
+            "主动内容筛选": "={{ $('判断输入的是链接还是文本').item.json['主动内容筛选'] }}",
+            "row_number": 0,
+            "战略层级": "={{ $json.StrategicLevel }}",
+            "用户画像": "={{ $json.UserPersona }}"
+          },
+          "matchingColumns": [
+            "主动内容筛选"
+          ],
+          "schema": [
+            {
+              "id": "日期",
+              "displayName": "日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "主动内容筛选",
+              "displayName": "主动内容筛选",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "战略层级",
+              "displayName": "战略层级",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "用户画像",
+              "displayName": "用户画像",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "核心选题",
+              "displayName": "核心选题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "参考链接",
+              "displayName": "参考链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2352,
+        104
+      ],
+      "id": "9c69a01d-cfcf-4a5e-9cc0-27cef7faa6b8",
+      "name": "更新表格状态为 '确定选题'",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "drez7unFeg8epr1r",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-2.5-pro-preview-06-05",
+          "mode": "list",
+          "cachedResultName": "gemini-2.5-pro-preview-06-05"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        464,
+        624
+      ],
+      "id": "6e6b09e1-fff2-4732-be5d-d9e25b45c4e2",
+      "name": "gemini 2.5 pro",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-20250514"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        336,
+        624
+      ],
+      "id": "6223a786-f2c6-4d13-bb8c-e17e8ec6eeae",
+      "name": "claude4",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-20250514"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        328
+      ],
+      "id": "0717ca69-1b6d-4290-ac02-ef88601dbfb6",
+      "name": "claude 4'",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gemini-2.5-pro-preview-06-05",
+          "mode": "list",
+          "cachedResultName": "gemini-2.5-pro-preview-06-05"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1888,
+        328
+      ],
+      "id": "dd525bf5-7339-4e7e-8813-558c0281b5f0",
+      "name": "gemini 2.5 pro'",
+      "credentials": {
+        "openAiApi": {
+          "id": "cZlskBroiqTIZ9j0",
+          "name": "V中转-API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 获取上游AI节点返回的、可能不规整的原始字符串\nconst rawString = items[0].json.output;\n\n// 使用正则表达式，匹配并提取出第一个'{'和最后一个'}'之间的所有内容\n// 's'标志让'.'可以匹配包括换行符在内的任意字符，非常重要\nconst jsonMatch = rawString.match(/{.*}/s);\n\n// 检查是否成功找到了JSON部分\nif (jsonMatch && jsonMatch[0]) {\n  // 这是我们提取出的、相对干净的JSON字符串\n  const cleanJsonString = jsonMatch[0];\n  \n  try {\n    // 解析这个干净的JSON字符串\n    const parsedData = JSON.parse(cleanJsonString);\n    \n    // 构建一个全新的、只包含我们需要的两个字段的输出对象\n    const finalOutput = {\n      json: {\n        StrategicLevel: parsedData.StrategicLevel,\n        UserPersona: parsedData.UserPersona\n      }\n    };\n    \n    // 将最终结果返回给下一个节点\n    return finalOutput;\n    \n  } catch (error) {\n    // 如果解析仍然失败，返回错误信息，方便排查\n    console.error(\"解析提取出的JSON时失败:\", error);\n    return { json: { error: \"解析提取出的JSON失败\", extracted_string: cleanJsonString } };\n  }\n  \n} else {\n  // 如果在原始字符串中完全找不到'{...}'结构，同样返回错误\n  console.error(\"在AI输出中未找到JSON对象。\");\n  return { json: { error: \"在AI输出中未找到JSON对象\", raw_string: rawString } };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2128,
+        104
+      ],
+      "id": "9f2c8486-6e0b-442e-a60b-46f600cb1674",
+      "name": "json字段拆分"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# -- 输入信息 --\n* **【核心选题方向】**\n{{ $json.output }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# 角色:\n首席内容战略官，拥有将深度分析转化为精准商业行动的决策能力。\n\n# 战略框架与决策规则 (Strategic Framework & Decision Rules):\n\n## 1. 三大内容层级定义：\n\n* **引流层 (Traffic Layer):**\n    * **定义与目标:** 核心目标是最大化破圈，建立广泛的品牌认知。内容必须紧追热点、具有普适性，能用最抓人眼球的方式吸引对AI、搞钱、效率提升等话题感兴趣的泛用户。\n    * **爆款选题范例:** 《普通人别再错过AI了！这3个搞钱思路，比上班强》、《Kimi的一小步，所有内容创作者的一大步》。\n\n* **筛选层 (Screening Layer):**\n    * **定义与目标:** 核心目标是展示专业能力，筛选出对n8n和自动化有具体需求的精准用户。内容通常是能解决特定痛点的实操教程或解决方案，让用户立刻感知到价值。\n    * **爆款选题范例:** 《我把重复工作全自动化了，就靠这个免费工具n8n》、《解放双手！这个n8n工作流，让AI自动帮你回邮件》。\n\n* **转化层 (Conversion Layer):**\n    * **定义与目标:** 核心目标是深度展示专业能力与个人品牌理念，**增加与用户之间的信任**，为最终的付费转化铺平道路。内容通常是高价值的客户案例或能引发深度共鸣的个人品牌理念。\n    * **爆款选题范例:** 《我为什么放弃高薪All in AI这件事》、《复盘一个价值五位数的自动化项目，我们是如何做到的？》。\n\n## 2. IP支柱定位规则：\n* **AI前沿发展**: 这类选题的核心是追逐热点、破圈吸引眼球，应严格定位为【**引流层**】。\n* **个人成长与创业**: 这类选题的核心是与用户建立深度信任、传递价值观，应严格定位为【**转化层**】。\n* **n8n自动化**: 这类选题最为灵活，请根据其内容判断：\n    * 结合社会热点破圈 → 定位为【**引流层**】\n    * 基础教程或场景介绍 → 定位为【**筛选层**】\n    * 复杂项目复盘或展示高阶思维模型 → 定位为【**转化层**】\n\n## 3. “用户画像”字段的生成范例：\n* **引流层范例:**\n    * `用户画像：对AI发展感到兴奋又焦虑，渴望找到入局点的普通职场人。\\n核心目标：通过解读Sora热点，吸引他们的注意力，并建立“能把复杂AI趋势讲明白”的专家人设。`\n* **筛选层范例:**\n    * `用户画像：已经在运营多个自媒体账号，但深陷手动发布、数据统计等重复性工作的创作者。\\n核心目标：通过一个具体的n8n解决方案，精准筛选出有真实自动化需求的他们，并让他们看到解放双手的希望。`\n* **转化层范例 (n8n方向):**\n    * `用户画像：已经尝试过n8n或类似工具，但遇到瓶颈，寻求系统性方法论或专家帮助的进阶用户。\\n核心目标：通过分享高阶的思维模型，与他们建立深度共鸣和信任，让他们认识到专业指导的价值。`\n* **转化层范例 (个人成长方向):**\n    * `用户画像：已经关注我一段时间，对我的创业历程和个人思考感兴趣的粉丝。\\n核心目标：通过分享我的“Build in Public”真实心路历程，与他们建立深度情感连接和信任。`\n\n# 核心任务:\n你的任务是接收一份【核心选题方向】，并严格遵循上述【战略框架与决策规则】，将其转化为一个只包含两个核心字段的、可直接执行的【最终战略定位方案】。\n\n# 最终输出格式 (必须严格遵守):\n你的最终回复，**必须且只能是**以下这个两字段的JSON对象。\n**【最高优先级指令】** `StrategicLevel`字段的值必须是`引流层`、`筛选层`、`转化层`这三个词本身，绝对禁止包含任何引号、括号、空格或其他任何多余字符，必须是纯净的文字以匹配系统下拉菜单。\n\n```json\n{\n  \"StrategicLevel\": \"（根据规则，在此处输出`引流层`或`筛选层`或`转化层`）\",\n  \"UserPersona\": \"（参考范例，结合简报内容和层级定位，在此处输出格式为‘用户画像：[...]。\\n核心目标：[...]’的描述，确保在两者之间有一个换行符）\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        400
+      ],
+      "id": "78ee3d77-5bdd-48a0-85f6-faa523e64fe7",
+      "name": "文本内容战略定位"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# -- 输入信息 --\n* **【核心选题方向】**\n{{ $json.output }}",
+        "needsFallback": true,
+        "options": {
+          "systemMessage": "=# 角色:\n首席内容战略官，拥有将深度分析转化为精准商业行动的决策能力。\n\n# 战略框架与决策规则 (Strategic Framework & Decision Rules):\n\n## 1. 三大内容层级定义：\n\n* **引流层 (Traffic Layer):**\n    * **定义与目标:** 核心目标是最大化破圈，建立广泛的品牌认知。内容必须紧追热点、具有普适性，能用最抓人眼球的方式吸引对AI、搞钱、效率提升等话题感兴趣的泛用户。\n    * **爆款选题范例:** 《普通人别再错过AI了！这3个搞钱思路，比上班强》、《Kimi的一小步，所有内容创作者的一大步》。\n\n* **筛选层 (Screening Layer):**\n    * **定义与目标:** 核心目标是展示专业能力，筛选出对n8n和自动化有具体需求的精准用户。内容通常是能解决特定痛点的实操教程或解决方案，让用户立刻感知到价值。\n    * **爆款选题范例:** 《我把重复工作全自动化了，就靠这个免费工具n8n》、《解放双手！这个n8n工作流，让AI自动帮你回邮件》。\n\n* **转化层 (Conversion Layer):**\n    * **定义与目标:** 核心目标是深度展示专业能力与个人品牌理念，**增加与用户之间的信任**，为最终的付费转化铺平道路。内容通常是高价值的客户案例或能引发深度共鸣的个人品牌理念。\n    * **爆款选题范例:** 《我为什么放弃高薪All in AI这件事》、《复盘一个价值五位数的自动化项目，我们是如何做到的？》。\n\n## 2. IP支柱定位规则：\n* **AI前沿发展**: 这类选题的核心是追逐热点、破圈吸引眼球，应严格定位为【**引流层**】。\n* **个人成长与创业**: 这类选题的核心是与用户建立深度信任、传递价值观，应严格定位为【**转化层**】。\n* **n8n自动化**: 这类选题最为灵活，请根据其内容判断：\n    * 结合社会热点破圈 → 定位为【**引流层**】\n    * 基础教程或场景介绍 → 定位为【**筛选层**】\n    * 复杂项目复盘或展示高阶思维模型 → 定位为【**转化层**】\n\n## 3. “用户画像”字段的生成范例：\n* **引流层范例:**\n    * `用户画像：对AI发展感到兴奋又焦虑，渴望找到入局点的普通职场人。\\n核心目标：通过解读Sora热点，吸引他们的注意力，并建立“能把复杂AI趋势讲明白”的专家人设。`\n* **筛选层范例:**\n    * `用户画像：已经在运营多个自媒体账号，但深陷手动发布、数据统计等重复性工作的创作者。\\n核心目标：通过一个具体的n8n解决方案，精准筛选出有真实自动化需求的他们，并让他们看到解放双手的希望。`\n* **转化层范例 (n8n方向):**\n    * `用户画像：已经尝试过n8n或类似工具，但遇到瓶颈，寻求系统性方法论或专家帮助的进阶用户。\\n核心目标：通过分享高阶的思维模型，与他们建立深度共鸣和信任，让他们认识到专业指导的价值。`\n* **转化层范例 (个人成长方向):**\n    * `用户画像：已经关注我一段时间，对我的创业历程和个人思考感兴趣的粉丝。\\n核心目标：通过分享我的“Build in Public”真实心路历程，与他们建立深度情感连接和信任。`\n\n# 核心任务:\n你的任务是接收一份【核心选题方向】，并严格遵循上述【战略框架与决策规则】，将其转化为一个只包含两个核心字段的、可直接执行的【最终战略定位方案】。\n\n# 最终输出格式 (必须严格遵守):\n你的最终回复，**必须且只能是**以下这个两字段的JSON对象。\n**【最高优先级指令】** `StrategicLevel`字段的值必须是`引流层`、`筛选层`、`转化层`这三个词本身，绝对禁止包含任何引号、括号、空格或其他任何多余字符，必须是纯净的文字以匹配系统下拉菜单。\n\n```json\n{\n  \"StrategicLevel\": \"（根据规则，在此处输出`引流层`或`筛选层`或`转化层`）\",\n  \"UserPersona\": \"（参考范例，结合简报内容和层级定位，在此处输出格式为‘用户画像：[...]。\\n核心目标：[...]’的描述，确保在两者之间有一个换行符）\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1728,
+        104
+      ],
+      "id": "29bb675a-bd05-4164-9d55-4e580f2f7c9f",
+      "name": "链接内容战略定位"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 获取上游AI节点返回的、可能不规整的原始字符串\nconst rawString = items[0].json.output;\n\n// 使用正则表达式，匹配并提取出第一个'{'和最后一个'}'之间的所有内容\n// 's'标志让'.'可以匹配包括换行符在内的任意字符，非常重要\nconst jsonMatch = rawString.match(/{.*}/s);\n\n// 检查是否成功找到了JSON部分\nif (jsonMatch && jsonMatch[0]) {\n  // 这是我们提取出的、相对干净的JSON字符串\n  const cleanJsonString = jsonMatch[0];\n  \n  try {\n    // 解析这个干净的JSON字符串\n    const parsedData = JSON.parse(cleanJsonString);\n    \n    // 构建一个全新的、只包含我们需要的两个字段的输出对象\n    const finalOutput = {\n      json: {\n        StrategicLevel: parsedData.StrategicLevel,\n        UserPersona: parsedData.UserPersona\n      }\n    };\n    \n    // 将最终结果返回给下一个节点\n    return finalOutput;\n    \n  } catch (error) {\n    // 如果解析仍然失败，返回错误信息，方便排查\n    console.error(\"解析提取出的JSON时失败:\", error);\n    return { json: { error: \"解析提取出的JSON失败\", extracted_string: cleanJsonString } };\n  }\n  \n} else {\n  // 如果在原始字符串中完全找不到'{...}'结构，同样返回错误\n  console.error(\"在AI输出中未找到JSON对象。\");\n  return { json: { error: \"在AI输出中未找到JSON对象\", raw_string: rawString } };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        792,
+        400
+      ],
+      "id": "ae088a31-9576-4667-ba88-0befb413dd87",
+      "name": "json字段拆分'"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "claude 4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "链接内容选题方向分析",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grok 4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "链接内容选题方向分析",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "豆包1.6": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "核心内容总结",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据清洗": {
+      "main": [
+        [
+          {
+            "node": "核心内容总结",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek V3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "核心内容总结",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "核心内容总结": {
+      "main": [
+        [
+          {
+            "node": "数据清洗1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据清洗1": {
+      "main": [
+        [
+          {
+            "node": "链接内容选题方向分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "claude ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "文本内容选题方向分析",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grok ": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "文本内容选题方向分析",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "谷歌表格新增行触发": {
+      "main": [
+        [
+          {
+            "node": "判断是否为'主动内容筛选'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "判断是否为'主动内容筛选'": {
+      "main": [
+        [
+          {
+            "node": "判断选题是否执行过",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "判断输入的是链接还是文本": {
+      "main": [
+        [
+          {
+            "node": "爬取参考文章正文",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "文本内容选题方向分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "爬取参考文章正文": {
+      "main": [
+        [
+          {
+            "node": "数据清洗",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "文本内容选题方向分析": {
+      "main": [
+        [
+          {
+            "node": "文本内容战略定位",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "链接内容选题方向分析": {
+      "main": [
+        [
+          {
+            "node": "链接内容战略定位",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "判断选题是否执行过": {
+      "main": [
+        [
+          {
+            "node": "判断输入的是链接还是文本",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini 2.5 pro": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "文本内容战略定位",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "claude4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "文本内容战略定位",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "claude 4'": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "链接内容战略定位",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gemini 2.5 pro'": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "链接内容战略定位",
+            "type": "ai_languageModel",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "json字段拆分": {
+      "main": [
+        [
+          {
+            "node": "更新表格状态为 '确定选题'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "文本内容战略定位": {
+      "main": [
+        [
+          {
+            "node": "json字段拆分'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "链接内容战略定位": {
+      "main": [
+        [
+          {
+            "node": "json字段拆分",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "json字段拆分'": {
+      "main": [
+        [
+          {
+            "node": "更新表格状态为'确定选题'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f3d29c07-cb2e-4c6d-b1b8-e10112711c9a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "14d1b60adc749fc2cf1cd98b4578d0a33025456b1da4b4d0870fea8f29b05222"
+  },
+  "id": "gd34HN6XJ4Z8I56w",
+  "tags": []
+}

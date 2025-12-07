@@ -1,0 +1,505 @@
+{
+  "name": "6.1 公众号内容二创",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "doubao-seed-1-6-250615",
+          "mode": "list",
+          "cachedResultName": "doubao-seed-1-6-250615"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        224
+      ],
+      "id": "52ed1889-e93e-43ec-aaae-e3f0cf3c2b68",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-20250514"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        224
+      ],
+      "id": "5b7a8eae-da3a-4589-a0d7-8e92bc422d18",
+      "name": "OpenAI Chat Model1"
+    },
+    {
+      "parameters": {
+        "operation": "scrape",
+        "url": "={{ $json['参考文章'] }}",
+        "requestOptions": {}
+      },
+      "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "78fc3a36-a466-42ef-a39c-a02fff997dcf",
+      "name": "Scrape a url and get its content"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.data.markdown }}",
+        "options": {
+          "systemMessage": "=# 角色\n你是一位专业的深度内容分析师。\n\n# 背景\n你将收到一份由Firecrawl工具从微信公众号文章中提取的Markdown原文。这份原文的开头和结尾可能包含作者信息、日期、以及“点赞”、“在看”、“赞赏”等与正文无关的干扰信息。\n\n# 核心任务\n你的核心任务是：忽略所有干扰信息，仅针对文章正文，进行精准的梳理与提炼。\n\n# 输出要求\n1.  **内容甄别**：在分析前，必须首先识别并忽略文章开头和结尾的所有非正文内容（如作者、日期、封面图标记、文末的“点赞”、“在看”、“感谢支持”、“赞赏”等互动性文字）。\n2.  **核心摘要**：用简洁、客观的语言，梳理并概括文章的核心论点、主要事实和情感脉络。确保读者能快速理解原文的核心思想。\n3.  **金句提炼**：从正文中摘录3-5句你认为最鞭辟入里、最具启发性的句子。仅需原文引用，无需添加任何解读或评论。\n4.  **字数控制**：摘要与金句的合计总字数，严格控制在500字以内。\n5.  **格式化输出**：请严格按照以下格式输出，以确保内容清晰：\n\n### 核心内容摘要\n\n【这里是你的摘要内容】\n\n### 文中金句\n\n- 【金句一】\n- 【金句二】\n- 【金句三】"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        464,
+        0
+      ],
+      "id": "2ec14df7-de67-4162-a4ee-91d14dbc0e96",
+      "name": "梳理文章核心内容和金句"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "=# 角色\n你是一位顶级的“现实派心态教练”，精通叙事比喻和**富有穿透力的写作**。你擅长将深刻的底层逻辑，用极具画面感的语言包装起来，既能一针见血地指出问题，又能给出高维度的解决方案。\n\n# 核心任务\n你的核心任务是：接收我提供的【核心内容摘要】和【文中金句】，严格遵循下方的写作风格与执行规则，并深度参考【写作风格参考范例】，创作一篇800-1000字的深度文章。\n\n# 写作风格参考范例\n为了让你更精准地理解我想要的写作风格，请仔细学习以下范例。\n\n**【核心指令】：你必须严格分离“风格”与“内容”。**\n你需要学习的是范例的**开篇方式、叙事比喻的运用手法、观点节奏的把控、段落结构以及结尾的收束力量**。\n**【绝对禁止】：在你的最终创作中，严禁使用范例里的任何具体故事（如《肖申克的救赎》）、人物（如安迪、老布）、概念（如“定力”、“监狱隐喻”）或句子。此范例仅作为你模仿文风和结构的模板，你的创作内容必须100%源于我后续提供的【素材】。**\n\n---\n### **范例：一个能帮你熬过任何至暗时刻的顶级心法：「定力强者勝」**\n很多人觉得，人生的至暗时刻，拼的是爆发力，是谁能咬着牙，第一个从泥潭里冲出来。\n\n错了，恰恰相反，决定胜负的，不是谁先冲出去，而是谁能在原地“待”得住。\n\n真正厉害的人，都懂得一种顶级心法：“定力强者勝”。这不是让你躺平，更不是精神胜利法，而是一种看透事物底层规律后，选择“以慢为快、以静制动”的动态平衡策略。\n\n就像《肖申克的救贖》里，老布和安迪的对比。老布在监狱里待了50年，成了图书馆管理员，受人尊敬，但他所有的价值感都建立在“监狱”这个系统内。一出狱，世界天翻地覆，他无法适应，最终选择了上吊。他的“定”，是被动的、僵化的，是被体制驯化的结果。\n\n而安迪不同，他在狱中20年，从未有一天放弃过对自由的渴望和规划。他帮狱警报税，扩建图书馆，表面上是在适应规则，但他的内心始终有一根准绳——“我知道我是谁，我要去哪里”。他所有的行动，都是为最终目标服务的“过程手段”。所以，当机会来临时，他能毫不犹豫地抓住。他的“定”，是主动的、极具生命力的，是内心秩序战胜外部混乱的典范。\n\n我们大多数人，在面对职业瓶颈、关系危机时，就像老布。恐慌、焦虑，疯狂地向外抓取，考证、跳槽、报课，试图用战术上的勤奋，来掩盖战略上的迷茫。结果，越折腾，越内耗，像没头苍蝇一样，在一个又一个“新监狱”里打转。\n\n问题的根源在哪？\n\n**在于我们混淆了“目标”和“过程”。**\n\n你真正想要的，是“成为一个有价值的专家”（目标），而不是“考下那个证书”（过程）。你真正渴望的，是“一段高质量的亲密关系”（目标），而不是“赢得每一次争吵”（过程）。\n\n当你把过程当成目标，你的情绪就会被过程中的一举一动牵着走。证书没考过，就感觉天塌了；伴侣没回微信，就觉得关系要完了。你的内心，就像一艘没有锚的船，一点风浪就能让你倾覆。\n\n而“定力强者”，是把锚深深扎在“目标”的基岩上的人。他们懂得，所有的“过程”，都是为“目标”服务的工具，有好用的，有不好用的，仅此而已。\n\n如何拥有这种定力？\n\n第一步：**定义你的“精神北极星”**。抛开所有外界的噪音，问自己一个问题：三年后，我最想成为一个怎样的自己？把这个“理想自我”的画像，用最具体的词汇描绘出来。这就是你的锚。\n\n第二步：**从“反应模式”切换到“创造模式”**。遇到问题时，深呼吸10秒，暂停你的第一反应（通常是抱怨、焦虑或甩锅）。然后问自己：“这个局面，虽然很糟，但它对于实现我的‘精神北极星’，有没有任何可以利用的价值？” 你会发现，视角完全变了。裁员，可能正是你开启自由职业的契机；失恋，可能让你更深刻地理解了亲密关系的本质。\n\n第三步：**建立你的“行动清单”，而不是“情绪清单”**。每天睡前，复盘的不是“我今天心情好不好”，而是“我今天做了哪几件无限接近我‘精神北-极星’的事？” 哪怕只是读了10页相关的书，打了一个链接关键人物的电话，都算。这会让你获得一种“掌控感”，这种感觉，是治愈一切内耗的良药。\n\n记住，真正的强大，不是在顺境中跑得有多快，而是在逆境中，你有没有能力，让自己的内心秩序，凌驾于外界的混乱之上。\n\n那份雷打不动的笃定，才是你穿越一切风暴的，最终底牌。\n---\n\n# 写作风格与执行规则\n\n1.  **【开篇】反直觉断言**：\n    文章开头必须用一个颠覆常规认知、甚至有点“冒犯性”的断言，迅速抓住读者注意力，引发好奇。\n\n2.  **【叙事】故事化说理**：\n    不要干巴巴地讲道理。必须用一个或多个生动的故事、比喻或类比，将核心逻辑“翻译”成读者能直观感受到的场景和画面。这个故事必须与核心论点紧密相扣。\n\n3.  **【观点】扎心式揭示**：\n    在故事之后，必须一针见血地揭示出现象背后的底层逻辑或人性弱点，让读者有“原来如此”或“说的就是我”的刺痛感和顿悟感。\n\n4.  **【语言】教练式口吻**：\n    通篇使用第二人称“你”，营造一种与读者一对一深度对话的氛围。语气要笃定、自信，既有严师的犀利，又有教练的引领。\n\n5.  **【结构】引导式流程**：\n    文章结构必须遵循“抛出问题 → 故事/比喻解析 → 揭示底层逻辑 → 给出解决方案”的清晰流程。解决方案必须是具体、可执行的步骤（例如：第一步、第二步...）。\n\n6.  **【结尾】高余味收束**：\n    结尾不能平淡收场。必须用一句或一段高度凝练、富有哲理和力量感的“金句”来结尾，给读者留下深刻的印象和长久的回味。\n\n7.  **【硬性规定】**：\n    *   **字数**：严格控制在800-1000字之间。\n\n---\n\n# 最终输出格式\n\n你的最终输出**必须是**一篇完整的、纯净的 **Markdown 格式文章**。**绝对禁止**使用 JSON 或任何其他代码结构进行包装。\n\n---"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        864,
+        0
+      ],
+      "id": "ae27356e-b3fe-42eb-baa3-0ee6dabcb231",
+      "name": "二创生成文章"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-20250514"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        960,
+        224
+      ],
+      "id": "d17a4190-09ae-4539-ac26-1617191aac32",
+      "name": "OpenAI Chat Model3"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64",
+          "mode": "list",
+          "cachedResultName": "生财n8n航海",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "案例3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64/edit#gid=0"
+        },
+        "event": "rowAdded",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -208,
+        0
+      ],
+      "id": "70dc94a6-4621-4be9-b83e-8b5332f32f26",
+      "name": "Google Sheets Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64",
+          "mode": "list",
+          "cachedResultName": "生财n8n航海",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "案例3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "参考文章": "={{ $('Google Sheets Trigger').item.json['参考文章'] }}",
+            "二创标题": "={{ $json.title }}",
+            "二创摘要": "={{ $json.summary }}",
+            "二创正文": "={{ $('二创生成文章').item.json.output }}",
+            "完成状态": "已完成"
+          },
+          "matchingColumns": [
+            "参考文章"
+          ],
+          "schema": [
+            {
+              "id": "参考文章",
+              "displayName": "参考文章",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "二创标题",
+              "displayName": "二创标题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "二创摘要",
+              "displayName": "二创摘要",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "二创正文",
+              "displayName": "二创正文",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "完成状态",
+              "displayName": "完成状态",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1888,
+        0
+      ],
+      "id": "fe44d221-f0bc-4cb9-a127-16a55f726082",
+      "name": "Update row in sheet"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=【文章原文】\n\n{{ $json.output }}\n",
+        "options": {
+          "systemMessage": "=# 角色\n你是一位顶尖的中文社交媒体内容策略师和创意总监，拥有将任何平实文章点石成金的超凡能力。\n\n# 核心任务\n你的任务是：仔细阅读下方的【文章原文】，然后严格按照【创作指令与输出格式】的要求，生成一个包含`Title`和`Summary`的**纯净JSON对象**。\n\n---\n\n# 【创作指令与输出格式】\n\n## 1. 输出格式要求:\n*   **【最高优先级指令】**: 你的唯一输出必须是一个语法100%正确的、**纯净的JSON对象**。\n*   **结构一致**: 必须严格按照下方的JSON结构输出，键名和数据类型不得有任何变动。\n*   **内容转义 (核心规则)**: 在为`\"Title\"`和`\"Summary\"`字段生成内容时，如果内容中本身包含任何双引号 (`\"`)，你必须将其转义为 `\\\"`。这是确保JSON语法正确的关键。例如，若标题为 `他说：“你好”`，在JSON中必须写为 `\"Title\": \"他说：\\\"你好\\\"\"`。\n*   **严禁污染**: 绝对禁止在JSON对象之外输出任何文本，包括任何解释、注释，或是在前后包裹 ` ```json ` 和 ` ``` ` 标记。\n\n```json\n{\n  \"Title\": \"String\",\n  \"Summary\": \"String\"\n}\n\n---\n\n## 2. 各字段创作指令:\n\n### **\"Title\" (String):**\n*   **目标**: 基于【文章原文】，创作一个抓人眼球、激发强烈好奇心的爆款标题。\n*   **技巧**: 灵活运用数字、疑问、对比、悬念、利益点等技巧。\n*   **禁忌**: 绝对禁止平铺直叙、枯燥乏味的标题。\n\n### **\"Summary\" (String):**\n*   **硬性规定**: 严格控制在60个汉字以内（含标点符号）。这是最高优先级的指令，必须遵守。\n*   **目标**: 基于【文章原文】，用生动、有吸引力的语言重写摘要，让读者在3秒内理解文章核心价值并产生阅读兴趣。\n*   **技巧**: 使用第二人称“你”与读者对话，营造代入感。可以先描绘一个痛点，然后给出解决方案的暗示。结尾最好以一个问题或一个引人思考的陈述来引导用户继续阅读。\n*   **禁忌**: 禁止直接摘抄原文句子。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1264,
+        0
+      ],
+      "id": "b7c0b379-3160-42c1-841f-4d3bb6a8b8a4",
+      "name": "输出标题、摘要"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64",
+          "mode": "list",
+          "cachedResultName": "生财n8n航海",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "案例3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ei2MT-SCbPY-C8MS4ih9I0H5abDvgxfJVDVbr2dTI64/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "参考文章": "={{ $json['参考文章'] }}",
+            "完成状态": "进行中"
+          },
+          "matchingColumns": [
+            "参考文章"
+          ],
+          "schema": [
+            {
+              "id": "参考文章",
+              "displayName": "参考文章",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "二创标题",
+              "displayName": "二创标题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "二创摘要",
+              "displayName": "二创摘要",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "二创正文",
+              "displayName": "二创正文",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "完成状态",
+              "displayName": "完成状态",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        16,
+        0
+      ],
+      "id": "b16a628c-c6cd-4d90-85ef-cda12eaef927",
+      "name": "Update row in sheet1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// 1. 获取当前正在处理的这一个数据项 (item)\n// 在 'Run Once for Each Item' 模式下，我们使用 $input.item\nconst inputString = $input.item.json.output;\n\n// 2. 清理字符串，提取出纯净的 JSON 部分\n// 这段正则表达式会匹配并提取出 '{' 和 '}' 之间的所有内容\nconst jsonMatch = inputString.match(/\\{[\\s\\S]*\\}/);\n\n// 如果当前项没有找到匹配的 JSON，可以选择跳过或返回错误\nif (!jsonMatch) {\n  // 您可以选择返回一个空对象，让工作流继续\n  // return { json: { error: \"No valid JSON found\" } }; \n  // 或者像原来一样抛出错误，让工作流在这里停止\n  throw new Error(\"在输入字符串中没有找到有效的 JSON 对象。\");\n}\n\n// .match() 返回的是一个数组，我们需要的是第一个匹配项\nconst jsonString = jsonMatch[0];\n\n// 3. 将清理后的 JSON 字符串解析成一个真正的 JavaScript 对象\nconst dataObject = JSON.parse(jsonString);\n\n// 4. 从对象中提取 title 和 summary 的值\nconst title = dataObject.Title;\nconst summary = dataObject.Summary;\n\n// 5. 返回一个处理后的新对象\n// 在 'Run Once for Each Item' 模式下，返回的是一个对象，而不是包含对象的数组\nreturn {\n  json: {\n    title: title,\n    summary: summary\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        0
+      ],
+      "id": "98923e9e-e615-445e-9497-31c4cd3e3eb4",
+      "name": "Code"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "梳理文章核心内容和金句",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "输出标题、摘要",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape a url and get its content": {
+      "main": [
+        [
+          {
+            "node": "梳理文章核心内容和金句",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "梳理文章核心内容和金句": {
+      "main": [
+        [
+          {
+            "node": "二创生成文章",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "二创生成文章": {
+      "main": [
+        [
+          {
+            "node": "输出标题、摘要",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "二创生成文章",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "输出标题、摘要": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Scrape a url and get its content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8231f556-49af-4953-b961-cb59917ef131",
+  "meta": {
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "FfUq8XUOI4KDmB7B",
+  "tags": []
+}

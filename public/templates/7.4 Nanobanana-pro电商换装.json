@@ -1,0 +1,1227 @@
+{
+  "name": "Nanobanana-pro电商换装",
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "bitable",
+        "operation": "bitable:table:record:search",
+        "app_toke": "ESCJbARbFaDAtSsvs9bci4hfnIh",
+        "table_id": "tblavkamrxdxvgVZ",
+        "body": "={\"filter\":{\n  \"conjunction\": \"and\",\n  \"conditions\": []\n}}"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNode",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        240
+      ],
+      "id": "e4e980c2-02d9-4495-aefe-b532326fade2",
+      "name": "导入飞书多维表格数据",
+      "credentials": {
+        "feishuCredentialsApi": {
+          "id": "9nKPUtim9tptYtmW",
+          "name": "Feishu Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "bitable",
+        "operation": "bitable:table:record:update",
+        "app_toke": "ESCJbARbFaDAtSsvs9bci4hfnIh",
+        "table_id": "tblavkamrxdxvgVZ",
+        "record_id": "={{ $('筛选「待换装」').item.json.record_id }}",
+        "body": "={{\nJSON.stringify({\n  \"fields\": {\n    \"状态\": \"已换装\",\n    \"换装图片\": [\n      {\n        \"file_token\": $('上传换装图至飞书').item.json.data.file_token\n      }\n    ]\n  }\n})\n}}"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNode",
+      "typeVersion": 1,
+      "position": [
+        4144,
+        240
+      ],
+      "id": "8406b9de-0d5c-4b2d-a544-9809fbee4182",
+      "name": "更新飞书多维表格",
+      "credentials": {
+        "feishuCredentialsApi": {
+          "id": "9nKPUtim9tptYtmW",
+          "name": "Feishu Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -688,
+        240
+      ],
+      "id": "3b14fb9b-2622-4a07-808c-c4c1cbb7ed7d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e6ece6b-4fbf-4d99-8ccd-abac1ab7b3be",
+              "name": "app_id",
+              "value": "cli_a89a5daf3e7ad00c",
+              "type": "string"
+            },
+            {
+              "id": "379e41e0-095a-4252-974b-eba24acaeb46",
+              "name": "app_secret",
+              "value": "y8XfWl7B90n5WihXlpjrybmiaTtlJxXa",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        432,
+        16
+      ],
+      "id": "003c3e79-71ac-4746-956b-cb9ff0c42580",
+      "name": "配置飞书密钥"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "app_id",
+              "value": "={{ $json.app_id }}"
+            },
+            {
+              "name": "app_secret",
+              "value": "={{ $json.app_secret }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        656,
+        16
+      ],
+      "id": "5f8e43bc-69d6-4ab7-bd14-026b2e614051",
+      "name": "获取飞书access_token"
+    },
+    {
+      "parameters": {
+        "url": "=https://open.feishu.cn/open-apis/drive/v1/medias/{{ $('筛选「待换装」').item.json.fields['参考背景图'][0].file_token }}/download",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书access_token').item.json.tenant_access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "background"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        64
+      ],
+      "id": "ee71ebfc-c177-45a6-bd60-4d4d725e0ad3",
+      "name": "下载「参考背景图」"
+    },
+    {
+      "parameters": {
+        "url": "=https://open.feishu.cn/open-apis/drive/v1/medias/{{ $('筛选「待换装」').item.json.fields['商品图'][0].file_token }}/download",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书access_token').item.json.tenant_access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "=product"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        -128
+      ],
+      "id": "8217ab07-0aae-4502-b9b9-b856cc1c2e41",
+      "name": "下载「商品图」"
+    },
+    {
+      "parameters": {
+        "url": "=https://open.feishu.cn/open-apis/drive/v1/medias/{{ $('筛选「待换装」').item.json.fields['模特图'][0].file_token }}/download",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书access_token').item.json.tenant_access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "model"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1104,
+        256
+      ],
+      "id": "24b5ee6c-b3a0-45a5-af3d-74f0a5846704",
+      "name": "下载「模特图」"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n",
+        "fileName": "={{ $('生成「商品图」文件名').item.json.product_name }}",
+        "binaryPropertyName": "product",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        -128
+      ],
+      "id": "7a150075-5bc8-46f2-bbdf-90676494f2a5",
+      "name": "Upload a file",
+      "credentials": {
+        "s3": {
+          "id": "dnZQ9ls8ES6Uanz7",
+          "name": "Cloudflare R2 - 账号2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n",
+        "fileName": "={{ $json.background_name }}",
+        "binaryPropertyName": "background",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        64
+      ],
+      "id": "0c932423-fbc8-4c17-8725-cda8ac707ed7",
+      "name": "Upload a file1",
+      "credentials": {
+        "s3": {
+          "id": "dnZQ9ls8ES6Uanz7",
+          "name": "Cloudflare R2 - 账号2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n",
+        "fileName": "={{ $json.model_name }}",
+        "binaryPropertyName": "model",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        1328,
+        256
+      ],
+      "id": "7595f1f2-040f-4ae7-b58c-15608d6ca06c",
+      "name": "Upload a file2",
+      "credentials": {
+        "s3": {
+          "id": "dnZQ9ls8ES6Uanz7",
+          "name": "Cloudflare R2 - 账号2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c5e68d-62c0-4e32-b3d2-ceb406273e79",
+              "name": "product_name",
+              "value": "={{ $now.toFormat('yyyyMMdd_HHmmss') }}_product.png",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        -128
+      ],
+      "id": "daea05b0-e668-4b08-9344-dd739777d493",
+      "name": "生成「商品图」文件名"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c5e68d-62c0-4e32-b3d2-ceb406273e79",
+              "name": "background_name",
+              "value": "={{ $now.toFormat('yyyyMMdd_HHmmss') }}_background.png",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        64
+      ],
+      "id": "3cc4fdbf-399e-47da-986f-be3127c7f451",
+      "name": "生成「参考背景图」文件名"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c5e68d-62c0-4e32-b3d2-ceb406273e79",
+              "name": "model_name",
+              "value": "={{ $now.toFormat('yyyyMMdd_HHmmss') }}_model.png",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        256
+      ],
+      "id": "0c519aa9-4e71-4c32-8702-e93b93b09a6d",
+      "name": "生成「模特图」文件名"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "89e7f2b5-af96-4ded-abcf-601eab0477a6",
+              "name": "background_url",
+              "value": "=https://pub-997fbcb7e3b94d439eac6d1a7d52296c.r2.dev/{{ $('生成「参考背景图」文件名').item.json.background_name }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1552,
+        64
+      ],
+      "id": "44b8ec5b-b170-4122-8fc8-20b5b646b42f",
+      "name": "参考背景图 url"
+    },
+    {
+      "parameters": {
+        "mode": "combineBySql",
+        "numberInputs": 3,
+        "query": "SELECT * FROM input1, input2, input3",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1776,
+        48
+      ],
+      "id": "c038febd-976b-44c9-865e-1d94d17b8bd2",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "66136d8b-775d-4ec2-a9a8-f734bca0738f",
+              "name": "product_url",
+              "value": "=https://pub-997fbcb7e3b94d439eac6d1a7d52296c.r2.dev/{{ $('生成「商品图」文件名').item.json.product_name }}",
+              "type": "string"
+            },
+            {
+              "id": "ebc9f7c9-62ce-4ea4-82a4-de80057eece5",
+              "name": "product_description",
+              "value": "={{ $('Loop Over Items').item.json.fields['商品图描述'][0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1552,
+        -128
+      ],
+      "id": "5cad438c-1e75-4cae-b173-a195e73a50c4",
+      "name": "商品图描述及 url"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4536c685-5038-4b83-a21e-ead38bdcb496",
+              "name": "model_url",
+              "value": "=https://pub-997fbcb7e3b94d439eac6d1a7d52296c.r2.dev/{{ $('生成「模特图」文件名').item.json.model_name }}",
+              "type": "string"
+            },
+            {
+              "id": "43453a0d-5ff6-46b9-a19c-64de9d0107d2",
+              "name": "model_description",
+              "value": "={{ $('Loop Over Items').item.json.fields['模特图描述'][0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1552,
+        256
+      ],
+      "id": "eec55b52-368b-4d0b-b0b4-ed2b08312a30",
+      "name": "模特图描述及 url"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-5",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        2528,
+        288
+      ],
+      "id": "34c6c6f3-da7b-476d-a9e4-ff4d259db854",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1tvGSNZ1pAphoDqT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.evolink.ai/v1/images/generations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "gemini-3-pro-image-preview"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "size",
+              "value": "9:16"
+            },
+            {
+              "name": "quality",
+              "value": "2K"
+            },
+            {
+              "name": "image_urls",
+              "value": "={{ $('url合并').item.json.image_urls }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cc2ace53-1ece-4bb7-be58-e9478a037d12",
+      "name": "Nano Banana Pro",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2800,
+        64
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fyq3dMeExPWtOhbe",
+          "name": "Evolink API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 遍历每一条数据\nfor (const item of $input.all()) {\n\n  // 1. 获取三个 URL (容错匹配)\n  const bgUrl = item.json.background_url || item.json.url_bg || item.json.bg_url;\n  const modelUrl = item.json.model_url || item.json.url_model;\n  const productUrl = item.json.product_url || item.json.url_product;\n\n  // 2. 组合成纯净的数组 (过滤空值)\n  // 结果是一个真正的 Array 对象，不是字符串！\n  // 格式: [\"https://...\", \"https://...\", \"https://...\"]\n  const finalArray = [bgUrl, modelUrl, productUrl].filter(Boolean);\n\n  // 3. 赋值给 image_urls\n  item.json.image_urls = finalArray;\n  \n}\n\nreturn $input.all();"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        64
+      ],
+      "id": "fd980db1-196d-4e83-b24b-7b0d2d6b9eec",
+      "name": "url合并"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        3024,
+        64
+      ],
+      "id": "348fdde1-e78d-4f3e-9ea3-952923b6028e",
+      "name": "等待10秒",
+      "webhookId": "f4f4afe5-402b-48bf-8dc2-a4fc674921bb"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.evolink.ai/v1/tasks/{{ $json.id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3248,
+        -32
+      ],
+      "id": "72e5032c-923d-48b2-88ad-92eb10ba7930",
+      "name": "异步轮询",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Fyq3dMeExPWtOhbe",
+          "name": "Evolink API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "095739c6-72d8-47ba-9f84-391dab98cfce",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3472,
+        64
+      ],
+      "id": "8a7888e3-a683-44c3-8af2-9f7a07e1d4e0",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "content": "## 飞书下载素材API文档\nhttps://open.feishu.cn/document/server-docs/docs/drive-v1/media/download",
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -320
+      ],
+      "id": "246a009a-bce9-4fca-a71f-cc2d00ea9c56",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 飞书上传素材API文档\nhttps://open.feishu.cn/document/server-docs/docs/drive-v1/media/download",
+        "width": 416
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        3248,
+        -256
+      ],
+      "id": "3ea93348-feb9-4e82-ac4a-d8592f023bb6",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.results[0] }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file",
+              "outputPropertyName": "output"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3696,
+        64
+      ],
+      "id": "2a273780-6c99-45c4-a7f5-365f52831149",
+      "name": "下载换装图"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=请只分析以下内容，并以结构化方式输出：\n1.\t背景人物特征（重点：这是保留的主体）\n\t•\t人种\n\t•\t性别\n\t•\t发型与发色\n\t•\t肤色\n\t•\t身体姿势、头部方向、四肢位置\n2.\t视觉风格\n\t•\t光线方向\n\t•\t影子分布\n\t•\t色调（冷/暖）\n\t•\t对比度、摄影风格（街拍 / 写真 / 室内灯光等）\n3.\t背景环境\n\t•\t室内 / 室外\n\t•\t场景中可见物体\n\t•\t景深、模糊程度\n\n请严格限制分析范围，不要描述未包含在以上列表中的任何内容。",
+        "imageUrls": "={{ $json.background_url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        2224,
+        64
+      ],
+      "id": "56c2eb19-90d2-4f07-b4e7-e9dc1183b966",
+      "name": "参考背景图分析",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hWOYNMU3oFGw727t",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=目标背景图分析（Background Context）: {{ $json.content.parts[0].text }}\n\n模特描述（Model Identity）: {{ $('url合并').item.json.model_description }}\n\n产品描述（Outfit Description）: {{ $('url合并').item.json.product_description }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "=你是 “Nano Banana Pro” 的专业提示词生成器。你的任务是根据三段输入内容——目标背景图分析（Background Context）、模特描述（Model Identity）、产品描述（Outfit Description）——生成一段 100–400 字符的英文图像生成提示词。\n\n请遵循以下规则：\n\t•\tBackground Context 描述的是固定的背景环境、原始主体的姿势、光影风格、氛围，以及所有必须保持不变的配饰与可见元素。\n\t•\tModel Identity 描述需要替换到背景中的人物，该人物将完全取代 Background Context 中的主体。\n\t•\tOutfit Description 描述需要穿在新主体身上的服装或产品。\n\n你的任务是生成一段英文提示词，要求图像生成模型：\n\t1.\t用 Model Identity 中的人物替换 Background Context 中描述的主体；\n\t2.\t让该人物穿上 Outfit Description 中的服装；\n\t3.\t同时严格保持 Background Context 中描述的背景、姿势、光影、风格、氛围与所有配饰完全不变。\n\n输出要求：\n\t•\t只输出最终的英文提示词正文；\n\t•\t不要输出引号或解释文本；\n\t•\t长度保持在 100–400 字符之间。"
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "id": "7199deea-b7f5-48e0-9d0d-c5c413a60f3d",
+      "name": "换装图片提示词生成",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        2448,
+        64
+      ],
+      "typeVersion": 1.7
+    },
+    {
+      "parameters": {
+        "resource": "space",
+        "operation": "space:upload",
+        "parent_type": "bitable_image",
+        "parent_node": "ESCJbARbFaDAtSsvs9bci4hfnIh",
+        "fileFieldName": "output",
+        "file_name": "={{ $('If1').item.json.id }}.png"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNode",
+      "typeVersion": 1,
+      "position": [
+        3920,
+        64
+      ],
+      "id": "7a1a8b16-f840-406e-83c2-f612bd867a43",
+      "name": "上传换装图至飞书",
+      "credentials": {
+        "feishuCredentialsApi": {
+          "id": "9nKPUtim9tptYtmW",
+          "name": "Feishu Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        240
+      ],
+      "id": "50fa1012-d817-40a3-8b2c-be158c551b99",
+      "name": "层级优化"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "45882176-f498-444c-bf18-c262eb96bd2a",
+              "leftValue": "={{ $json.fields['状态'] }}",
+              "rightValue": "未换装",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "51732a41-0c61-43c2-a352-0adbc9a4853f",
+              "leftValue": "={{ $json.fields['参考背景图'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "6b188e2c-ca97-472a-8adb-c6cad3b9615e",
+              "leftValue": "={{ $json.fields['商品图'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "b0c7397b-6ca3-42a1-95c1-96d6db802f8a",
+              "leftValue": "={{ $json.fields['模特图'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "45d209d7-c42f-4ab6-ac91-dda327b38b93",
+              "leftValue": "={{ $json.fields['模特图描述'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "4ce466fc-eb25-4d21-b596-dd656cf8d89f",
+              "leftValue": "={{ $json.fields['商品图描述'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -16,
+        240
+      ],
+      "id": "4d302621-a38c-4c2d-98a6-efa894b88d5c",
+      "name": "筛选「待换装」"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        208,
+        240
+      ],
+      "id": "af16ec51-c825-4827-920c-b659000d5de3",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "导入飞书多维表格数据": {
+      "main": [
+        [
+          {
+            "node": "层级优化",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新飞书多维表格": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "导入飞书多维表格数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "配置飞书密钥": {
+      "main": [
+        [
+          {
+            "node": "获取飞书access_token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取飞书access_token": {
+      "main": [
+        [
+          {
+            "node": "生成「商品图」文件名",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "生成「参考背景图」文件名",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "生成「模特图」文件名",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下载「参考背景图」": {
+      "main": [
+        [
+          {
+            "node": "Upload a file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下载「商品图」": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下载「模特图」": {
+      "main": [
+        [
+          {
+            "node": "Upload a file2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file": {
+      "main": [
+        [
+          {
+            "node": "商品图描述及 url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file1": {
+      "main": [
+        [
+          {
+            "node": "参考背景图 url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file2": {
+      "main": [
+        [
+          {
+            "node": "模特图描述及 url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成「商品图」文件名": {
+      "main": [
+        [
+          {
+            "node": "下载「商品图」",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成「参考背景图」文件名": {
+      "main": [
+        [
+          {
+            "node": "下载「参考背景图」",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成「模特图」文件名": {
+      "main": [
+        [
+          {
+            "node": "下载「模特图」",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "参考背景图 url": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "url合并",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "商品图描述及 url": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "模特图描述及 url": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "换装图片提示词生成",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nano Banana Pro": {
+      "main": [
+        [
+          {
+            "node": "等待10秒",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "url合并": {
+      "main": [
+        [
+          {
+            "node": "参考背景图分析",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "等待10秒": {
+      "main": [
+        [
+          {
+            "node": "异步轮询",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "异步轮询": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "下载换装图",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "等待10秒",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下载换装图": {
+      "main": [
+        [
+          {
+            "node": "上传换装图至飞书",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "参考背景图分析": {
+      "main": [
+        [
+          {
+            "node": "换装图片提示词生成",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "换装图片提示词生成": {
+      "main": [
+        [
+          {
+            "node": "Nano Banana Pro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "上传换装图至飞书": {
+      "main": [
+        [
+          {
+            "node": "更新飞书多维表格",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "层级优化": {
+      "main": [
+        [
+          {
+            "node": "筛选「待换装」",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "筛选「待换装」": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "配置飞书密钥",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d3dfb7b0-e9bc-4ef7-88b4-5fc5d96db7b0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "qaaJ09TS0b0NY6G7",
+  "tags": []
+}

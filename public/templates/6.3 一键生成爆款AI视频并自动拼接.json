@@ -1,0 +1,754 @@
+{
+  "name": "6.3 一键生成爆款AI视频并自动拼接",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Generate two new \"Oddly Satisfying\" slicing video concept.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a viral content strategist specializing in Oddly Satisfying 3D animation ASMR. Your task is to generate **TWO DISTINCT, complete, and original video concepts** designed for maximum virality and loop-watching.\n\nFor each concept, you must feature an unconventional tool flawlessly slicing a hyper-realistic object to reveal a completely unexpected and visually stunning interior.\n\nYou must invent and concisely describe these three core elements for each concept:\n1.  **The Object:** A familiar item with a unique, impossible quality.\n2.  **The Tool:** A visually interesting cutting instrument, not a simple knife.\n3.  **The Surprise Interior:** The key to virality—a mesmerizing material or miniature scene.\n\nReference example: A highly realistic ultra-8K ASMR video shows a human using his hands to cut a detailed lava cake sculpture on a slate cutting board, cutting quickly, and the hot magma touches the gap at the moment of cutting. The cake resembles volcanic rock - obsidian, slightly burnt with cracks clearly visible inside and emitting light. The camera uses a shallow depth of field close-up to capture the cinematic light and detailed glass texture. Each cut is precise and lifelike. The sound of metal rubbing against rock, the sound of magma erupting, and the sound of cutting.\n\n### **Output Format (Crucial)**\n\nYour entire output **MUST** be a single, valid JSON object.\n- The JSON object must contain exactly two keys: `prompt1` and `prompt2`.\n- The value for each key must be a direct, usable paragraph-style prompt. This paragraph must describe the unconventional tool flawlessly slicing the hyper-realistic object, revealing its unexpected interior, and must also detail the crisp, high-fidelity ASMR sounds and the clean, satisfying physics of the interaction.\n- Do not add any words, explanations, or markdown formatting like ````json` outside of the JSON object itself."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -1472,
+        -16
+      ],
+      "id": "df365c47-1795-4321-b22d-e54dfdd2cb11",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        208
+      ],
+      "id": "1f504d5b-bd49-46c6-8ac1-f00a8ccc0640",
+      "name": "DeepSeek Chat Model"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"prompt1\": \"ASMR idea 1\",\n    \"prompt2\": \"ASMR idea 2\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1312,
+        208
+      ],
+      "id": "37232478-b6c8-42bb-bae7-8f3e8fc31c7f",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        -16
+      ],
+      "id": "657079f2-c30a-4ca7-8e7f-7bfe183e1fce",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1696,
+        -16
+      ],
+      "id": "8815e7e1-42be-40f4-a70c-b9c1b8a2d446",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.output.prompt1 }}"
+            },
+            {
+              "name": "model",
+              "value": "veo3_fast"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1072,
+        -160
+      ],
+      "id": "b2cd718e-c6da-4acd-8106-8082c7db9af7",
+      "name": "Video Request 1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        272,
+        -16
+      ],
+      "id": "573e1c2c-3ed2-4c6a-aeaf-b1a34b2e590d",
+      "name": "Wait for Final Video",
+      "webhookId": "b67a4cc5-8923-4f46-9238-e6880ef90a59"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -176,
+        -16
+      ],
+      "id": "60e13653-2139-4d65-9bc6-23dcd8afa893",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": [\n    \"{{ $('If1').item.json.data.response.resultUrls[0] }}\",\n    \"{{ $('If2').item.json.data.response.resultUrls[0] }}\"\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        -16
+      ],
+      "id": "ecb975dc-bf04-427b-b658-e51e5d4b9ab2",
+      "name": "剪辑合并视频"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/ffmpeg-api/requests/{{ $json.request_id }}/status",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        496,
+        -96
+      ],
+      "id": "7941e581-c664-46fc-a4d9-ccd082613c4a",
+      "name": "查询视频合并状态"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1GcD1GI8kNpqmSUd1Fp_0i-RWovoN-L56hmEDouYmqEM",
+          "mode": "list",
+          "cachedResultName": "0817演示",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GcD1GI8kNpqmSUd1Fp_0i-RWovoN-L56hmEDouYmqEM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1921356750,
+          "mode": "list",
+          "cachedResultName": "案例4",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1GcD1GI8kNpqmSUd1Fp_0i-RWovoN-L56hmEDouYmqEM/edit#gid=1921356750"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $json.currentDate }}",
+            "Idea": "={{ $('AI Agent').item.json.output }}",
+            "Status": "done",
+            "Video Url": "={{ $('请求最终视频').item.json.video.url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Idea",
+              "displayName": "Idea",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Video Url",
+              "displayName": "Video Url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1392,
+        -16
+      ],
+      "id": "086d7c02-fb27-4786-b645-78a3808162a5",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/ffmpeg-api/requests/{{ $json.request_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        944,
+        -16
+      ],
+      "id": "2679b179-219c-40be-a856-92900962feaf",
+      "name": "请求最终视频"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "20bb8266-ca84-41aa-8e14-dadfebf0200c",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        720,
+        -16
+      ],
+      "id": "eb20a2d3-dc8c-4ce4-bf11-09face774da2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.output.prompt2 }}"
+            },
+            {
+              "name": "model",
+              "value": "veo3_fast"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1072,
+        128
+      ],
+      "id": "1360a4a6-1262-4d5a-8928-696f6b8f6756",
+      "name": "Video Request "
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/veo/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        -240
+      ],
+      "id": "d6358b57-7a38-4868-a160-aaea9ec2a862",
+      "name": "Video Request 2"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -848,
+        -160
+      ],
+      "id": "63ab5c7f-383d-4a9f-962d-9aa4ece513fb",
+      "name": "Wait",
+      "webhookId": "33f72030-30a0-43a7-8e12-aaffd1446390"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1e03bbe0-00b3-4cec-a8c7-e582e4b0af6f",
+              "leftValue": "={{ $json.data.successFlag }}",
+              "rightValue": "=1",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        -160
+      ],
+      "id": "0904f6ba-623f-469f-8213-405d381c2643",
+      "name": "If1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -848,
+        128
+      ],
+      "id": "4e30d97f-37be-4839-9086-e4911f00c063",
+      "name": "Wait1",
+      "webhookId": "55c085b6-6442-4993-90b4-b612ad22dd08"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "1e03bbe0-00b3-4cec-a8c7-e582e4b0af6f",
+              "leftValue": "={{ $json.data.successFlag }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -400,
+        128
+      ],
+      "id": "4b53e416-630e-4e1a-9c73-cb30a9535c18",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "url": "https://api.kie.ai/api/v1/veo/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -624,
+        64
+      ],
+      "id": "6b386439-f130-4a48-9663-7de49db26b1d",
+      "name": "Video Request 3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Video Request 1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Video Request ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Request 1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Final Video": {
+      "main": [
+        [
+          {
+            "node": "查询视频合并状态",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "剪辑合并视频",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "剪辑合并视频": {
+      "main": [
+        [
+          {
+            "node": "Wait for Final Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "查询视频合并状态": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "请求最终视频": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "请求最终视频",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait for Final Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Request ": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Video Request 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Request 2": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Video Request 3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Request 3": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5c426cd2-b517-4135-a845-9459eb147f0f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "FfUq8XUOI4KDmB7B",
+  "tags": []
+}

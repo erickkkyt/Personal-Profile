@@ -5,15 +5,95 @@ description: '社区节点、数据库等高阶玩法，拓展 n8n 能力边界�
 
 <div className="guide-rich intro-rich">
 
-## 8.1 高阶节点与生态
+## 8.1 异步轮询机制设计
 
-- 认识社区节点、数据库连接等进阶能力，扩展官方节点的覆盖面。  
+- 讲解如何利用 IF 节点和 Wait 节点设计简单的 API 请求重试逻辑（例如，如果 HTTP 请求失败，则等待 5 秒后重试一次）。
+- 在对接 AI 生图或视频处理 API 时，通常涉及两个步骤：第一步是提交任务，第二步是获取结果。因为生成需要时间，我们不能一直挂着连接等，而是需要设计一套“轮询（Polling）”机制。
+- **核心逻辑**：提交任务 -> 等待 -> 查询状态 -> 判断是否完成 -> (没完成) -> 回到等待。
 
-## 8.2 实战指引
+![核心逻辑示意](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/333c06e0-f915-4bd6-e60b-75deaf5e0b00/public)
 
-- 安装/管理社区节点的注意事项与安全提示。  
-- 高阶场景（如数据库读写、批处理、异步轮询）实践路径。  
+**🔧 实操步骤（以 Nano Banana 生图为例）**：
 
-> 详细步骤与示例待补充。
+**第一步**：发起任务 (Task Creation)
+
+- **节点**：Nano Banana 生图 (HTTP Request - POST)
+- **作用**：向 API 发送生图指令。
+- **关键点**：这个节点不会直接返回图片，而是返回一个 Task ID（任务 ID）。我们需要保留这个 ID，用于后续查询。
+
+**第二步**：构建轮询闭环 (The Loop)
+
+1. **设置缓冲**：等待 10 秒 (Wait 节点)  
+   - **作用**：给服务器一点处理时间。如果不加等待直接疯狂查询，不仅会被 API 封禁，还会导致 n8n 服务器资源空转。  
+   - **设置**：“Wait Amount” 设置为 10 秒（根据 API 建议调整）。
+2. **查询状态**：异步轮询 (HTTP Request - GET)  
+   - **作用**：拿着第一步获得的 Task ID，去询问服务器：“我的图做好了吗？”  
+   - **配置**：URL 通常是 `.../task/{task_id}`。
+3. **判断分流**：If (Switch/If 节点)  
+   - **作用**：查看上一步查询回来的 status（状态）字段。  
+   - **条件设置**：  
+     - **String (Value 1)**：`{{ $json.status }}`  
+     - **Operator**：Equal  
+     - **Value 2**：succeeded（或者 completed，视 API 文档而定）。  
+   - **连线逻辑（关键！）**：  
+     - **True (完成)**：连向后续节点（如下载图片、发通知）。  
+     - **False (未完成)**：拉一条线，倒回去连在 等待 10 秒 节点的输入口。
+
+---
+
+## 8.2 批量梳理数据及性能优化
+
+- 讲解 Split in Batches 的进阶用法，以及如何设计子工作流 (Execute Workflow 节点) 来处理复杂、可复用的逻辑，避免单个工作流过于臃肿。
+
+### 8.2.1 Loop Over Items（Split in Batches）
+
+Loop Over Items 是处理大批量数据的神器。它的作用是将一大坨数据切成“小块（Batch）”，分批喂给后续节点。
+
+- **为什么要用它？**  
+  - **规避 API 限制**：很多 API 限制每分钟的请求次数（比如每分钟 10 次），或者一次只能接收一定量的数据。  
+  - **内存保护**：避免一次性加载过多数据导致服务器崩溃。
+- **核心配置**：  
+  - **Batch Size（批次大小）**：比如设置为 10。意味着如果有 100 条数据，循环会执行 10 次，每次执行 10 条数据。
+- **工作流向**：  
+  - **Loop 端口**：输出当前批次的数据（处理逻辑接在这里）。  
+  - **Done 端口**：当所有批次都处理完后，从这里输出（通常接结束通知）。  
+  - **闭环**：处理完当前批次的逻辑后，必须把连线连回到 Loop Over Items 节点的输入侧（通常是它的左侧或自身），告诉它：“这一批处理完了，给我下一批。”
+
+![闭环示意 1](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/f8e08e4d-5887-4eff-1f0a-54297aa9c700/public)
+![闭环示意 2](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/08713f8f-af8d-4f4a-1d55-2dbb575eac00/public)
+
+### 8.2.2 子工作流（Sub-workflow Trigger）
+
+这个节点是“工作流”的专属起点，意思是“我是一个可以被调用的模块，我准备好接收来自上级工作流的参数了”。
+
+- **添加触发器**：首先，在 n8n 画布空白处点击 “+”，在右侧添加节点处搜索 “sub”，找到 Execute Sub-workflow 并添加。  
+
+![添加子工作流触发节点](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/a3785394-ad83-41c3-ff0c-8e40c2c13600/public)
+
+- **确认触发器**：接着点击进去，找到这个触发器，点击添加。  
+
+![确认并添加触发器](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/88c3bf16-cb89-4324-1ef8-ebf97af13200/public)
+
+- **调用与参数传递**：子工作流必须使用这个触发节点作为开始，以接收上级工作流的参数。上级工作流则通过 Execute A Sub workflow 调用子工作流，通过这样的方法能够极大丰富我们的工作流使用场景。  
+
+![子工作流调用示意](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/bdeb60c9-7e59-495c-1bc0-b6220e849200/public)
+
+---
+
+## 8.3 社区节点 (Community Nodes) 的安装与使用
+
+- n8n 官方节点虽然多，但无法覆盖全世界所有的 SaaS。社区节点是 n8n 生态的宝藏。  
+- 发现、安装和使用社区开发的节点，例如功能更强大的 Puppeteer 节点（用于复杂网页抓取）、Vector DB 节点（用于 AI 知识库）等，是 n8n 生态强壮性的来源。  
+- **发现节点**：  
+  - **访问**：n8n 官方 npm 列表。  
+  - **案例**：Puppeteer 节点 (n8n-nodes-puppeteer) —— 控制无头浏览器，处理需要 JS 渲染的动态网页。
+- **安装方法（自托管版本）**：  
+  1. **Settings (设置)**：左下角 Settings -> Community Nodes。  
+  2. **Install**：点击 Install。  
+  3. **输入**：npm 包名（例如 n8n-nodes-puppeteer）。  
+  4. **重启**：安装完成后，需重启 n8n 服务。  
+  5. **使用**：回到画布，搜索节点名称即可使用。
+- **注 1**：社区节点由第三方维护，更新速度可能不如官方。在生产环境使用前，务必充分测试。  
+- **注 2**：目前官网使用的 n8n 暂时无法使用社区节点。
 
 </div>

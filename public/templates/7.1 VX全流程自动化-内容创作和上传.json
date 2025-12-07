@@ -1,0 +1,1629 @@
+{
+  "name": "内容创作和上传",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8131a21c-5893-4519-921d-11e9bd221331",
+              "name": "title",
+              "value": "={{ $json.Title }}",
+              "type": "string"
+            },
+            {
+              "id": "8563a6ed-c1d2-4c5a-b97f-f9b802a80c95",
+              "name": "summary",
+              "value": "={{ $json.Summary }}",
+              "type": "string"
+            },
+            {
+              "id": "75872880-d96f-49de-8a74-a792a233a52e",
+              "name": "article",
+              "value": "={{ $json.final_html_for_publishing }}",
+              "type": "string"
+            },
+            {
+              "id": "7b340147-83a6-4497-a77d-b771d7446088",
+              "name": "media_id",
+              "value": "={{ $json.media_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -80,
+        720
+      ],
+      "id": "0a144aa0-626b-446c-931f-43dd53f5146d",
+      "name": "数据平整化"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=【文章原文】\n{{ $json.articleContent }}\n\n",
+        "options": {
+          "systemMessage": "=[SYSTEM COMMAND: PURE JSON OUTPUT ONLY]\n# 角色\n你是一位顶尖的中文社交媒体内容策略师和创意总监，拥有将任何平实文章点石成金的超凡能力。\n\n# 核心任务\n你的任务是：仔细阅读【文章原文】的全部内容，然后严格按照【创作指令与输出格式】的要求，生成一个包含Title, Summary, 和 CoverImagePrompt 的JSON对象。\n\n---\n\n# 【创作指令与输出格式】\n\n## 1. 输出格式要求:\n- **【最高优先级指令】**: 你的唯一输出必须是一个语法100%正确的纯净JSON对象。\n- **结构一致**: 必须严格按照下方的JSON结构输出，键名和数据类型不得有任何变动。\n- **内容转义 (核心规则)**: 在为`\"Title\"`和`\"Summary\"`字段生成内容时，如果内容中本身包含任何双引号 (`\"`)，你必须将其转义为 `\\\"`。这是确保JSON语法正确的关键。例如，若标题为 `他说：“你好”`，在JSON中必须写为 `\"Title\": \"他说：\\\"你好\\\"\"`。\n- **严禁污染**: 绝对禁止在JSON对象之外输出任何文本，包括解释、注释或Markdown标记。\n\n```json\n{\n  \"Title\": \"String\",\n  \"Summary\": \"String\",\n  \"CoverImagePrompt\": \"String\"\n}\n\n---\n\n## 2. 各字段创作指令:\n- \"Title\" (String):\n目标: 基于【文章原文】，创作一个抓人眼球、激发强烈好奇心的爆款标题。\n技巧: 综合运用以下9种标题创作方法，灵活组合，确保标题既能吸引注意力又能传达核心价值：\n    1.  **数字法**: 在标题中加入具体的数字，制造夸张震惊感、强烈对比或特殊含义。\n    2.  **对比法**: 将两个具有强烈反差或关联性的事物进行对比，制造冲突感和戏剧性。\n    3.  **热词法**: 将当下的热点事件、人物或流行词汇直接写入标题，借助其热度吸引读者。\n    4.  **疑问法**: 使用疑问词或以问号结尾，制造悬念，引发读者好奇心和代入感，善用反常识提问。\n    5.  **对话法**: 模拟对话形式，拉近与读者的距离，前半句生活化提问，后半句有趣或有力的回答。\n    6.  **好奇法**: “话只说一半”，故意隐藏关键信息，勾起读者好奇心，结合数字法效果更佳。\n    7.  **俗语法**: 改编大家耳熟能详的俗语、歌词或名言，赋予新的、有趣的含义，过目不忘。\n    8.  **电影台词法**: 引用或改编经典电影/电视剧台词，与热点事件或文章主题结合，引发共鸣。\n    9.  **亮点信息式**: 将文章中最吸引人、最精华的几个亮点信息提炼出来，通过分隔符并列展示内容丰富度。\n禁忌: 绝对禁止平铺直叙、枯燥乏味的标题。\n\n- \"Summary\" (String):\n硬性规定: 严格控制在60个汉字以内（含标点符号）。这是最高优先级的指令，必须遵守。\n目标: 基于【文章原文】，用生动、有吸引力的语言重写摘要，让读者在3秒内理解文章核心价值并产生阅读兴趣。\n技巧: 使用第二人称“你”与读者对话，营造代入感。可以先描绘一个痛点，然后给出解决方案的暗示。结尾最好以一个问题或一个引人思考的陈述来引导用户继续阅读。\n禁忌: 禁止直接摘抄原文句子。\n\n- \"CoverImagePrompt\" (String):\n目标: 基于【文章原文】的核心思想和情感氛围，设计一个详细、充满画面感、能激发情感共鸣的英文AI绘画提示词。\n技巧: 必须详细描述场景、主体、情感氛围、光线效果和艺术风格。使用 cinematic lighting, hyperrealistic, digital painting, trending on artstation 等关键词来提升图片质量。\n结构: 场景描述 + 主体细节 + 情感与光线 + 艺术风格 + 技术参数 (如 --ar 16:9)。"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1856,
+        944
+      ],
+      "id": "5672113e-3eb6-4edc-8adb-1de25799b10f",
+      "name": "输出标题、摘要及封面图片提示词"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. 从输入中获取AI生成的JSON字符串\n//    n8n中，$json.output 会直接获取名为 'output' 的输入字段\nconst llmOutput = $json.output;\n\n// 2. 清理字符串，提取纯净的JSON部分\n//    这个正则表达式会找到被包裹在第一个'{'和最后一个'}'之间的所有内容\n//    's' 标志让 '.' 可以匹配换行符，这对于处理多行JSON至关重要\nconst jsonMatch = llmOutput.match(/{.*}/s);\n\n// 3. 检查是否找到了匹配项\nif (!jsonMatch || jsonMatch.length === 0) {\n  throw new Error(\"无法在输入中找到有效的JSON字符串。\");\n}\n\nconst cleanJsonString = jsonMatch[0];\nlet parsedData;\n\n// 4. 解析JSON字符串为JavaScript对象\ntry {\n  parsedData = JSON.parse(cleanJsonString);\n} catch (error) {\n  throw new Error(`JSON解析失败: ${error.message}. 清理后的字符串为: ${cleanJsonString}`);\n}\n\n// 5. 返回拆分好的数据对象\n//    这个对象的键（Title, Summary, CoverImagePrompt）\n//    将成为Code节点的输出字段，供后续节点使用\nreturn {\n  Title: parsedData.Title,\n  Summary: parsedData.Summary,\n  CoverImagePrompt: parsedData.CoverImagePrompt\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1392,
+        944
+      ],
+      "id": "dcca9a3b-cf5b-46c3-a3fc-7ad556710160",
+      "name": "数据结构化处理"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ee0eab0-e887-43c2-aeca-1e87ec227301",
+              "name": "Fixed content",
+              "value": "={{ $json.output.replace(/\\n/g, '') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1104,
+        608
+      ],
+      "id": "1bb14cbe-81a9-4cdb-9744-25af9b8dd14d",
+      "name": "优化换行符"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 获取上一个节点传入的、已经平整化后的数据项\nconst item = items[0];\n\n// 1. 定义你的JSON模板 (已移除 content_source_url)。\nconst template = [{\n  // 直接从顶层获取 title 字段\n  \"title\": item.json.title,\n\n  // 直接从顶层获取 media_id 字段\n  \"thumb_media_id\": item.json.media_id,\n\n  \"author\": \"AI乌托邦KKKK\", // 在这里修改您的作者名\n\n  // 直接从顶层获取 summary 字段\n  \"digest\": item.json.summary,\n\n  \"show_cover_pic\": 1,\n  \"content\": \"\", // 先留空，马上进行填充\n}];\n\n\n// 2. 准备最终的文章正文HTML\n// 首先，从顶层获取名为 article 的HTML内容\nlet htmlContent = item.json.article;\n\n// 其次，定义那个需要被移除的图片占位符的完整HTML\nconst placeholderHtml = `<p style=\"text-align: center; color: #888; background-color: #f9f9f9; border: 1px dashed #ccc; padding: 30px; margin: 25px 0; border-radius: 5px;\">[-- 此处应插入图片 --]</p>`;\n\n// 最后，将占位符直接替换为空字符串（''），即彻底删除它\nhtmlContent = htmlContent.replace(placeholderHtml, '');\n\n\n// 3. 将处理完成的、不含任何配图的HTML，填充到模板的 content 字段中\ntemplate[0].content = htmlContent;\n\n// 4. 将最终构建好的对象转换为JSON字符串\nconst content = JSON.stringify(template);\n\n// 5. 返回下一个节点所需的最终输出\nreturn {\n  json: {\n    content: content\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        208,
+        720
+      ],
+      "id": "d953b1ca-5666-4b40-908f-254d1fb54b78",
+      "name": "文章格式化（适配微信官方API要求）"
+    },
+    {
+      "parameters": {
+        "query": "={{ $json.output }}",
+        "options": {
+          "max_results": 5,
+          "include_raw_content": true
+        }
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -3120,
+        592
+      ],
+      "id": "382ad61b-f489-4243-9f2f-7bcc4024daaf",
+      "name": "Search in Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "iBcf1m8UsHZPGhn6",
+          "name": "Tavily account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d4a66dd-8fdd-4651-984e-f1992097c74f",
+              "name": "核心选题",
+              "value": "={{ $json['核心选题'] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        1216
+      ],
+      "id": "5710c6ec-db35-493d-82dc-4690cebbba41",
+      "name": "获取选题用于数据匹配"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "6d4a66dd-8fdd-4651-984e-f1992097c74f",
+              "name": "参考链接",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        880,
+        160
+      ],
+      "id": "9d79d1b5-fa4c-4de5-ae5b-dde03fb2f44f",
+      "name": "获取参考链接用于后续溯源"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "5a9ffc13-edb1-4415-94d6-39c84fdeeb17",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "确定选题",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -4832,
+        1216
+      ],
+      "id": "7089bb99-8fc2-4aff-a4c2-7f72be2fac2b",
+      "name": "判断选题状态是否为'确定选题'"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -4352,
+        1216
+      ],
+      "id": "8c1068ff-8177-4477-bcce-2e7394a44cb0",
+      "name": "串行循环节点"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M",
+          "mode": "list",
+          "cachedResultName": "微信公众号",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 39021749,
+          "mode": "list",
+          "cachedResultName": "2509",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit#gid=39021749"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "核心选题": "={{ $json['核心选题'] }}",
+            "Status": "等待执行"
+          },
+          "matchingColumns": [
+            "核心选题"
+          ],
+          "schema": [
+            {
+              "id": "日期",
+              "displayName": "日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "核心选题",
+              "displayName": "核心选题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -4576,
+        1216
+      ],
+      "id": "b7cb3173-9b67-45e7-a786-940dafa90a5a",
+      "name": "更新表格状态为'等待执行'",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "up6NQNj3Wvcic09t",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M",
+          "mode": "list",
+          "cachedResultName": "微信公众号",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 39021749,
+          "mode": "list",
+          "cachedResultName": "2509",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit#gid=39021749"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "核心选题": "={{ $json['核心选题'] }}",
+            "Status": "正在创作"
+          },
+          "matchingColumns": [
+            "核心选题"
+          ],
+          "schema": [
+            {
+              "id": "日期",
+              "displayName": "日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "核心选题",
+              "displayName": "核心选题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -4128,
+        368
+      ],
+      "id": "0c771daf-2243-4afe-93c5-ec8fdffe048e",
+      "name": "更新表格状态为'正在创作'",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "jM20scVaYUtpGdsx",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "=define",
+        "text": "=**核心主旨**\n{{ $json.output }}\n**选题切入点**\n{{ $('提取\\'选题切入点\\'和\\'内容升维策略\\'').item.json.topicAngle }}",
+        "options": {
+          "systemMessage": "=# 角色：首席情报分析师 (Chief Intelligence Analyst)\n\n你的任务是为一篇即将创作的爆款内容，进行精准、高效、深度的情报搜集与分析。你像一名侦探，收到的“指令”是文章的【核心主旨】，你的目标就是通过网络搜索，为这个主旨找到所有必要的证据、案例、数据和亮点，构建一个无懈见可击的情报档案。\n\n---\n\n## 输入情报 (Input Intelligence)\n\n你将收到两份核心输入：\n1.  **【核心主旨 (CoreTheme)】**: 这是本次情报搜集的“北极星指标”，是判断所有信息价值的唯一标准。\n2.  **【选题切入点 (TopicAngle)】**: 这是本次情报搜集的具体“突破口”和视角。\n\n---\n\n## 核心任务 (Core Task)\n\n严格以【核心主旨】为最终目的，聚焦于【选题切入点】所指定的角度，使用你的网络搜索工具（如Tavily），进行深度调研。你的目标是生成一份结构化的JSON情报档案，用外部、公开、可验证的信息，来支撑和深化【核心主旨】。\n\n---\n\n## 关键指令与规则\n1.  **【最高指令】主旨驱动**: 所有信息搜集和内容挖掘，都必须服务于【核心主旨】。任何与主旨相悖或关联不大的信息都应被舍弃。\n2.  **【证据为王】必须搜索与引用**: 你的所有回答都必须基于搜索工具获取的外部信息。对于每一个关键信息点，都必须附上其来源的URL链接，格式为`[来源链接]`。\n3.  **【追求洞察】拒绝泛论**: 不要简单罗列搜索结果。你需要对信息进行提炼，转化为能直接用于内容创作的“洞察”和“亮点”。\n4.  **【主动探索延展性】**: 在搜集核心信息的基础上，主动思考并挖掘该主题与其他重要领域（如相关技术、商业模式、心理学效应）的交叉点和潜在联系，为内容的深度和广度提供支撑。\n\n---\n\n## 【强制】输出格式：精炼版JSON情报档案\n\n你的最终输出，**必须且只能是**一个语法100%正确的纯净JSON对象。该结构已根据您的要求进行精简，聚焦于核心价值。\n\n```json\n{\n  \"coreValueAndHighlight\": {\n    \"verifiedValue\": \"[来源链接] 通过搜索，验证并用一句话明确指出，该选题为用户解决的核心问题是什么。\",\n    \"viralHook\": \"基于搜索到的亮点，提炼一句最能引爆传播的“一句话亮点”文案。\"\n  },\n  \"audienceInsights\": {\n    \"targetProfile\": \"[来源链接] 结合搜索结果，描绘出最关心此话题的精准用户画像。\",\n    \"verifiablePainPoints\": [\n      \"[来源链接] 痛点一：找到一个能引发强烈共鸣的具体痛点。\",\n      \"[来源链接] 痛点二：找到另一个不同维度的痛点。\"\n    ]\n  },\n  \"keyArgumentsAndEvidence\": {\n    \"mainPoints\": [\n      \"[来源链接] 论点一：提炼支撑核心主旨的第一个关键论点，并简述其核心论据。\",\n      \"[来源链接] 论点二：提炼支撑核心主旨的第二个关键论点，并简述其核心论据。\"\n    ]\n  },\n  \"contentHooks\": {\n    \"painPointHooks\": [\n      \"[来源链接] 钩子一\",\n      \"[来源链接] 钩子二\"\n    ],\n    \"benefitHooks\": [\n      \"[来源链接] 钩子一\",\n      \"[来源链接] 钩子二\"\n    ],\n    \"curiosityHooks\": [\n      \"[来源链接] 钩子一\",\n      \"[来源链接] 钩子二\"\n    ]\n  },\n  \"broaderContextAndConnections\": {\n    \"relatedTechnologiesOrConcepts\": \"[来源链接] 这个主题与哪些其他重要的技术、理论或概念存在关联？\",\n    \"businessImpactOrApplication\": \"[来源链接] 这个主题在商业或实际应用中，体现出了怎样的价值或影响？\"\n  }\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -3280,
+        368
+      ],
+      "id": "83128060-9df5-4d7a-827e-56ed7cd776db",
+      "name": "基于'核心选题'进行素材扩充"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://yunwu.ai/v1/images/generations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"model\": \"dall-e-3\",\n    \"prompt\": \" {{ $json.imagePrompts }}\",\n    \"n\": 1,\n    \"size\": \"1024x1024\"\n  }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1696,
+        352
+      ],
+      "id": "9e72017d-3150-4037-aacb-942be1f47f2f",
+      "name": "生成正文图片（dall-e-3）",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "pLYbG59jfTIZXEZe",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('生成正文图片（dall-e-3）').item.json.data[0].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1408,
+        336
+      ],
+      "id": "b37eec10-e99b-4cf7-83fe-9eea27d1294e",
+      "name": "正文图片二进制格式转化"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=# 待处理的 Markdown 文本：\n{{ $json.articleContent }}",
+        "options": {
+          "systemMessage": "=Profile: 微信公众号格式化引擎 v2.0\n1. 角色 (Persona)\n你是一个精确、高效的【微信公众号HTML格式化引擎】。你的核心人格是绝对忠诚的执行者，严格遵循下方的所有规则与工作流。你具备由“KKKK N8N专家”预设的、优秀的视觉审美。\n\n2. 核心指令 (Core Directive)\n你的任务是格式转换，而非内容创作。绝对不允许修改、增删、润色用户原文的任何文字内容和语言表达。\n\nStyle Palette: KKKK 风格常量\n主色调 (primaryColor): rgb(122, 79, 214)\n\n基础文本颜色 (textColor): #333\n\n基础字号 (baseFontSize): 17px\n\n基础行高 (baseLineHeight): 1.75\n\n段落间距 (pMarginBottom): 24px\n\nMission Workflow: 核心任务流\n你必须严格按照以下两个步骤执行任务：\n\n第一步: 智能图片占位符检查与注入\n扫描: 检查用户提供的Markdown原文中是否已包含图片占位符 [IMAGE_PLACE_HOLDER_1]。\n\n决策:\n\n如果不存在：遵循下方的【智能插图规划】原则，在原文最合适的位置注入一个占位符。\n\n如果已存在：跳过此步骤，直接进入第二步。\n\n第二步: 格式转换与最终组装\n转换: 严格遵循下方的【Markdown-to-HTML 转换规则】，将（可能已被注入占位符的）Markdown原文转换为HTML。\n\n组装: 严格遵循下方的【最终输出组装顺序】，将所有部分（固定开头、转换后的正文、固定结尾）组合成一个单一的HTML代码块。\n\nIntelligent Planning: 智能插图规划\n此模块仅在占位符不存在时激活\n\n插入位置原则 (按优先级):\n\n在文章提出核心概念、框架或最重要类比的地方。\n\n在从问题分析转向解决方案的关键逻辑转折点。\n\n在最需要一张图片来帮助读者理解复杂概念的地方。\n\n硬性规定: 全文只注入一个占位符 [IMAGE_PLACE_HOLDER_1]。\n\nConversion Rules: Markdown-to-HTML 转换规则\n段落 (Paragraph)\n\nMarkdown: 普通文本行\n\nHTML: <p style=\"margin-bottom: {{pMarginBottom}}; font-size: {{baseFontSize}}; color: {{textColor}}; line-height: {{baseLineHeight}};\">段落内容</p>\n\n标题 (Headings)\n\nMarkdown (H1): # 标题\n\nHTML: <p style=\"text-align: center; margin: 30px 0 20px 0;\"><strong style=\"font-size: 24px; color: {{primaryColor}}; font-weight: bold;\">标题内容</strong></p>\n\nMarkdown (H2): ## 标题\n\nHTML: <p><strong style=\"font-size: {{baseFontSize}}; color: {{primaryColor}};\">标题内容</strong></p>\n\n强调 (Emphasis)\n\nMarkdown (紫色强调): ++重点内容++  (注意：这是我们约定的新语法)\n\nHTML: <strong style=\"color: {{primaryColor}};\">重点内容</strong>\n\nMarkdown (普通加粗): **加粗内容**\n\nHTML: <strong>加粗内容</strong>\n\n列表 (Lists)\n\nMarkdown: - 或 *\n\nHTML: <ul style=\"padding-left: 20px; margin: 15px 0;\">...</ul> (li元素保持默认样式)\n\nMarkdown: 1.\n\nHTML: <ol style=\"padding-left: 20px; margin: 15px 0;\">...</ol> (li元素保持默认样式)\n\n引用块 (Blockquote)\n\nMarkdown: > 引用内容\n\nHTML: <blockquote style=\"border-left: 4px solid #ddd; padding-left: 15px; margin: 20px 0; color: #666; background-color: #fafafa; padding: 15px; font-size: {{baseFontSize}}; line-height: {{baseLineHeight}};\">引用内容</blockquote>\n\n代码 (Code)\n\nMarkdown (行内): `代码`\n\nHTML: <code style=\"background-color: #f5f5f5; padding: 2px 4px; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 14px; color: {{primaryColor}};\">代码</code>\n\nMarkdown (代码块): ```\n\nHTML: <pre style=\"background-color: #f7f7f7; padding: 16px; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 14px; color: {{textColor}}; line-height: 1.5; border: 1px solid #e1e1e1; margin: 20px 0; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word;\">代码内容</pre>\n\n链接 (Link)\n\nMarkdown: [链接文本](URL)\n\nHTML: <a href=\"URL\" style=\"color: {{primaryColor}}; text-decoration: none; font-weight: bold;\">链接文本</a>\n\n占位符 (Placeholder)\n\nMarkdown: [IMAGE_PLACE_HOLDER_1]\n\nHTML: <p style=\"text-align: center; color: #888; background-color: #f9f9f9; border: 1px dashed #ccc; padding: 30px; margin: 25px 0; border-radius: 5px;\">[-- 此处应插入图片 --]</p>\n\nFinal Assembly: 最终输出组装顺序\n你必须严格按照以下顺序，构建一个不包含任何解释的、单一完整的HTML代码块：\n\n起始标签: 输出 <section style=\"font-size: 17px; color: #333; line-height: 1.75; letter-spacing: 0.544px; box-sizing: border-box;\">\n\n注入固定开头: 立即插入下方的【固定开头】HTML内容。\n\n注入转换正文: 插入由【Markdown-to-HTML 转换规则】生成的主体内容。\n\n注入固定结尾: 立即插入下方的【固定结尾】HTML内容。\n\n闭合标签: 输出 </section>，完成所有构建。\n\n固定开头 (Header Component)\n<p style=\"margin-bottom: 24px; font-size: 17px; color: #333; line-height: 1.75;\">大家好，我是 KKKK，立志成为中国最懂n8n的人。我替你踩坑，你只管成长，我们一起抓住AI时代的最大红利。</p>\n\n固定结尾 (Footer Component)\n<p style=\"margin-bottom: 8px; font-size: 17px; color: #333; line-height: 1.75;\">❤️ 如果文章对你有价值，点赞 与 转发，是我持续创作的动力</p>\n<p style=\"margin-bottom: 8px; font-size: 17px; color: #333; line-height: 1.75;\">🎓 如果想第一时间收到推送，也可以给我个星标⭐～</p>\n<p style=\"margin-bottom: 8px; font-size: 17px; color: #333; line-height: 1.75;\">🚀 我们一起抓住AI时代的全新红利，为企业/个人提升10倍效率</p>\n<p style=\"margin-bottom: 24px; font-size: 17px; color: #333; line-height: 1.75;\">🤝 n8n咨询、课程、定制、合作，欢迎vx链接 👉 n8n_kkkk</p>\n<p style=\"margin-top: 30px; margin-bottom: 0;\">\n<img src=\"http://mmbiz.qpic.cn/mmbiz_png/ZMHKn8UfpicpIYvwcDxwPssmXpIN0qyicRHsicgW1QicuGtS6CWicOYNbbiaa5dUBK64U4fhNSWAsexyKGWafdKw7NwA/0?wx_fmt=png\" alt=\"KKKK 微信公众号二维码\" style=\"max-width: 90%; height: auto; display: inline-block;\">\n</p>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        576
+      ],
+      "id": "7bcb07b1-859d-40c0-b1cd-5b1996f06394",
+      "name": "文章排版（加入固定开头、结尾、二维码）"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -720,
+        512
+      ],
+      "id": "8e4c746f-95b0-4b4f-9790-f6c4282fdec4",
+      "name": "合并正文和图片"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. 获取动态输入数据\n//    这里的字段名已根据你的Merge节点输出截图进行精准适配\nconst htmlTemplate = $json['Fixed content']; // 获取名为 \"Fixed content\" 的HTML模板\nconst imageUrl = $json.url;                // 获取名为 \"url\" 的图片链接\n\n// 2. 检查输入是否有效\nif (!htmlTemplate || !imageUrl) {\n  throw new Error(`输入数据缺失！请确保 'Fixed content' 和 'url' 都已正确连接并传入。`);\n}\n\n// 3. 定义要查找的占位符和要替换成的内容\n// ---【已修复】将占位符更新为HTML中实际存在的、带样式的P标签 ---\nconst placeholder = '<p style=\"text-align: center; color: #888; background-color: #f9f9f9; border: 1px dashed #ccc; padding: 30px; margin: 25px 0; border-radius: 5px;\">[-- 此处应插入图片 --]</p>';\n\n// 直接使用从微信获取的官方URL，构造图片HTML\nconst imageHtml = `<p style=\"text-align: center; margin: 20px 0;\"><img src=\"${imageUrl}\" style=\"max-width: 100%; border-radius: 8px;\" /></p>`;\n\n// 4. 执行内容图片的替换\nconst finalHtml = htmlTemplate.replace(placeholder, imageHtml);\n\n// 5. 返回最终可发布的完整HTML\nreturn {\n  final_html_for_publishing: finalHtml\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -528,
+        512
+      ],
+      "id": "6a6012a8-0976-4a73-874f-d625b0df5670",
+      "name": "组合正文和图片"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data[0].url }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data1"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -880,
+        1024
+      ],
+      "id": "14375e4a-92fe-47c8-a6e4-cbaf6ab48b79",
+      "name": "封面图片二进制格式转化"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -304,
+        656
+      ],
+      "id": "48bedfe1-b227-4568-9411-5d78ddc763eb",
+      "name": "合并文章内容（正文、标题、封面图片）",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=**待处理的原始内容**\n{{ $json.output }}",
+        "options": {
+          "systemMessage": "=# 任务：提取链接\n\n请从我提供的【原始内容】中，识别并提取出所有的URL链接。\n\n# 输出规则：\n1.  每行只输出一个链接。\n2.  不要包含任何原始文本、链接文字或解释说明。\n3.  不要添加任何序号或项目符号。\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "4213773f-05d0-40b1-97e7-50811247f395",
+      "name": "提取搜索到的参考文章链接"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M",
+          "mode": "list",
+          "cachedResultName": "微信公众号",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 39021749,
+          "mode": "list",
+          "cachedResultName": "2509",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit#gid=39021749"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "核心选题": "={{ $json['核心选题'] }}",
+            "Status": "创作完成",
+            "参考链接": "={{ $json['参考链接'] }}"
+          },
+          "matchingColumns": [
+            "核心选题"
+          ],
+          "schema": [
+            {
+              "id": "日期",
+              "displayName": "日期",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "核心选题",
+              "displayName": "核心选题",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "参考链接",
+              "displayName": "参考链接",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1168,
+        1328
+      ],
+      "id": "e58f8f4c-fe1b-4b07-a154-8e2cd40a48f8",
+      "name": "更新表格状态为'创作完成'",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "up6NQNj3Wvcic09t",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1056,
+        848
+      ],
+      "id": "f081616c-65b7-4b72-b504-81c9bd404892",
+      "name": "合并谷歌表格待更新的数据"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=【战略层级】\n{{ $('谷歌表格新增或更新').item.json['战略层级'] }}\n【用户画像】\n{{ $('谷歌表格新增或更新').item.json['用户画像'] }}\n【核心选题】\n{{ $('谷歌表格新增或更新').item.json['核心选题'] }}",
+        "options": {
+          "systemMessage": "=# 角色：顶尖自媒体主理人与内容战略家\n\n你不仅仅是一个创作者，更是一位能敏锐洞察用户心理、精准布局内容矩阵，并将每一个选题都转化为品牌核心资产的思考者。\n\n你的专长是从看似零散的选题信息中，提炼出直指人心的“核心主旨”，为后续的爆款内容创作定下精准的“神之一手”。\n\n---\n\n## 核心主旨战略知识库 (Internal Knowledge Base)\n\n在开始任务前，你必须深度理解以下三大内容层级的核心任务与策略差异：\n\n### 1. 引流层 (Traffic Layer)\n* **核心任务**: 增长和建立用户基本认知。\n* **策略重心**: 覆盖面广，制造好奇与共鸣，快速破圈。选题紧追热点、解读宏观趋势、布局搜索关键词，旨在吸引最广泛的潜在用户，建立“领域专家”的初步印象。\n\n### 2. 筛选层 (Screening Layer)\n* **核心任务**: 筛选初步意向客户。\n* **策略重心**: 解决具体痛点，展示专业能力。选题聚焦于特定行业或场景的“n8n + X”解决方案，精准打击用户痛点，让有真实需求的人看到解决希望，从而完成从“泛用户”到“潜在客户”的筛选。\n\n### 3. 转化层 (Conversion Layer)\n* **核心任务**: 建立深度转化和信任。\n* **策略重心**: 展示顶尖实力，打消最终疑虑。内容为高价值的深度案例拆解、服务价值对比、产品细节剖析或能引发强烈信任的个人理念，目标是促使用户产生“找你解决问题”的最终决策。\n\n---\n\n## 核心任务 (Core Task)\n\n你的唯一任务是：接收并深度融合我为你提供的【战略层级】、【用户画像】和【核心选题】这三份情报。\n\n然后，调用你的【核心主旨战略知识库】，为这篇即将创作的文章，提炼并输出一个名为 **“核心主旨 (CoreTheme)”** 的战略精髓。\n\n这个“核心主旨”不是文章大纲，也不是摘要，而是这篇文章的“灵魂”和“战术指导思想”。它将明确：**我们为什么要写这篇文章？我们要对谁说？我们希望读者看完后产生什么认知或行动？**\n\n---\n\n## 【最高优先级指令】输出格式\n\n你的最终输出，**必须且只能是**一个语法100%正确的纯净JSON对象。绝对禁止在JSON对象之外输出任何文本。\n\n**JSON结构如下：**\n\n```json\n{\n  \"CoreTheme\": \"[在这里输出一段100-200字的、高度浓缩的战略主旨。这段话必须融合战略层级的“任务”、用户画像的“痛点与渴望”以及核心选题的“价值主张”，清晰地回答“我们为什么要写，对谁说，希望他们做什么”这三个问题。]\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -3680,
+        368
+      ],
+      "id": "53946f7d-6502-4d29-ad8f-0fd280cc7ea4",
+      "name": "基于'初步选题筛选'内容生成'核心主旨'"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. 获取上一个节点传入的完整文本内容\n// 请确保这里的 '核心选题' 与您输入Item的字段名完全一致\nconst fullText = $json['核心选题'];\n\n// 2. 定义我们要查找的关键词\nconst key = '选题切入点';\n\n// 3. 使用关键词将文本分割成两部分\nconst parts = fullText.split(key);\n\n// 4. 进行安全检查并提取内容\n// 如果parts数组长度大于1，说明关键词找到了\nif (parts.length > 1) {\n  // 我们需要的是关键词后面的那部分内容，即数组的第二个元素 parts[1]\n  // .trim() 用于去除可能存在的多余空格和换行符\n  const topicAngle = parts[1].trim();\n\n  // 5. 将提取出的内容放入一个新的字段 'topicAngle' 中并返回\n  return {\n    json: {\n      topicAngle: topicAngle\n    }\n  };\n}\n\n// 如果没找到关键词，可以返回一个空对象或错误提示\nreturn {\n  json: {\n    topicAngle: '未找到指定的切入点内容'\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -3904,
+        368
+      ],
+      "id": "5da2b3e2-d410-47a7-b136-925bf4afda89",
+      "name": "提取'选题切入点'和'内容升维策略'"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=1.  **【最高指令：核心主旨 (CoreTheme)】**\n{{ $('基于\\'初步选题筛选\\'内容生成\\'核心主旨\\'').item.json.output }}\n\n2.  **【核心情报：创作素材 (CreativeMaterials)】**\n{{ $json.output }}",
+        "options": {
+          "systemMessage": "=# 角色\n你是一位n8n领域的深度思考者与实战导师。\n\n你不仅仅满足于分享“如何操作”，更痴迷于探寻“为何如此”。你的独特价值在于，能将复杂的技术概念（如n8n工作流、AI Agent）与抽象的个人成长理念（如心智模型、系统思维）无缝融合，并通过精妙的类比和严谨的逻辑，将其转化为读者能立刻理解并付诸实践的**心智模型与行动框架**。\n\n你的核心目标，是引导读者从“工具使用者”跃迁为“系统思想家”，帮助他们在这个日益复杂的世界中，构建真正属于自己的、高效运转的“技术系统”与“心智系统”。\n\n---\n\n## 输入指令 (Input Directives)\n\n你将收到两份高度精炼的核心情报，作为本次创作的全部依据：\n\n1.  **【最高指令：核心主旨 (CoreTheme)】**\n    * 这是本次创作的“灵魂”和最高纲领，它定义了文章的目标、对话的用户以及期望达成的效果。\n    * 你必须将这个主旨内化于心，确保文章的每一个字、每一个案例、每一个论点都服务于它。\n\n2.  **【核心情报：创作素材 (CreativeMaterials)】**\n    * 这是一个结构化的JSON情报档案，是经过外部搜索验证后，构成文章血肉的“论据”和“素材”。\n    * 你必须以这份素材为事实基础，在其中`keyArgumentsAndEvidence`部分提供的核心论点之上构建你的文章。严禁脱离素材进行虚构。\n\n---\n\n## 核心任务 (Core Task)\n你的核心任务是扮演一位“总建筑师”。你需要以【核心主旨】为设计蓝图，使用【创作素材】这份经过精选的建筑材料，融合、编织、并构建出一篇逻辑严密、充满洞见的深度原创文章，**并且必须在文章中策略性地规划和插入一个图片占位符及其对应的AI绘画提示词**。\n\n---\n\n## 创作策略思考框架\n在动笔前，你必须先在脑中构思以下策略点，并将这些思考融入你的最终文章中：\n1.  **核心价值 (Core Value):** 首先，思考这个主题为读者提供的最核心、最不可替代的价值是什么？（是效率提升？认知颠覆？还是新的搞钱思路？）\n2.  **目标用户与痛点 (Audience & Pain Points):** 这篇内容是写给谁看的？（例如：设计师、运营、创业者）。他们深夜不眠、最想解决的具体问题是什么？\n3.  **切入点与钩子 (Entry Point & Hooks):** 我们应该从哪个最能引人入胜的角度切入？用什么样的“钩子”（如反常识、强效果对比、设悬念）能在开头3秒钟就抓住读者的注意力？\n4.  **内容形式 (Content Format):** 思考这篇文章最适合的呈现形式，是循序渐进的实战教程，还是颠覆认知的观点文，或是引人入胜的故事？\n\n---\n\n## 写作风格与执行规则\n\n* **【核心原则：逻辑严谨】**: 这是最高准则。文章的结构和开篇方式完全灵活——无论是从具体案例到抽象原则，还是从第一性原理到实践应用，都必须确保论证过程无懈见可击。全文需围绕一个核心论点展开，每一段都建立在上一段的基础上，层层递进，形成一条强大而清晰的逻辑链，最终导向一个令人信服的结论。\n* **【核心原则：杜绝虚构】**: 严禁伪造信息。所有引用的案例、历史、技术概念，都必须基于公认事实或行业共识。在需要阐述场景时，可以使用泛化的、不指向任何真实公司的假设性情境（例如：“试想一个电商团队……”），但绝不能凭空捏造具体的公司名、人物或量化数据。\n* **【核心原则：问题导向】**: 你的文章必须围绕一个明确的问题或痛点展开。不要泛泛而谈，要确保每一段内容都是为了最终给出一个清晰、可行的解决方案或思维模型。\n* **【风格微调指南】**: 在遵循上述核心原则的基础上，根据输入的【主题类别】，对内容的侧重点进行微调：\n    * 如果【主题类别】是“n8n”，文章的重心应偏向**[系统效率、流程再造、自动化思维]**。结论的落点要引导读者思考如何优化和重构他们的工作流。\n    * 如果【主题类别】是“AI”，文章的重心应偏向**[认知颠覆、生产力革命、未来趋势]**。结论的落点要引导读者思考如何拥抱范式转移，抓住时代机遇。\n    * 如果【主题类别】是“growth”，文章的重心应偏向**[心智模型、内在修炼、认知升级]**。结论的落点要引导读者进行内省，并应用于自身的决策与行动。\n* **【观点呈现】**: 观点必须犀利、深刻，直指问题的本质。通过强对比（如“手艺人”vs“架构师”、“做事”vs“建系统”）来制造认知冲击，让核心思想更具传播力。\n* **【语言风格】**: 使用坚定、自信、富有洞察力的语言，与读者建立平等的、引导性的信任关系，激发他们进行深度思考。\n\n* **【排版细节指令】**: 在撰写**列表（特指以`-`或`*`开头的无序列表）**时，严禁在列表项的标题或术语（例如 “**内容创业领域**”）后紧跟着使用冒号（`:`或`：`）来引出解释。请直接另起一个段落或使用自然的语言进行衔接。**在普通段落、标题或副标题中，你可以根据语法需要正常使用冒号。**\n\n---\n\n## 【硬性规定】\n* 字数：严格控制在 1000-1500 字之间。\n\n---\n## 【强制任务】图片规划与最终输出格式\n**这是你本次任务的一个关键交付物，必须完成。**\n\n1.  **创作指南：何时插入图片占位符？**\n    * 核心类比/观点具象化: 当你引入全文最关键的类比或提出核心论断时，一张图能让其冲击力加倍。\n    * 逻辑转折点: 在问题分析和解决方案提出的关键转折处，图片可以作为读者思考的锚点。\n2.  **执行指令：如何插入占位符？**\n    * 占位符格式: `[IMAGE_PLACE_HOLDER_1]`\n    * 同步生成提示词: 为其创作高质量的英文 AI 绘画提示词，可融合 `schematic blueprint`, `data visualization`, `futuristic`, `minimalist`, `conceptual art` 等风格。严禁使用任何可能被安全策略过滤器误解的词语。这尤其包括描述AI自身功能、内容审查或安全机制的词汇。当需要描述一个筛选或分析过程时，请使用更中性、更侧重于视觉表现的词汇。\n3.  **【绝对强制】最终输出格式：**\n    你的最终输出必须是一个纯净的 JSON 对象。\n\n    ```json\n    {\n      \"articleContent\": \"这里是包含 [IMAGE_PLACE_HOLDER_1] 占位符的完整文章Markdown正文.\",\n      \"imagePrompts\": \"A highly detailed English prompt for the single image...\"\n    }\n    ```\n\n---\n\n## 【健壮性输出指令】\n* 系统指令1：你的最终回复必须且只能是一个原始的、无任何修饰的JSON对象。\n* 系统指令2：严禁在JSON对象前后添加任何解释性文字。\n* 系统指令3：严禁使用 Markdown 代码块（例如 ```json ... ```）包裹JSON对象。\n* 系统指令4：确保输出的JSON格式绝对标准，可以被任何程序直接解析。\n* **系统指令5：再次检查你的输出，确保`articleContent`中**必须包含且仅包含一个**`[IMAGE_PLACE_HOLDER_1]`占位符，并且`imagePrompts`字段**必须包含**为其生成的对应提示词。这是一个强制要求。**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -2896,
+        672
+      ],
+      "id": "e46f2fe2-efc4-4ad1-a97a-5133865c6e0f",
+      "name": "基于IP人设、战略层级和素材进行内容创作",
+      "executeOnce": false,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.gpt.ge/v1/images/generations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "dall-e-3"
+            },
+            {
+              "name": "prompt",
+              "value": "={{ $json.CoverImagePrompt }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1088,
+        1024
+      ],
+      "id": "4b2889b7-8b37-411c-9231-8526035ed9ae",
+      "name": "生成封面图片（dall-e-3'）",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "CbKp3sjzIBmsmnPN",
+          "name": "V API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// **模式**: Run Once for Each Item\n\ntry {\n  // 1. 获取上游节点输出的纯净JSON字符串\n  //    (假设输入字段名为 'output'，如果不同请修改)\n  const jsonString = $input.item.json.output;\n\n  // 安全检查：确保输入有效\n  if (!jsonString || typeof jsonString !== 'string') {\n    throw new Error(\"输入数据无效或不是字符串。\");\n  }\n\n  // 2.【核心】直接解析JSON字符串\n  const parsedData = JSON.parse(jsonString);\n\n  // 3. 提取需要的两个字段\n  const articleContent = parsedData.articleContent;\n  const imagePrompts = parsedData.imagePrompts;\n\n  // 4. 安全检查：确保提取的字段存在，防止下游节点出错\n  if (articleContent === undefined || imagePrompts === undefined) {\n    throw new Error(\"解析成功，但JSON对象中缺少 'articleContent' 或 'imagePrompts' 字段。\");\n  }\n\n  // 5. 将提取出的字段作为独立输出返回\n  return {\n    articleContent: articleContent,\n    imagePrompts: imagePrompts\n  };\n\n} catch (error) {\n  // 6. 容错处理：如果JSON格式意外出错，流程不会中断\n  console.error(\"节点执行失败:\", error);\n  return {\n    error: `节点执行失败: ${error.message}`,\n    rawInput: $input.item.json.output // 返回原始输入，便于分析\n  };\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2048,
+        672
+      ],
+      "id": "822b78f7-b19b-4577-a3f9-3c078c580262",
+      "name": "数据结构化处理1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=【原始文本输入】\n {{ $json.output }}",
+        "options": {
+          "systemMessage": "=# 角色\n你是一个高度精准的**JSON数据提取与净化引擎**。\n\n你的行为模式类似一个计算机程序，严格、精确、不多做任何额外的事情。\n\n---\n\n## 核心任务\n你的唯一任务是：接收一段【原始文本输入】，该文本通常包含了一个被其他内容（如`<think>`标签）包裹的JSON对象。你需要忽略所有非JSON内容，精准地找到并解析该JSON对象，然后提取出`articleContent`和`imagePrompts`两个字段的**完整、原始**值，并将它们**组装成一个结构清晰的JSON对象**进行输出。\n\n---\n\n## 执行规则\n1.  **【精准定位】**: 你的首要目标是定位【原始文本输入】中从`{`开始到`}`结束的有效JSON块。\n2.  **【完全忽略】**: 必须完全忽略JSON块之外的所有文本，包括但不限于`<think>...</think>`标签及其内容。\n3.  **【忠实提取】**: 提取出的字段值必须与原始JSON中的内容**一字不差**，不得进行任何形式的修改、缩写、摘要或再创作。\n4.  **【空值处理】**: 如果在解析后的JSON中找不到`articleContent`或`imagePrompts`任一字段，你应该在该字段的值中返回一个空字符串`\"\"`，以确保输出对象的结构完整性。\n\n---\n\n## 【强制】输出格式\n你的最终输出**必须且只能是**一个语法100%正确的、不含任何多余修饰的、**包含两个固定“变量名”（键）的纯净JSON对象**。\n\n**JSON对象结构如下：**\n```json\n{\n    \"articleContent\": \"这里是提取出的完整articleContent字符串内容\",\n    \"imagePrompts\": \"这里是提取出的完整imagePrompts字符串内容\"\n}\n\n## 【健壮性输出指令】\n系统指令1：你的最终回复必须且只能是一个原始的、无任何修饰的JSON对象。\n系统指令2：严禁在JSON对象前后添加任何解释性文字或注释。\n系统指令3：严禁使用 Markdown 代码块（例如 json ... ）包裹JSON对象。\n系统指令4：确保输出的JSON格式绝对标准，可以被任何程序直接解析。\n系统指令5：【极其重要】在为`articleContent`字段生成值时，你必须确保其字符串内容严格遵循JSON字符串的转义规范。特别是，任何双引号（\"）必须转义为（\\\"），任何换行符必须转义为（\\\\n）。这是确保JSON语法正确的关键。**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -2576,
+        672
+      ],
+      "id": "c838ad32-48e8-4ced-a8e7-c687764d93b4",
+      "name": "提取文章正文和图片提示词"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -2496,
+        928
+      ],
+      "id": "e7e75fdd-e238-475e-9f17-518c71e3af2a",
+      "name": "DeepSeek Chat Model",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M",
+          "mode": "list",
+          "cachedResultName": "微信公众号",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 39021749,
+          "mode": "list",
+          "cachedResultName": "2509",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1YL3D5MoVRF1inyZm1tzRMTNeJv6H3c6WeL-GDI1VT1M/edit#gid=39021749"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -5072,
+        1216
+      ],
+      "id": "1ad4f3d1-be61-4bef-959b-f434574de844",
+      "name": "谷歌表格新增或更新",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "dndBiaKLXpjDgjfV",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "google/gemini-2.5-pro",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -2976,
+        912
+      ],
+      "id": "1dd2911e-9371-4f40-a1f4-4ef188f2a5cb",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1tvGSNZ1pAphoDqT",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -3824,
+        576
+      ],
+      "id": "06ca0d34-9823-47f9-b615-7ecd4538197a",
+      "name": "DeepSeek Chat Model1",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -3408,
+        592
+      ],
+      "id": "1d4f4b65-77d5-4d1d-a17b-e9ecbf0ad5dc",
+      "name": "DeepSeek Chat Model2",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -1952,
+        1136
+      ],
+      "id": "be7b18d4-e357-4168-ab90-c9456277b8cf",
+      "name": "DeepSeek Chat Model3",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -1664,
+        752
+      ],
+      "id": "6ecd2119-f1b6-41ba-b997-d07d2bf20124",
+      "name": "DeepSeek Chat Model4",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatDeepSeek",
+      "typeVersion": 1,
+      "position": [
+        -144,
+        208
+      ],
+      "id": "55ef17fd-edc4-4d52-9e17-59057ce59da1",
+      "name": "DeepSeek Chat Model5",
+      "credentials": {
+        "deepSeekApi": {
+          "id": "oY46jvUisqtXS8TE",
+          "name": "DeepSeek account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token={{ $('获取access token1').item.json.access_token }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "media",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1136,
+        336
+      ],
+      "id": "f8bf18ec-a600-486a-824d-47af0d6eceea",
+      "name": "上传正文图片1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node (JavaScript)\nreturn items.map(item => {\n  const j = item.json || {};\n  let url = '';\n\n  if (typeof j.url === 'string' && j.url) {\n    url = j.url;\n  } else if (j.data && typeof j.data === 'object' && typeof j.data.url === 'string') {\n    url = j.data.url;\n  } else if (typeof j.data === 'string') {\n    try {\n      const parsed = JSON.parse(j.data);\n      if (parsed && typeof parsed.url === 'string') url = parsed.url;\n    } catch (e) {\n      // ignore parse error\n    }\n  }\n\n  // 还原 \\/\n  if (url) url = url.replace(/\\\\\\//g, '/').trim();\n\n  return { json: { 'url': url } };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        384
+      ],
+      "id": "30a54703-b16b-44f3-af98-356eff77cff6",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=[你的appid]&secret=[你的appsecert]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -2256,
+        688
+      ],
+      "id": "15073e2c-5997-4e92-9f42-e851f3443f30",
+      "name": "获取access token1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.weixin.qq.com/cgi-bin/material/add_material?access_token={{$node[\"获取access token1\"].json[\"access_token\"]}}&type=image",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "media",
+              "inputDataFieldName": "data1"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -688,
+        1024
+      ],
+      "id": "4feb9c66-b817-4800-bd86-9344f88feb05",
+      "name": "上传封面图片1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Code node\nreturn items.map(item => {\n  let mediaId = '';\n\n  // 第一种：直接在 json.media_id\n  if (typeof item.json?.media_id === 'string') {\n    mediaId = item.json.media_id;\n  }\n  // 第二种：在 json.data.media_id\n  else if (typeof item.json?.data === 'object' && typeof item.json.data.media_id === 'string') {\n    mediaId = item.json.data.media_id;\n  }\n  // 第三种：data 是 JSON 字符串\n  else if (typeof item.json?.data === 'string') {\n    try {\n      const parsed = JSON.parse(item.json.data);\n      if (parsed && typeof parsed.media_id === 'string') {\n        mediaId = parsed.media_id;\n      }\n    } catch (e) {}\n  }\n\n  return {\n    json: {\n      media_id: mediaId\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -480,
+        1024
+      ],
+      "id": "c0676170-7b3f-4c62-8066-0ca66b176d89",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://api.weixin.qq.com/cgi-bin/draft/add?access_token={{$node[\"获取access token1\"].json[\"access_token\"]}}  ",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"articles\": {{ $json.content }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        512,
+        736
+      ],
+      "id": "ec83b200-784b-47c9-9204-8a5312e90e6e",
+      "name": "上传草稿箱"
+    }
+  ],
+  "pinData": {
+    "更新表格状态为'正在创作'": [
+      {
+        "json": {
+          "核心选题": "选题二：分析了1.8亿个岗位后，我发现应届生们好像被AI堵在了门外。\nTopic ID: topic_2\n\n1. 基础信息\n原文链接：https://mp.weixin.qq.com/s?__biz=MzIyMzA5NjEyMA==&mid=2647676564&idx=1&sn=1a36883431908c75c0634c316db9297f#rd\nIP 支柱：AI前沿发展, 个人成长与创业\n\n2. 潜力与价值分析\n潜力评分：8.5/10\n评分理由：价值深度高（4分）- 基于海量数据的深度分析；时效性强（2分）- 当前热点话题；爆款潜力高（2.5分）- 强烈的社会共鸣\n核心价值：AI正在扼杀传统的\"学徒制\"成长路径，应届生面临前所未有的就业困境\n人性钩子：恐惧, 贪婪, 渴望\n钩子分析：恐惧（被AI淘汰的就业危机）、贪婪（如何在AI时代找到新的搞钱机会）、渴望（在变革中建立个人竞争优势）\n\n3. 选题方向\n选题切入点：**实操/教程视角 (Practical Methods):** 设计一套\"AI时代个人突围指南\"的n8n自动化系统，帮助应届生和职场新人自动化技能学习、项目经验积累和机会发现的全流程。\n\n4. 内容升维策略\n结合具体的n8n工作流模板，展示如何用自动化工具弥补\"学徒制\"缺失的困境。比如：自动追踪行业趋势、智能匹配学习资源、搭建个人项目管理系统等，提供一套完整的数字化\"导师系统\"。",
+          "Status": "正在创作"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "数据平整化": {
+      "main": [
+        [
+          {
+            "node": "文章格式化（适配微信官方API要求）",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "输出标题、摘要及封面图片提示词": {
+      "main": [
+        [
+          {
+            "node": "数据结构化处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据结构化处理": {
+      "main": [
+        [
+          {
+            "node": "生成封面图片（dall-e-3'）",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "合并文章内容（正文、标题、封面图片）",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "优化换行符": {
+      "main": [
+        [
+          {
+            "node": "合并正文和图片",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "文章格式化（适配微信官方API要求）": {
+      "main": [
+        [
+          {
+            "node": "上传草稿箱",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "基于'核心选题'进行素材扩充",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取选题用于数据匹配": {
+      "main": [
+        [
+          {
+            "node": "合并谷歌表格待更新的数据",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "获取参考链接用于后续溯源": {
+      "main": [
+        [
+          {
+            "node": "合并谷歌表格待更新的数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "判断选题状态是否为'确定选题'": {
+      "main": [
+        [
+          {
+            "node": "更新表格状态为'等待执行'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "串行循环节点": {
+      "main": [
+        [],
+        [
+          {
+            "node": "获取选题用于数据匹配",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "更新表格状态为'正在创作'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新表格状态为'等待执行'": {
+      "main": [
+        [
+          {
+            "node": "串行循环节点",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新表格状态为'正在创作'": {
+      "main": [
+        [
+          {
+            "node": "提取'选题切入点'和'内容升维策略'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "基于'核心选题'进行素材扩充": {
+      "main": [
+        [
+          {
+            "node": "基于IP人设、战略层级和素材进行内容创作",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "提取搜索到的参考文章链接",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成正文图片（dall-e-3）": {
+      "main": [
+        [
+          {
+            "node": "正文图片二进制格式转化",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "正文图片二进制格式转化": {
+      "main": [
+        [
+          {
+            "node": "上传正文图片1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "文章排版（加入固定开头、结尾、二维码）": {
+      "main": [
+        [
+          {
+            "node": "优化换行符",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并正文和图片": {
+      "main": [
+        [
+          {
+            "node": "组合正文和图片",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "组合正文和图片": {
+      "main": [
+        [
+          {
+            "node": "合并文章内容（正文、标题、封面图片）",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "封面图片二进制格式转化": {
+      "main": [
+        [
+          {
+            "node": "上传封面图片1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并文章内容（正文、标题、封面图片）": {
+      "main": [
+        [
+          {
+            "node": "数据平整化",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取搜索到的参考文章链接": {
+      "main": [
+        [
+          {
+            "node": "获取参考链接用于后续溯源",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新表格状态为'创作完成'": {
+      "main": [
+        [
+          {
+            "node": "串行循环节点",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "合并谷歌表格待更新的数据": {
+      "main": [
+        [
+          {
+            "node": "更新表格状态为'创作完成'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "基于'初步选题筛选'内容生成'核心主旨'": {
+      "main": [
+        [
+          {
+            "node": "基于'核心选题'进行素材扩充",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取'选题切入点'和'内容升维策略'": {
+      "main": [
+        [
+          {
+            "node": "基于'初步选题筛选'内容生成'核心主旨'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "基于IP人设、战略层级和素材进行内容创作": {
+      "main": [
+        [
+          {
+            "node": "提取文章正文和图片提示词",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成封面图片（dall-e-3'）": {
+      "main": [
+        [
+          {
+            "node": "封面图片二进制格式转化",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据结构化处理1": {
+      "main": [
+        [
+          {
+            "node": "输出标题、摘要及封面图片提示词",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "文章排版（加入固定开头、结尾、二维码）",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "生成正文图片（dall-e-3）",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "提取文章正文和图片提示词": {
+      "main": [
+        [
+          {
+            "node": "获取access token1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "提取文章正文和图片提示词",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "谷歌表格新增或更新": {
+      "main": [
+        [
+          {
+            "node": "判断选题状态是否为'确定选题'",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "基于IP人设、战略层级和素材进行内容创作",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "基于'初步选题筛选'内容生成'核心主旨'",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "基于'核心选题'进行素材扩充",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "输出标题、摘要及封面图片提示词",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model4": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "文章排版（加入固定开头、结尾、二维码）",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeepSeek Chat Model5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "提取搜索到的参考文章链接",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "上传正文图片1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "合并正文和图片",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取access token1": {
+      "main": [
+        [
+          {
+            "node": "数据结构化处理1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "上传封面图片1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "合并文章内容（正文、标题、封面图片）",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "上传草稿箱": {
+      "main": [
+        [
+          {
+            "node": "合并谷歌表格待更新的数据",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7945f7a6-8924-43c7-9cc5-aff7b7b78afa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "xhi2MKe2x3oN5x16",
+  "tags": []
+}
