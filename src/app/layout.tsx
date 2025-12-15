@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import '@/styles/globals.scss';
 import Script from 'next/script';
 import SplashCursor from '@/components/shared/SplashCursor';
+import ThemeInitializer from '@/components/shared/ThemeInitializer';
+import GoogleOneTap from '@/components/auth/GoogleOneTap';
 
 export const metadata: Metadata = {
   title: '个人专业主页',
@@ -58,7 +60,13 @@ export default function RootLayout({
         />
       </head>
       <body className="dark-transition">
+        <ThemeInitializer />
         <SplashCursor />
+        <Script
+          strategy="afterInteractive"
+          src="https://accounts.google.com/gsi/client"
+        />
+        <GoogleOneTap />
         <Script
           strategy="afterInteractive"
           src="https://www.googletagmanager.com/gtag/js?id=G-9TQ3NWGFC9"

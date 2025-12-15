@@ -2,8 +2,9 @@ import { getCoursePosts } from '@/lib/course';
 import { Sidebar } from '@/components/course/Sidebar';
 import { TOC } from '@/components/course/TOC';
 import Link from 'next/link';
+import UserBadge from '@/components/shared/UserBadge';
 
-export default function CourseLayout({
+export default async function CourseLayout({
     children,
 }: {
     children: React.ReactNode;
@@ -22,12 +23,18 @@ export default function CourseLayout({
                 id="course-main-content"
                 className="flex-1 overflow-y-auto scroll-smooth relative"
             >
+                <div className="hidden lg:block absolute right-6 top-4 z-20">
+                    <UserBadge variant="light" />
+                </div>
                 {/* Mobile Header (Hamburger placeholder) */}
                 <div className="sticky top-0 z-10 flex items-center border-b border-gray-200 bg-white/80 px-4 py-3 backdrop-blur dark:border-gray-800 dark:bg-gray-900/80 lg:hidden">
                     <Link href="/" className="mr-4 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
                         &larr; Back
                     </Link>
                     <span className="font-semibold text-gray-900 dark:text-white">n8n 课程</span>
+                    <div className="ml-auto">
+                        <UserBadge variant="light" />
+                    </div>
                 </div>
 
                 <div className="mx-auto max-w-4xl px-8 py-10">

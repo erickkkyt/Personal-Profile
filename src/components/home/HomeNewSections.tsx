@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Bot, Brain, Layers, Network, Workflow, ActivitySquare, Megaphone, BookOpen, Video, MessageCircle, Sparkles } from 'lucide-react';
+import { ArrowRight, Bot, Brain, Layers, Network, Workflow, ActivitySquare, Megaphone, BookOpen, Video, MessageCircle, Sparkles, ShieldCheck, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 
 type CardProps = {
@@ -13,12 +13,17 @@ function SectionShell({ id, title, subtitle, children }: { id?: string; title: s
   return (
     <section id={id} className="py-20 md:py-28">
       <div className="container-custom mx-auto px-5 md:px-8">
-        <div className="rounded-[2.5rem] border border-white/60 bg-white/40 p-8 md:p-12 shadow-2xl shadow-gray-200/50 backdrop-blur-xl dark:border-gray-800/50 dark:bg-gray-900/40 dark:shadow-none">
-          <div className="max-w-3xl mb-10 md:mb-14">
-            <p className="text-sm font-bold tracking-[0.15em] uppercase text-primary/90 mb-3">{subtitle}</p>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-gray-900 dark:text-white tracking-tight">{title}</h2>
+        <div className="relative overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-br from-white via-white to-white/80 p-8 md:p-12 shadow-[0_25px_80px_-40px_rgba(15,35,60,0.45)] dark:border-white/10 dark:from-gray-900/90 dark:via-gray-900/85 dark:to-gray-900/80">
+          <div className="pointer-events-none absolute inset-0 opacity-70 [background-image:radial-gradient(circle_at_10px_10px,#0F233C0F_1px,transparent_0)] [background-size:120px_120px]" />
+          <div className="pointer-events-none absolute -right-40 -top-32 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -left-28 -bottom-32 h-64 w-64 rounded-full bg-secondary/10 blur-3xl" />
+            <div className="relative z-10">
+              <div className="max-w-3xl mb-10 md:mb-14">
+                <p className="text-sm font-bold tracking-[0.15em] uppercase text-primary/90 dark:text-white/80 mb-3">{subtitle}</p>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-gray-900 dark:text-white tracking-tight">{title}</h2>
+              </div>
+            {children}
           </div>
-          {children}
         </div>
       </div>
     </section>
@@ -27,13 +32,62 @@ function SectionShell({ id, title, subtitle, children }: { id?: string; title: s
 
 function Card({ title, description, icon }: CardProps) {
   return (
-    <div className="group rounded-2xl border border-white/80 bg-white/60 p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 hover:border-primary/20 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:shadow-none dark:hover:bg-gray-800/60">
-      <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 text-primary group-hover:from-primary group-hover:to-primary/90 group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:scale-110">
+    <div className="group relative overflow-hidden rounded-2xl border border-gray-100/80 bg-white p-7 shadow-[0_20px_60px_-24px_rgba(15,35,60,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(15,35,60,0.35)] dark:border-white/10 dark:bg-gray-800/85 dark:shadow-[0_20px_60px_-30px_rgba(20,220,190,0.12)]">
+      <div className="absolute inset-x-0 top-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-primary via-secondary to-accent" />
+      <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/12 to-secondary/12 text-primary group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:scale-110 dark:from-white/10 dark:to-white/5 dark:text-secondary">
         {icon}
       </div>
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">{title}</h3>
-      <p className="text-[15px] text-gray-600 leading-relaxed dark:text-gray-300 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors">{description}</p>
+      <h3 className="text-xl font-bold text-gray-900 dark:text-gray-50 mb-3 group-hover:text-primary transition-colors">{title}</h3>
+      <p className="text-[15px] text-gray-600 leading-relaxed dark:text-gray-200 group-hover:text-gray-700 dark:group-hover:text-gray-100 transition-colors">{description}</p>
     </div>
+  );
+}
+
+export function ProductEntrySection() {
+  const items = [
+    {
+      title: 'n8n 系统课 · 699/年',
+      description: '持续更新，含完整大纲、实践案例、模板全量内含，支持试听与退款说明。',
+      icon: <ShieldCheck className="w-6 h-6" />,
+      href: '/course',
+      cta: '进入课程',
+    },
+    {
+      title: '模板合集 · 299/次',
+      description: '高质量工作流模板打包下载，单次购买永久使用；课程内已包含全量模板。',
+      icon: <Layers className="w-6 h-6" />,
+      href: '/templates',
+      cta: '查看模板',
+    },
+  ];
+
+  return (
+    <SectionShell id="products" title="产品与付费入口" subtitle="Course & Templates">
+      <div className="grid gap-6 md:grid-cols-2">
+        {items.map((item) => (
+          <Link
+            key={item.title}
+            href={item.href}
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-7 shadow-[0_20px_60px_-24px_rgba(15,35,60,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(15,35,60,0.35)] dark:border-white/10 dark:bg-gray-800/85 dark:shadow-[0_20px_60px_-30px_rgba(20,220,190,0.12)]"
+          >
+            <div className="absolute inset-x-0 top-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-primary via-secondary to-accent" />
+            <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 text-primary group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:scale-110 dark:from-white/10 dark:to-white/5 dark:text-secondary">
+              {item.icon}
+            </div>
+            <h3 className="text-xl font-bold text-white mb-3 group-hover:text-white transition-colors">{item.title}</h3>
+            <p className="text-[15px] text-white/85 leading-relaxed group-hover:text-white/90 transition-colors">{item.description}</p>
+            <div className="mt-5 inline-flex items-center text-sm font-semibold text-primary group-hover:text-white transition-colors group-hover:translate-x-1 transition-transform">
+              {item.cta}
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </div>
+          </Link>
+        ))}
+      </div>
+      <div className="mt-8 inline-flex items-center gap-3 rounded-xl border border-dashed border-primary/40 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 bg-white/70 dark:bg-gray-800/70">
+        <CreditCard className="w-4 h-4 text-primary" />
+        <span>课程内已包含全部模板；单独购买模板适合已有基础或只需素材的用户。</span>
+      </div>
+    </SectionShell>
   );
 }
 

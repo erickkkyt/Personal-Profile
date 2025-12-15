@@ -5,12 +5,37 @@ description: 'n8n 常见问题解答'
 
 <div className="guide-rich demand-rich">
 
-### 1. 云端 n8n 如何连接飞书 / Notion / Google Sheet？
-<VideoPlayer src="2de52e328954512cefed08763ac153e6" />
+## 1. 如何把 JSON 模板导入到 n8n 界面？
+<div className="card">
+  <div className="card-url">
+    <span className="dot dot-blue"></span>
+    <span className="card-label">导入步骤</span>
+  </div>
+  <ul className="faq-steps">
+    <li>在 n8n 主页点击右上角 <strong>Import</strong>，或在画布空白处右键选择 <strong>Import from File</strong>。</li>
+    <li>选择课程提供的 <code>.json</code> 模板文件，导入后检查节点连线是否完整。</li>
+    <li>确认无误后点击 <strong>Save</strong> 或 <strong>Save As</strong>，在左侧给工作流命名并保存版本。</li>
+  </ul>
+  <VideoPlayer src="f2087f1442e561ef88ebbb8746a8dca0" />
+</div>
 
-### 2. 本地 n8n 如何连接 Google Sheet？
-
-<VideoPlayer src="04f6821431d8645766856cb4734c6f1b" />
+## 2. 如何连接 n8n 与谷歌表格？
+<div className="card">
+  <div className="card-url">
+    <span className="dot dot-green"></span>
+    <span className="card-label">连接步骤</span>
+  </div>
+  <ul className="faq-steps">
+    <li>n8n 里找到对应的 Google Sheets 节点。</li>
+    <li>在谷歌云控制台创建项目（<a href="https://console.cloud.google.com/" target="_blank" rel="noreferrer">https://console.cloud.google.com/</a>）。</li>
+    <li>在谷歌云控制台开启 API 权限（Google Drive / Google Sheets API）。</li>
+    <li>在谷歌云控制台创建 OAuth 密钥。</li>
+    <li>输入对应的 URL 和重定向 URL。</li>
+    <li>目标对象加入你的邮箱（测试版）或直接对外发布。</li>
+    <li>回到 n8n，点击 “Sign in with Google” 测试，即可成功连接。</li>
+  </ul>
+  <VideoPlayer src="bd07e66af3be647e4f531bdf81c9071a" />
+</div>
 
 </div>
 
@@ -19,16 +44,9 @@ description: 'n8n 常见问题解答'
   .guide-rich.demand-rich {
     color: #0f172a;
   }
-  .guide-rich.demand-rich h2, .guide-rich.demand-rich h3 {
-    margin-top: 1.3rem;
-    margin-bottom: 0.6rem;
-    color: #0f172a;
-  }
-  .guide-rich.demand-rich p {
-    margin: 0 0 0.5rem 0;
-    line-height: 1.6;
-  }
-  .guide-rich.demand-rich strong {
+  .guide-rich.demand-rich h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
     color: #0f172a;
   }
   .guide-rich.demand-rich a {
@@ -43,5 +61,53 @@ description: 'n8n 常见问题解答'
     color: #0d9488;
     text-decoration-color: #5eead4;
   }
+  .guide-rich.demand-rich .link-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .guide-rich.demand-rich .link-list > li {
+    margin-bottom: 1.4rem;
+  }
+  .guide-rich.demand-rich .card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    box-shadow: 0 10px 30px rgba(15, 118, 110, 0.08);
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich .card-url {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .guide-rich.demand-rich .card-label {
+    font-size: 14px;
+    color: #0f172a;
+  }
+  .guide-rich.demand-rich .faq-steps {
+    margin: 0;
+    padding-left: 1.1rem;
+    line-height: 1.6;
+  }
+  .guide-rich.demand-rich .faq-steps li {
+    margin-bottom: 6px;
+  }
+  .guide-rich.demand-rich .card-desc {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: inherit;
+  }
+  .guide-rich.demand-rich .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+  .guide-rich.demand-rich .dot-blue { background: #2563eb; }
+  .guide-rich.demand-rich .dot-green { background: #10b981; }
 `}
 </style>

@@ -17,9 +17,9 @@ module.exports = {
     },
     extend: {
       colors: {
-        primary: '#2A5C82',
-        secondary: '#5FA8D3',
-        accent: '#F5B041',
+        primary: '#0F233C',
+        secondary: '#14B8A6',
+        accent: '#F2994A',
         gray: {
           50: '#f9fafb',
           100: '#f3f4f6',
@@ -35,8 +35,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        'sans': ['Open Sans', 'sans-serif'],
-        'heading': ['Inter', 'sans-serif'],
+        'sans': ['Sora', 'sans-serif'],
+        'heading': ['Space Grotesk', 'sans-serif'],
       },
       spacing: {
         '4': '4px',

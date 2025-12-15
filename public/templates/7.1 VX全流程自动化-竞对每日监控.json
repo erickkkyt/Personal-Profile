@@ -1,5 +1,5 @@
 {
-  "name": "竞对每日监控",
+  "name": "公众号-竞对每日监控",
   "nodes": [
     {
       "parameters": {
@@ -532,6 +532,21 @@
       ],
       "id": "dc3c40c8-56ec-4101-a4bf-b8da6c40b3f3",
       "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "content": "## 需配置内容 \n1、极致了 API key  https://dajiala.com/main/interface?actnav=0&selectCategory2\n2. Deepseek API key https://platform.deepseek.com/usage\n3. 谷歌云控制台连接n8n与谷歌表格  https://console.cloud.google.com/\n4. 配置对应的谷歌表格表头",
+        "height": 352,
+        "width": 736
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2432,
+        -80
+      ],
+      "id": "ba884c3f-2e02-41e1-8d4d-f0cf47a69c8b",
+      "name": "Sticky Note"
     }
   ],
   "pinData": {},
@@ -751,11 +766,11 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "17c0cf20-c39d-40ce-baa4-1a5075f0465f",
+  "versionId": "45fe4cbd-f368-45cc-b3d3-6139e2943882",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"

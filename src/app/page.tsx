@@ -1,9 +1,8 @@
 'use client';
-
-import { useEffect } from 'react';
 import Navbar from '@/components/shared/Navbar';
 import HeroSection from '@/components/home/HeroSection';
 import {
+  ProductEntrySection,
   CapabilitiesSection,
   ScenariosSection,
   OfferingsSection,
@@ -12,36 +11,9 @@ import {
   CommunitySection,
 } from '@/components/home/HomeNewSections';
 import Footer from '@/components/shared/Footer';
-import { useThemeStore } from '@/lib/store';
 import Script from 'next/script';
 
 export default function Home() {
-  const { theme, setTheme } = useThemeStore();
-
-  // 检查并设置主题
-  useEffect(() => {
-    // 从localStorage获取主题，如果没有则使用系统偏好
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      setTheme(savedTheme);
-    } else if (prefersDark) {
-      setTheme('dark');
-    } else {
-      setTheme('light');
-    }
-  }, [setTheme]);
-
-  // 应用主题到html元素
-  useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
-
   return (
     <main className="min-h-screen">
       {/* Google Analytics */}
@@ -66,6 +38,9 @@ export default function Home() {
 
       {/* 个人自我介绍 */}
       <HeroSection id="home" />
+
+      {/* 产品入口 */}
+      <ProductEntrySection />
 
       {/* 能力与产品 */}
       <CapabilitiesSection />

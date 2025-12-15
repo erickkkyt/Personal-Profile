@@ -5,6 +5,12 @@ import { useEffect, useState } from 'react';
 export function TOC() {
     const [headings, setHeadings] = useState<{ id: string; text: string; level: number }[]>([]);
     const [activeId, setActiveId] = useState<string>('');
+    const [paywallLocked, setPaywallLocked] = useState(false);
+
+    useEffect(() => {
+        const paywallState = document.getElementById('paywall-state')?.getAttribute('data-paywall');
+        setPaywallLocked(paywallState === 'locked');
+    }, []);
 
     useEffect(() => {
         const updateHeadings = () => {
@@ -82,7 +88,7 @@ export function TOC() {
                 <span className="h-1.5 w-1.5 rounded-full bg-primary/80" />
                 本页导航
             </div>
-            <ul className="space-y-1 text-sm leading-6">
+            <ul className={`space-y-1 text-sm leading-6 ${paywallLocked ? 'pointer-events-none opacity-60 select-none' : ''}`}>
                 {headings.map((heading) => (
                     <li key={heading.id}>
                         <a
@@ -93,6 +99,10 @@ export function TOC() {
                                     : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800/60'
                                 }`}
                             onClick={(e) => {
+                                if (paywallLocked) {
+                                    e.preventDefault();
+                                    return;
+                                }
                                 e.preventDefault();
                                 const el = document.getElementById(heading.id);
                                 if (el) {
@@ -100,6 +110,8 @@ export function TOC() {
                                     setActiveId(heading.id);
                                 }
                             }}
+                            aria-disabled={paywallLocked}
+                            tabIndex={paywallLocked ? -1 : 0}
                         >
                             <span className={`h-2 w-2 rounded-full ${activeId === heading.id ? 'bg-primary' : 'bg-gray-300'}`} />
                             <span className="truncate">{heading.text}</span>
