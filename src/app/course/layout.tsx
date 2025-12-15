@@ -23,7 +23,7 @@ export default async function CourseLayout({
                 id="course-main-content"
                 className="flex-1 overflow-y-auto scroll-smooth relative"
             >
-                <div className="hidden lg:block absolute right-6 top-4 z-20">
+                <div className="hidden lg:block absolute right-6 top-4 translate-y-[20px] z-20">
                     <UserBadge variant="light" />
                 </div>
                 {/* Mobile Header (Hamburger placeholder) */}
