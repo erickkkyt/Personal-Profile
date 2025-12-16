@@ -16,11 +16,11 @@ function LoginContent() {
   const [isPending, startTransition] = useTransition(); // 用于处理异步操作状态
 
   useEffect(() => {
-    const urlMessage = searchParams.get('message');
+    const urlMessage = searchParams?.get('message');
     if (urlMessage) {
       setMessage(decodeURIComponent(urlMessage));
     }
-    const urlError = searchParams.get('error'); // 也检查常见的 error 参数
+    const urlError = searchParams?.get('error'); // 也检查常见的 error 参数
     if (urlError) {
       setMessage(decodeURIComponent(urlError));
     }
@@ -32,7 +32,7 @@ function LoginContent() {
       setMessage(null); // 清除旧消息
 
       // 添加next参数到formData
-      const next = searchParams.get('next') || '/';
+      const next = searchParams?.get('next') || '/';
       formData.append('next', next);
 
       // login 成功时 redirect, 失败时返回对象
@@ -60,7 +60,7 @@ function LoginContent() {
     setMessage(null); // 清除之前的消息
     startTransition(async () => { // 使用 transition 来管理加载状态
       // 获取重定向目标
-      const next = searchParams.get('next') || '/';
+      const next = searchParams?.get('next') || '/';
       const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
 
       const { error } = await supabase.auth.signInWithOAuth({
