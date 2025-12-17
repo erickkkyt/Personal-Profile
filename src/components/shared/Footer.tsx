@@ -88,14 +88,14 @@ const Footer = () => {
             </h3>
             <ul className="space-y-4">
               <li>
-                <a href="#home" className="hover:text-primary transition-colors">个人介绍</a>
+                <a href="#home" className="hover:text-primary transition-colors">首页</a>
               </li>
               <li>
-                <a href="#projects" className="hover:text-primary transition-colors">项目作品</a>
+                <a href="#products" className="hover:text-primary transition-colors">产品方案</a>
               </li>
               <li>
-                <a href="#tools" className="hover:text-primary transition-colors">
-                  {mounted ? "常用工具" : "AI工具"}
+                <a href="/course" className="hover:text-primary transition-colors">
+                  {mounted ? "n8n 课程" : "课程"}
                 </a>
               </li>
             </ul>

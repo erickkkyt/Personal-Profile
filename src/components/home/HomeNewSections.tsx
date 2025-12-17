@@ -17,11 +17,11 @@ function SectionShell({ id, title, subtitle, children }: { id?: string; title: s
           <div className="pointer-events-none absolute inset-0 opacity-70 [background-image:radial-gradient(circle_at_10px_10px,#0F233C0F_1px,transparent_0)] [background-size:120px_120px]" />
           <div className="pointer-events-none absolute -right-40 -top-32 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -left-28 -bottom-32 h-64 w-64 rounded-full bg-secondary/10 blur-3xl" />
-            <div className="relative z-10">
-              <div className="max-w-3xl mb-10 md:mb-14">
-                <p className="text-sm font-bold tracking-[0.15em] uppercase text-primary/90 dark:text-white/80 mb-3">{subtitle}</p>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-gray-900 dark:text-white tracking-tight">{title}</h2>
-              </div>
+          <div className="relative z-10">
+            <div className="max-w-3xl mb-10 md:mb-14">
+              <p className="text-sm font-bold tracking-[0.15em] uppercase text-primary/90 dark:text-white/80 mb-3">{subtitle}</p>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-gray-900 dark:text-white tracking-tight">{title}</h2>
+            </div>
             {children}
           </div>
         </div>
@@ -191,35 +191,40 @@ export function OfferingsSection() {
 export function CaseStudiesSection() {
   const cases = [
     {
-      tag: '电商运营',
-      title: '减少 80% 重复劳动',
-      detail: '搭建商品信息同步 + 评价抓取 + Dashboard 自动更新，团队每天节省 3 小时。',
+      tag: '内容营销',
+      title: '公众号全流程自动化',
+      detail: '从竞对监控、选题决策、内容撰写到排版上传的端到端自动化。',
     },
     {
-      tag: '内容团队',
-      title: '小红书矩阵自动化',
-      detail: '批量生成笔记、定时发布、数据回流，整体效率提升 3 倍。',
+      tag: '短视频运营',
+      title: '抖音爆款内容爬取与二创',
+      detail: '按关键词抓取抖音爆款，分析数据并驱动 AI 仿写与文案二创。',
     },
     {
-      tag: '私域/社群',
-      title: '消息同步与沉淀',
-      detail: '多渠道消息一键归档、自动标签、群发，获客转化流程标准化。',
+      tag: '社交媒体',
+      title: '小红书爆款图文自动化',
+      detail: '抓取笔记数据，通过视觉分析提炼爆款因子，自动生成二创图文。',
+    },
+    {
+      tag: '电商视觉',
+      title: 'AI 虚拟模特换装流水线',
+      detail: '串联 n8n + 飞书 + Nanobanana，自动生成以假乱真的真人试穿效果图。',
     },
   ];
 
   return (
     <SectionShell id="cases" title="真实案例" subtitle="Case Studies">
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {cases.map((item) => (
           <div
             key={item.title}
-            className="group rounded-2xl border border-white/80 bg-white/60 p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 hover:border-primary/20 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:bg-gray-800/60"
+            className="group rounded-2xl border border-white/80 bg-white/60 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 hover:border-primary/20 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:bg-gray-800/60"
           >
             <div className="mb-4 inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary tracking-wide uppercase group-hover:bg-primary group-hover:text-white transition-colors">
               {item.tag}
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">{item.title}</h3>
-            <p className="text-[15px] leading-relaxed text-gray-600 dark:text-gray-300">{item.detail}</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 group-hover:text-primary transition-colors">{item.title}</h3>
+            <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">{item.detail}</p>
           </div>
         ))}
       </div>

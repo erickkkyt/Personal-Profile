@@ -7,11 +7,10 @@ import { createClient } from '@/utils/supabase/client';
 
 // 导航链接数据
 const navLinks = [
-  { href: '#home', label: '首页' },
-  { href: '#capabilities', label: '能力' },
-  { href: '#cases', label: '案例' },
-  { href: '/templates', label: '模板' },
-  { href: '/course', label: '课程' },
+  { href: '#', label: '社交媒体' },
+  { href: '#products', label: '产品方案' },
+  { href: '/templates', label: '高阶模板' },
+  { href: '/course', label: '课程入口' },
 ];
 
 const Navbar = () => {
@@ -58,7 +57,7 @@ const Navbar = () => {
             href="#home"
             className="text-xl font-heading font-bold text-white"
           >
-            <span className="gradient-text">{mounted ? "KKKK AI Space" : "AI个人主页"}</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 text-base md:text-xl">{mounted ? "KKKK AI Space · 用 n8n 构建落地的 AI 工作流与智能体" : "AI个人主页"}</span>
           </a>
 
           {/* 桌面导航 */}
@@ -68,6 +67,9 @@ const Navbar = () => {
                 key={link.href}
                 href={link.href}
                 className="text-sm font-semibold text-white/85 hover:text-white transition-colors"
+                onClick={(e) => {
+                  if (link.href === '#') e.preventDefault();
+                }}
               >
                 {link.label}
               </a>
@@ -121,7 +123,10 @@ const Navbar = () => {
                   key={link.href}
                   href={link.href}
                   className="text-sm font-semibold text-white/85 hover:text-white transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    if (link.href === '#') e.preventDefault();
+                    setMobileMenuOpen(false);
+                  }}
                 >
                   {link.label}
                 </a>
