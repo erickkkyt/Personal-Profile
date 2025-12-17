@@ -1,5 +1,22 @@
 {
-  "node": {},
+  "node": {
+    "4cfc6cc6c214878b8358e99c0c2f93bad491e7e5": {
+      "workers": {
+        "app/login/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fkkkk%2FDesktop%2FPersonal-Profile%2Fsrc%2Fapp%2Flogin%2Factions.ts%22%2C%5B%22signup%22%2C%22login%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/login/page": "action-browser"
+      }
+    },
+    "4d5e3b918006443162c611c80d238b84a9a82baa": {
+      "workers": {
+        "app/login/page": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fkkkk%2FDesktop%2FPersonal-Profile%2Fsrc%2Fapp%2Flogin%2Factions.ts%22%2C%5B%22signup%22%2C%22login%22%5D%5D%5D&__client_imported__=true!"
+      },
+      "layer": {
+        "app/login/page": "action-browser"
+      }
+    }
+  },
   "edge": {},
-  "encryptionKey": "W6pRvPxa+hPhShzSypVMGJ46AaRR1HksNGCtg3wnjqk="
+  "encryptionKey": "P2f3Sr3mHw/94aT57Mi2gj4l8At45ODrtLHWaTC7Nio="
 }

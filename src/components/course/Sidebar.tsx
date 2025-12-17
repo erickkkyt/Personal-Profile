@@ -18,7 +18,7 @@ const VIDEO_DURATIONS: Record<string, string> = {
     'advanced-cases/01-case-1': "31'29",
     'advanced-cases/02-case-2': "30'18",
     'advanced-cases/03-case-3': "23'34",
-    'advanced-cases/04-case-4': "36'54",
+    'advanced-cases/04-case-4': "47'59",
     'resources/04-faq': "16'46",
 };
 
