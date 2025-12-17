@@ -12,7 +12,7 @@
       "type": "n8n-nodes-feishu-lite.feishuNode",
       "typeVersion": 1,
       "position": [
-        -464,
+        -160,
         240
       ],
       "id": "e4e980c2-02d9-4495-aefe-b532326fade2",
@@ -36,8 +36,8 @@
       "type": "n8n-nodes-feishu-lite.feishuNode",
       "typeVersion": 1,
       "position": [
-        4144,
-        240
+        2736,
+        912
       ],
       "id": "8406b9de-0d5c-4b2d-a544-9809fbee4182",
       "name": "更新飞书多维表格",
@@ -47,17 +47,6 @@
           "name": "Feishu Credentials account"
         }
       }
-    },
-    {
-      "parameters": {},
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
-      "position": [
-        -688,
-        240
-      ],
-      "id": "3b14fb9b-2622-4a07-808c-c4c1cbb7ed7d",
-      "name": "When clicking ‘Execute workflow’"
     },
     {
       "parameters": {
@@ -82,8 +71,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        432,
-        16
+        752,
+        240
       ],
       "id": "003c3e79-71ac-4746-956b-cb9ff0c42580",
       "name": "配置飞书密钥"
@@ -119,8 +108,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        656,
-        16
+        976,
+        240
       ],
       "id": "5f8e43bc-69d6-4ab7-bd14-026b2e614051",
       "name": "获取飞书access_token"
@@ -153,8 +142,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1104,
-        64
+        1424,
+        128
       ],
       "id": "ee71ebfc-c177-45a6-bd60-4d4d725e0ad3",
       "name": "下载「参考背景图」"
@@ -187,8 +176,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1104,
-        -128
+        1424,
+        -64
       ],
       "id": "8217ab07-0aae-4502-b9b9-b856cc1c2e41",
       "name": "下载「商品图」"
@@ -221,8 +210,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1104,
-        256
+        1424,
+        320
       ],
       "id": "24b5ee6c-b3a0-45a5-af3d-74f0a5846704",
       "name": "下载「模特图」"
@@ -238,8 +227,8 @@
       "type": "n8n-nodes-base.s3",
       "typeVersion": 1,
       "position": [
-        1328,
-        -128
+        1648,
+        -64
       ],
       "id": "7a150075-5bc8-46f2-bbdf-90676494f2a5",
       "name": "Upload a file",
@@ -261,8 +250,8 @@
       "type": "n8n-nodes-base.s3",
       "typeVersion": 1,
       "position": [
-        1328,
-        64
+        1648,
+        128
       ],
       "id": "0c932423-fbc8-4c17-8725-cda8ac707ed7",
       "name": "Upload a file1",
@@ -284,8 +273,8 @@
       "type": "n8n-nodes-base.s3",
       "typeVersion": 1,
       "position": [
-        1328,
-        256
+        1648,
+        320
       ],
       "id": "7595f1f2-040f-4ae7-b58c-15608d6ca06c",
       "name": "Upload a file2",
@@ -313,8 +302,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        880,
-        -128
+        1200,
+        -64
       ],
       "id": "daea05b0-e668-4b08-9344-dd739777d493",
       "name": "生成「商品图」文件名"
@@ -336,8 +325,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        880,
-        64
+        1200,
+        128
       ],
       "id": "3cc4fdbf-399e-47da-986f-be3127c7f451",
       "name": "生成「参考背景图」文件名"
@@ -359,8 +348,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        880,
-        256
+        1200,
+        320
       ],
       "id": "0c519aa9-4e71-4c32-8702-e93b93b09a6d",
       "name": "生成「模特图」文件名"
@@ -382,8 +371,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1552,
-        64
+        1872,
+        128
       ],
       "id": "44b8ec5b-b170-4122-8fc8-20b5b646b42f",
       "name": "参考背景图 url"
@@ -398,8 +387,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        1776,
-        48
+        2096,
+        288
       ],
       "id": "c038febd-976b-44c9-865e-1d94d17b8bd2",
       "name": "Merge"
@@ -427,8 +416,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1552,
-        -128
+        1872,
+        -64
       ],
       "id": "5cad438c-1e75-4cae-b173-a195e73a50c4",
       "name": "商品图描述及 url"
@@ -456,31 +445,11 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        1552,
-        256
+        1872,
+        320
       ],
       "id": "eec55b52-368b-4d0b-b0b4-ed2b08312a30",
       "name": "模特图描述及 url"
-    },
-    {
-      "parameters": {
-        "model": "openai/gpt-5",
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
-      "typeVersion": 1,
-      "position": [
-        2528,
-        288
-      ],
-      "id": "34c6c6f3-da7b-476d-a9e4-ff4d259db854",
-      "name": "OpenRouter Chat Model",
-      "credentials": {
-        "openRouterApi": {
-          "id": "1tvGSNZ1pAphoDqT",
-          "name": "OpenRouter account"
-        }
-      }
     },
     {
       "parameters": {
@@ -519,8 +488,8 @@
       "name": "Nano Banana Pro",
       "type": "n8n-nodes-base.httpRequest",
       "position": [
-        2800,
-        64
+        1392,
+        752
       ],
       "typeVersion": 4.2,
       "credentials": {
@@ -537,8 +506,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2000,
-        64
+        592,
+        752
       ],
       "id": "fd980db1-196d-4e83-b24b-7b0d2d6b9eec",
       "name": "url合并"
@@ -550,8 +519,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        3024,
-        64
+        1616,
+        752
       ],
       "id": "348fdde1-e78d-4f3e-9ea3-952923b6028e",
       "name": "等待10秒",
@@ -567,8 +536,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3248,
-        -32
+        1824,
+        688
       ],
       "id": "72e5032c-923d-48b2-88ad-92eb10ba7930",
       "name": "异步轮询",
@@ -607,39 +576,11 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        3472,
-        64
+        2064,
+        752
       ],
       "id": "8a7888e3-a683-44c3-8af2-9f7a07e1d4e0",
       "name": "If1"
-    },
-    {
-      "parameters": {
-        "content": "## 飞书下载素材API文档\nhttps://open.feishu.cn/document/server-docs/docs/drive-v1/media/download",
-        "width": 416
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        448,
-        -320
-      ],
-      "id": "246a009a-bce9-4fca-a71f-cc2d00ea9c56",
-      "name": "Sticky Note"
-    },
-    {
-      "parameters": {
-        "content": "## 飞书上传素材API文档\nhttps://open.feishu.cn/document/server-docs/docs/drive-v1/media/download",
-        "width": 416
-      },
-      "type": "n8n-nodes-base.stickyNote",
-      "typeVersion": 1,
-      "position": [
-        3248,
-        -256
-      ],
-      "id": "3ea93348-feb9-4e82-ac4a-d8592f023bb6",
-      "name": "Sticky Note1"
     },
     {
       "parameters": {
@@ -657,8 +598,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        3696,
-        64
+        2288,
+        752
       ],
       "id": "2a273780-6c99-45c4-a7f5-365f52831149",
       "name": "下载换装图"
@@ -680,8 +621,8 @@
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1,
       "position": [
-        2224,
-        64
+        816,
+        752
       ],
       "id": "56c2eb19-90d2-4f07-b4e7-e9dc1183b966",
       "name": "参考背景图分析",
@@ -709,8 +650,8 @@
       "name": "换装图片提示词生成",
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "position": [
-        2448,
-        64
+        1040,
+        752
       ],
       "typeVersion": 1.7
     },
@@ -726,8 +667,8 @@
       "type": "n8n-nodes-feishu-lite.feishuNode",
       "typeVersion": 1,
       "position": [
-        3920,
-        64
+        2512,
+        752
       ],
       "id": "7a1a8b16-f840-406e-83c2-f612bd867a43",
       "name": "上传换装图至飞书",
@@ -746,7 +687,7 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1,
       "position": [
-        -240,
+        64,
         240
       ],
       "id": "50fa1012-d817-40a3-8b2c-be158c551b99",
@@ -830,7 +771,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -16,
+        288,
         240
       ],
       "id": "4d302621-a38c-4c2d-98a6-efa894b88d5c",
@@ -843,11 +784,62 @@
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 3,
       "position": [
-        208,
+        512,
         240
       ],
       "id": "af16ec51-c825-4827-920c-b659000d5de3",
       "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -384,
+        240
+      ],
+      "id": "5ab5ba8e-6660-4166-82a0-c8f75ed2be24",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "content": "## 待配置内容\n1. 多维表格token和多维表格id\n2. 飞书应用appid和appsecret（https://open.feishu.cn/app）\n3. 开启飞书上传素材、下载素材和多维表格更新的权限\n4. 在飞书多维表格中添加文档应用(放上一步你开启权限的飞书应用)\n5. 配置cloudflare r2的 Credential，并建立对应的bucket，开启public enabled权限（https://dash.cloudflare.com/login）\n6. 更新url为自己的cloudflare r2存储桶域名\n7. 获取gemini的api key（https://aistudio.google.com/prompts/new_chat）\n8. 配置openrouter（https://openrouter.ai/）\n9. 配置nanobanana-pro生图api（https://evolink.ai/)\n(https://kie.ai/nano-banana?model=nano-banana-pro）\n\n\n\n\n## 飞书下载素材API文档\nhttps://open.feishu.cn/document/server-docs/docs/drive-v1/media/download",
+        "height": 512,
+        "width": 832
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        512
+      ],
+      "id": "e88cef67-2645-4493-b8dc-3d75b71682a3",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        976,
+        960
+      ],
+      "id": "197a21d2-03b5-4093-9989-0e66f913dbe8",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "1tvGSNZ1pAphoDqT",
+          "name": "OpenRouter account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -868,17 +860,6 @@
         [
           {
             "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "When clicking ‘Execute workflow’": {
-      "main": [
-        [
-          {
-            "node": "导入飞书多维表格数据",
             "type": "main",
             "index": 0
           }
@@ -1060,17 +1041,6 @@
         ]
       ]
     },
-    "OpenRouter Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "换装图片提示词生成",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Nano Banana Pro": {
       "main": [
         [
@@ -1211,13 +1181,35 @@
           }
         ]
       ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "导入飞书多维表格数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "换装图片提示词生成",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "d3dfb7b0-e9bc-4ef7-88b4-5fc5d96db7b0",
+  "versionId": "44fa4298-58c1-4ad3-8c72-9bf7bd85f7cd",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
