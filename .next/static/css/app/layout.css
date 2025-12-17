@@ -1497,6 +1497,9 @@ h1,
 .max-w-6xl{
   max-width: 72rem;
 }
+.max-w-\[120px\]{
+  max-width: 120px;
+}
 .flex-1{
   flex: 1 1 0%;
 }
@@ -2256,6 +2259,10 @@ h1,
 .py-6{
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+}
+.py-0\.5{
+  padding-top: 0.125rem;
+  padding-bottom: 0.125rem;
 }
 .pb-12{
   padding-bottom: 12px;
@@ -3288,6 +3295,9 @@ html body{
   .md\:mt-0{
     margin-top: 0px;
   }
+  .md\:-ml-6{
+    margin-left: -1.5rem;
+  }
   .md\:flex{
     display: flex;
   }
@@ -3384,6 +3394,9 @@ html body{
   }
 }
 @media (min-width: 1024px){
+  .lg\:-ml-8{
+    margin-left: -8px;
+  }
   .lg\:block{
     display: block;
   }

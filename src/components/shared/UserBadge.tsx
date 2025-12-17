@@ -35,6 +35,9 @@ export default function UserBadge({ variant = 'dark' }: { variant?: Variant }) {
   if (!user) return null;
 
   const initial = user.email?.[0]?.toUpperCase() || 'U';
+  const emailHandle = user.email?.split('@')[0] || '';
+  const displayEmail =
+    emailHandle.length > 12 ? `${emailHandle.slice(0, 12)}...` : emailHandle;
 
   const styles =
     variant === 'light'
@@ -44,9 +47,8 @@ export default function UserBadge({ variant = 'dark' }: { variant?: Variant }) {
           badge:
             'bg-primary/90 text-white',
           email: 'text-gray-700',
-          status: 'text-gray-800',
           button:
-            'text-xs font-semibold text-primary hover:text-white bg-primary/10 hover:bg-primary px-2.5 py-1 rounded-full transition-colors border border-primary/40',
+            'text-[11px] font-semibold text-primary hover:text-white bg-primary/10 hover:bg-primary px-2 py-0.5 rounded-full transition-colors border border-primary/40',
         }
       : {
           container:
@@ -54,19 +56,17 @@ export default function UserBadge({ variant = 'dark' }: { variant?: Variant }) {
           badge:
             'bg-primary/80 text-white',
           email: 'text-white/80',
-          status: 'text-white',
           button:
-            'text-xs font-semibold text-primary-foreground bg-white/10 hover:bg-white/20 text-white px-2.5 py-1 rounded-full transition-colors border border-white/30',
+            'text-[11px] font-semibold text-primary-foreground bg-white/10 hover:bg-white/20 text-white px-2 py-0.5 rounded-full transition-colors border border-white/30',
         };
 
   return (
-    <div className={`flex items-center gap-3 rounded-full px-3 py-1.5 ${styles.container}`}>
-      <div className={`h-9 w-9 rounded-full flex items-center justify-center font-semibold ${styles.badge}`}>
+    <div className={`flex items-center gap-2 rounded-full px-2 py-1 ${styles.container}`}>
+      <div className={`h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold ${styles.badge}`}>
         {initial}
       </div>
-      <div className="leading-tight text-sm max-w-[180px]">
-        <div className={`font-semibold ${styles.status}`}>已登录</div>
-        <div className={`truncate ${styles.email}`}>{user.email}</div>
+      <div className={`text-xs font-semibold max-w-[120px] truncate ${styles.email}`}>
+        {displayEmail}
       </div>
       <button
         type="button"

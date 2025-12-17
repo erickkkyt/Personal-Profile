@@ -55,7 +55,7 @@ const Navbar = () => {
           {/* Logo */}
           <a
             href="#home"
-            className="text-xl font-heading font-bold text-white"
+            className="text-xl font-heading font-bold text-white md:-ml-6 lg:-ml-8"
           >
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-100 to-gray-300 text-base md:text-xl">{mounted ? "KKKK AI Space · 用 n8n 构建落地的 AI 工作流与智能体" : "AI个人主页"}</span>
           </a>
