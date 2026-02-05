@@ -32,7 +32,7 @@ function SectionShell({ id, title, subtitle, children }: { id?: string; title: s
 
 function Card({ title, description, icon }: CardProps) {
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-gray-100/80 bg-white p-7 shadow-[0_20px_60px_-24px_rgba(15,35,60,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(15,35,60,0.35)] dark:border-white/10 dark:bg-gray-800/85 dark:shadow-[0_20px_60px_-30px_rgba(20,220,190,0.12)]">
+    <div className="group relative overflow-hidden rounded-2xl border border-gray-100/80 bg-white p-10 shadow-[0_20px_60px_-24px_rgba(15,35,60,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(15,35,60,0.35)] dark:border-white/10 dark:bg-gray-800/85 dark:shadow-[0_20px_60px_-30px_rgba(20,220,190,0.12)]">
       <div className="absolute inset-x-0 top-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-primary via-secondary to-accent" />
       <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/12 to-secondary/12 text-primary group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:scale-110 dark:from-white/10 dark:to-white/5 dark:text-secondary">
         {icon}
@@ -68,7 +68,7 @@ export function ProductEntrySection() {
           <Link
             key={item.title}
             href={item.href}
-            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-7 shadow-[0_20px_60px_-24px_rgba(15,35,60,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(15,35,60,0.35)] dark:border-white/10 dark:bg-gray-800/85 dark:shadow-[0_20px_60px_-30px_rgba(20,220,190,0.12)]"
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-9 shadow-[0_20px_60px_-24px_rgba(15,35,60,0.25)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_-40px_rgba(15,35,60,0.35)] dark:border-white/10 dark:bg-gray-800/85 dark:shadow-[0_20px_60px_-30px_rgba(20,220,190,0.12)]"
           >
             <div className="absolute inset-x-0 top-0 h-1 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-primary via-secondary to-accent" />
             <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 text-primary group-hover:from-primary group-hover:to-secondary group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-md group-hover:scale-110 dark:from-white/10 dark:to-white/5 dark:text-secondary">
@@ -142,7 +142,7 @@ export function ScenariosSection() {
         {scenarios.map((text) => (
           <div
             key={text}
-            className="flex items-center gap-4 rounded-2xl border border-white/80 bg-white/60 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-gray-200/40 hover:border-primary/20 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:bg-gray-800/60 group cursor-default"
+            className="flex items-center gap-4 rounded-2xl border border-white/80 bg-white/60 p-7 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-gray-200/40 hover:border-primary/20 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:bg-gray-800/60 group cursor-default"
           >
             <span className="flex h-3 w-3 rounded-full bg-primary/80 ring-4 ring-primary/10 group-hover:ring-primary/20 transition-all"></span>
             <p className="text-base font-medium text-gray-800 dark:text-gray-100 group-hover:text-primary transition-colors">{text}</p>
@@ -218,7 +218,7 @@ export function CaseStudiesSection() {
         {cases.map((item) => (
           <div
             key={item.title}
-            className="group rounded-2xl border border-white/80 bg-white/60 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 hover:border-primary/20 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:bg-gray-800/60"
+            className="group rounded-2xl border border-white/80 bg-white/60 p-10 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-gray-200/50 hover:border-primary/20 dark:border-gray-800 dark:bg-gray-800/40 dark:hover:bg-gray-800/60"
           >
             <div className="mb-4 inline-flex items-center rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary tracking-wide uppercase group-hover:bg-primary group-hover:text-white transition-colors">
               {item.tag}
@@ -255,7 +255,7 @@ export function CommunitySection() {
   return (
     <SectionShell id="community" title="社群与联系方式" subtitle="Connect">
       <div className="grid gap-8 md:grid-cols-2 items-stretch">
-        <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-8 md:p-10 shadow-sm transition-all hover:shadow-md">
+        <div className="rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-10 md:p-12 shadow-sm transition-all hover:shadow-md">
           <h3 className="text-2xl font-bold text-primary mb-4">加入社群 / 领取指南</h3>
           <p className="text-base text-gray-700 leading-relaxed mb-8 dark:text-gray-300">
             微信/飞书社群、公众号、邮箱/表单。领取「免费自动化指南」或预约 30min 诊断。
@@ -269,7 +269,7 @@ export function CommunitySection() {
             </a>
           </div>
         </div>
-        <div className="rounded-3xl border border-white/80 bg-white/60 p-8 md:p-10 text-gray-700 shadow-sm dark:border-gray-800 dark:bg-gray-800/40 dark:text-gray-200 flex flex-col justify-center">
+        <div className="rounded-3xl border border-white/80 bg-white/60 p-10 md:p-12 text-gray-700 shadow-sm dark:border-gray-800 dark:bg-gray-800/40 dark:text-gray-200 flex flex-col justify-center">
           <p className="font-bold text-lg mb-3 text-gray-900 dark:text-white">社群入口</p>
           <p className="mb-4 text-base leading-relaxed">微信 / 飞书社群二维码，公众号，邮箱/表单。</p>
           <p className="text-sm text-gray-500 bg-gray-100 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700/50">提示：可在此放二维码或链接，保持与站点主色一致。</p>

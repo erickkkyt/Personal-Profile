@@ -31,7 +31,7 @@ const HeroSection = ({ id }: HeroSectionProps) => {
         <div className="absolute -right-32 bottom-0 h-[520px] w-[520px] rounded-full bg-secondary/15 blur-3xl" />
       </div>
 
-      <div className="container-custom max-w-7xl px-4 md:px-6 relative z-10 grid md:grid-cols-[1.05fr_0.95fr] items-center gap-12 lg:gap-16">
+      <div className="container-custom max-w-7xl px-6 md:px-8 relative z-10 grid md:grid-cols-[1.05fr_0.95fr] items-center gap-12 lg:gap-16">
         <div className="flex flex-col justify-center gap-10 max-w-[840px]">
           {/* 顶部标签 */}
           <motion.div

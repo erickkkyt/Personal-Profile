@@ -9,9 +9,10 @@ export default function TemplatesPage() {
   const [showQr, setShowQr] = useState(false);
 
   const templates = [
-    { title: '电商运营流水线', detail: '商品同步、评价抓取、看板更新', tag: '热门' },
-    { title: '内容矩阵自动化', detail: '生成-排版-定时发布-数据回流', tag: '矩阵' },
-    { title: '社群私域沉淀', detail: '多渠道消息归档、标签、群发', tag: '私域' },
+    { title: '公众号全流程自动化', detail: '从选题策略、素材扩充到排版上传的端到端自动化工作流。', tag: '自动化' },
+    { title: '抖音爆款爬取与文案二创', detail: '按关键词抓取抖音爆款数据，筛选后驱动 AI 做仿写与二创。', tag: '爆款' },
+    { title: '小红书爆款爬取及图文二创', detail: '抓取小红书笔记数据，分析爆款原因并生成图文二创。', tag: '爬虫' },
+    { title: 'AI 虚拟模特换装自动化', detail: '电商视觉自动化生产线，自动生成真人试穿效果图。', tag: '电商' },
   ];
 
   return (
