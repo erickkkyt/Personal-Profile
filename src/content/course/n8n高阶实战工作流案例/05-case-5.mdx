@@ -1,0 +1,116 @@
+---
+title: 'AI 电商 UGC 视频自动化工作流'
+description: '飞书 + n8n + Gemini + Kie + Fal：自动生成并回传 UGC 成片'
+---
+
+<div className="guide-rich intro-rich">
+
+### 1. 核心价值
+
+这是一套电商 UGC 视觉自动化生产线，核心链路为：  
+飞书多维表格（需求 + 素材） -> n8n 流程整理 -> AI 自动生成视频脚本和分镜 -> AI 生成图片与视频 -> 自动合成 -> 回传飞书。
+
+它解决的核心问题：
+- 降低内容制作门槛：减少人工脚本拆分、手动生图/生视频、手动拼接。  
+- 缩短出片周期：状态为“未换装”的记录可批量自动执行。  
+- 提升规模化能力：可按商品批量出片，支持后续 A/B 版本扩展。  
+
+参考效率（以实际算力与队列为准）：
+- 完整 20-30 秒视频，产出时间约 3 分钟。  
+- 视频按 8 秒分段生成，自动拼接为完整成片。  
+
+### 2. 视频展示与效果展示
+
+1. 视频展示与配置视频
+<VideoPlayer src="64701f74a82d92841bb44cbfd65d0dee" />
+
+2. 效果展示
+<VideoPlayer src="5dd186bd36ba3b3f4c4fa697202d8e2d" />
+
+### 3. 技术架构 (Tech Stack)
+
+- **n8n**：工作流调度、条件筛选、轮询控制、错误重试与结果归档。  
+- **飞书多维表格 + 飞书云文档存储**：需求与素材入口、附件下载、成片回传、状态字段更新。  
+- **Cloudflare R2（S3 协议）**：商品图中转为公网 URL，供图像模型读取。  
+- **Google Gemini**：图像理解（Analyze an image）与提示词生成链路中的语言模型能力。  
+- **Kie.ai**：  
+  - 图片生成：`/api/v1/gpt4o-image/generate`  
+  - 视频生成：`/api/v1/veo/generate`  
+- **Fal FFmpeg API**：多段视频自动拼接 `fal-ai/ffmpeg-api/merge-videos`。  
+
+### 4. 自动化流程拆解
+
+**🟢 第一阶段：数据进入与任务筛选**
+1. `Schedule Trigger` 定时拉取飞书多维表格记录。  
+2. 导入目标表全部记录，并通过“层级优化”拆分逐条处理。  
+3. 节点“筛选未换装”只保留满足以下条件的记录：  
+   - 状态 = 未换装  
+   - UGC视频描述非空  
+   - 商品图非空  
+
+**🔵 第二阶段：素材预处理与理解**
+1. 通过飞书 `tenant_access_token` 调用媒体下载接口，获取商品图二进制。  
+2. 上传至 R2 并产出 `product_url`。  
+3. 使用 Gemini 的 `Analyze an image` 做结构化理解。  
+4. “UGC图片提示词生成”输出：
+   - `image_prompt`
+   - `aspect_ratio_image`
+
+**🟠 第三阶段：生成、轮询、合成、回写**
+1. 图片生成 + 轮询：`Create Image` -> `Wait 10 sec` -> `Get Image`。  
+2. 视频提示词与分镜拆分：`UGC视频提示词生成` 产出 `scenes` 数组后 `Split Out`。  
+3. 视频生成 + 轮询：`Create Video` -> `Wait 60 sec` -> `Get Video`，成功后聚合分段 URL。  
+4. 自动拼接：`Combine Clips` 调用 Fal FFmpeg，`Wait 20 sec` 后 `Get Final Video` 获取成片 URL。  
+5. 回传飞书：下载成片二进制并上传到 `bitable_file`，再更新状态与附件字段。  
+
+### 5. 飞书多维表格配置
+
+请严格按以下字段建立数据表，保证工作流可直接运行：
+
+必填字段：
+1. 状态（单选 / 文本）  
+   - 初始值：未换装  
+   - 完成后自动更新：已换装  
+2. UGC视频描述（多行文本）  
+   - 用于描述广告目标、风格、卖点、镜头信息  
+3. 商品图（附件）  
+   - 必填，至少 1 张  
+4. UGC视频（附件）  
+   - 回传字段，由工作流自动写入成片文件  
+
+### 6. 部署注意事项
+
+**6.1 凭证与账号**
+- Feishu Credentials  
+- Kie API Key  
+- Fal API Key  
+- Google Gemini API  
+- S3 / R2 凭证  
+
+**6.2 关键配置项**
+- 飞书应用权限需覆盖：  
+  - 多维表格读写  
+  - 云文档文件下载 / 上传  
+- S3 节点默认可对接 Cloudflare R2；如替换 AWS S3 / OSS，仅需替换凭证与 Bucket。  
+
+**6.3 成本与时延**
+- 主要成本来自图片/视频生成接口调用。  
+- 视频总成本与场景段数、模型档位直接相关。  
+- 队列高峰时轮询总时长会增加，属于正常现象。  
+
+### 7. JSON 工作流模板
+
+- 查看：<a href="/templates/7.5%20KKKK%20ugc-cn.json" target="_blank">7.5 KKKK ugc-cn.json</a>｜下载：<a href="/templates/7.5%20KKKK%20ugc-cn.json" download>点击下载</a>
+
+### 8. 飞书多维表格模板
+
+- 模板链接：<a href="https://my.feishu.cn/base/ESCJbARbFaDAtSsvs9bci4hfnIh?table=tbleIhWAhMpTdKmt&view=vew5KxutU1" target="_blank">KKKK电商工作流案例-UGC视频</a>
+
+### 9. 常见问题 (FAQ)
+
+1. 任务一直不出结果怎么办？  
+   - 先检查 Gemini / Kie / Fal.ai 账户余额与接口限流，再看 n8n 执行日志里的轮询节点返回。  
+2. 飞书没有回写文件怎么办？  
+   - 检查飞书应用权限、上传节点父目录配置，以及 `UGC视频` 字段类型是否为附件。  
+
+</div>

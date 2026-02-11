@@ -1,0 +1,1369 @@
+{
+  "name": "KKKK ugc-cn",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "fa80348b-3ff8-43ae-9c70-e3333cb1b1f7",
+      "name": "Think",
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "position": [
+        112,
+        496
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.scenes",
+        "options": {}
+      },
+      "id": "83b4a700-1658-45ac-a7ab-34b8e54dec4a",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        416,
+        288
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"prompt\":\"{{ $('Split Out').item.json.video_prompt\n    .replace(/\\n/g, '\\\\n')\n    .replace(/\"/g, '\\\\\"') }}\",\n  \"model\": \"{{ $('Split Out').item.json.model }}\",\n  \"aspectRatio\": \"{{ $('Split Out').item.json.aspect_ratio_video }}\",\n  \"imageUrls\": \"{{ $('Get Image').first().json.data.response.resultUrls[0] }}\"\n}\n",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 3000
+            }
+          }
+        }
+      },
+      "id": "0dcf8ac8-79e1-4a2e-b9f7-f8532a41ed11",
+      "name": "Create Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1440,
+        880
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XPhUywDJB5cZ7vcG",
+          "name": "Kie API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/veo/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $('Create Video').item.json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "018cbe7e-0a32-47a2-ae62-c471e9035ac8",
+      "name": "Get Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -992,
+        800
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XPhUywDJB5cZ7vcG",
+          "name": "Kie API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "4c895d90-e8bd-42cf-ab58-511c85e8c782",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.data.successFlag }}",
+              "rightValue": 1
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "db7541f0-b3c0-456e-a95f-357e4e5b91ad",
+      "name": "If ",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -176,
+        288
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "data.response.resultUrls[0]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fcbf6e7c-73a7-4668-b121-a91f2bda121a",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        -544,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"scenes\": [\n    {\n      \"video_prompt\": \"dialogue: ...\\naction: ...\\ncamera: ...\\nemotion: ...\\nvoice_type: ...\\ncharacter: ...\\nsetting: ...\",\n      \"aspect_ratio_video\": \"9:16\",\n      \"model\": \"veo3_fast\"\n    }\n  ]\n}\n",
+        "autoFix": true
+      },
+      "id": "de313d5f-4384-450e-94f2-f1379027ed33",
+      "name": "Structured Output 1",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        224,
+        496
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"image_prompt\": \"emotion: ...\\naction: ...\\ncharacter: ...\\nproduct: ...\\nsetting: ...\\ncamera: ...\\nstyle: ...\\ncomposition: ...\\nlighting: ...\\ncolor_palette: ...\\ntypography: ...\\ntext_accuracy: ...\",\n  \"aspect_ratio_image\": \"2:3\"\n}\n",
+        "autoFix": true
+      },
+      "id": "3710c7c9-8210-411e-875b-b10dbd2b5e46",
+      "name": "Structured Output 2",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        -1024,
+        480
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/gpt4o-image/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"filesUrl\": [\"{{ $('商品图描述及 url').item.json.product_url }}\"],\n\"prompt\": \"{{ $json.output.image_prompt.replace(/\\\"/g, '\\\\\\\"').replace(/\\n/g, '\\\\n') }}\",\n  \"size\": \"{{ $json.output.aspect_ratio_image }}\",\n  \"nVariants\": 1\n}\n\n",
+        "options": {}
+      },
+      "id": "b8ef78fc-0094-48fb-ac85-8f6f87d5ac4c",
+      "name": "Create Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -848,
+        288
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XPhUywDJB5cZ7vcG",
+          "name": "Kie API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/gpt4o-image/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $('Create Image').first().json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0d71d8ec-d803-42ec-9c61-05c0daaa54d7",
+      "name": "Get Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -400,
+        208
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XPhUywDJB5cZ7vcG",
+          "name": "Kie API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/ffmpeg-api/merge-videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"video_urls\": [{{ $json.resultUrls[0].map(url => `\"${url}\"`) }}]\n}\n",
+        "options": {}
+      },
+      "id": "9f888a82-a59f-485c-91d8-51e2531e7f06",
+      "name": "Combine Clips",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -320,
+        880
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uM5ASWztKOvh6IVt",
+          "name": "Fal API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Combine Clips').first().json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "5f49c6aa-ab4a-4e96-9a51-c4ad01bef358",
+      "name": "Get Final Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        128,
+        800
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uM5ASWztKOvh6IVt",
+          "name": "Fal API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "4c895d90-e8bd-42cf-ab58-511c85e8c782",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.video.url }}",
+              "rightValue": 1
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0cdcf8d3-f868-428c-a82d-e15a77fa15a5",
+      "name": "If 2",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        352,
+        880
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "content": "## 🔹 概览（Overview）\n\n- **输入（Input）**\n  - 飞书表单：填写 `ad description`（广告目标、卖点、风格、时长/镜头数等）\n  - 飞书多维表格：至少需要 **商品图**（可选：模特图/参考背景图等，用于增强一致性与场景感）\n- **处理（Process）**：n8n 工作流自动完成\n  1. 拉取并筛选“待生成”的记录\n  2. 让 AI **理解商品图**（识别品牌、包装文字/配色、主体特征等）\n  3. 让 AI **写图片提示词**，生成一张“更适合拍广告的关键参考图”\n  4. 让 AI **写视频分镜提示词**，按 8 秒一段生成多个短视频片段\n  5. 自动 **拼接合成** 成最终成片\n- **输出（Output）**\n  - 生成一条最终成片视频（通常以 URL 形式输出；也可扩展为回写表格、上传网盘或发布平台）\n\n---\n\n## 🔹 系统工作流（System Workflow）\n\n### A) 输入与筛选（你需要准备什么）\n\n1. 在飞书表单中填写 `ad description`，描述你希望的广告成片：\n   - 建议包含：**产品是什么、目标人群、核心卖点 1-3 个、UGC 风格要求、希望的总时长/镜头数（可选）**\n2. 在飞书多维表格中准备对应记录的素材字段：\n   - **必填**：商品图\n   - **可选增强**：模特图、参考背景图、商品图描述/模特图描述（用于让画面更稳定、更像“真实 UGC”）\n3. 系统会筛选“待生成”的记录进入后续流程（例如按状态字段筛选）。\n\n---\n\n### B) 核心生成链路（系统自动完成）\n\n#### Step 1：理解商品图（提取“必须保持一致”的信息）\n- AI 会先分析商品图，抽取出对一致性最关键的要素：品牌/包装文字、主色调、主体外观特征等。\n- 目的：让后续生成的图片与视频 **不跑偏**，尤其是电商最在意的 **包装文字与品牌识别**。\n\n#### Step 2：生成关键参考图（把“商品图”变成更适合拍广告的场景图）\n- AI 根据你的 `ad description` + 商品图理解结果，生成一段“图片提示词”。\n- 系统用这段提示词生成一张“关键参考图”（更贴 UGC 场景、更利于后面做视频）。\n- 目的：先把画面风格与场景定下来，提升后续视频的一致性与可控性。\n\n#### Step 3：生成分镜与视频片段（按 8 秒一段出片）\n- AI 会把你的需求拆成多段分镜（通常每段约 8 秒）。\n- 每段分镜会包含：**台词/动作/镜头/场景/情绪**等要素（更像“可拍的短视频脚本”）。\n- 系统根据每段分镜逐段生成视频片段，并自动等待生成完成。\n\n#### Step 4：合成成片（自动拼接）\n- 系统会把多个短视频片段按顺序拼接为一条完整成片。\n- 输出最终成片视频（一般为一个可下载/可播放的 URL）。\n\n---",
+        "height": 1184,
+        "width": 912
+      },
+      "id": "b54ff617-3f0f-471b-82ba-bb3716ef96b8",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2528,
+        176
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "359a3862-7976-46be-b398-8df93e78b0d5",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.data.successFlag }}",
+              "rightValue": 1
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "99c7cc9d-a27e-49c0-9799-90631c663fc6",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -768,
+        880
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "resource": "bitable",
+        "operation": "bitable:table:record:search",
+        "app_toke": "ESCJbARbFaDAtSsvs9bci4hfnIh",
+        "table_id": "tbleIhWAhMpTdKmt",
+        "body": "={\"filter\":{\n  \"conjunction\": \"and\",\n  \"conditions\": []\n}}"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNode",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        -32
+      ],
+      "id": "8169f72a-f580-4c3d-9fbb-d34fc6b6755c",
+      "name": "导入飞书多维表格数据",
+      "credentials": {
+        "feishuCredentialsApi": {
+          "id": "9nKPUtim9tptYtmW",
+          "name": "Feishu Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8e6ece6b-4fbf-4d99-8ccd-abac1ab7b3be",
+              "name": "app_id",
+              "value": "cli_a89a5daf3e7ad00c",
+              "type": "string"
+            },
+            {
+              "id": "379e41e0-095a-4252-974b-eba24acaeb46",
+              "name": "app_secret",
+              "value": "y8XfWl7B90n5WihXlpjrybmiaTtlJxXa",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1248,
+        -32
+      ],
+      "id": "1fe60800-ebac-4309-9a7b-f40aade036b7",
+      "name": "配置飞书密钥"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "app_id",
+              "value": "={{ $json.app_id }}"
+            },
+            {
+              "name": "app_secret",
+              "value": "={{ $json.app_secret }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -1024,
+        -32
+      ],
+      "id": "33c083b2-8a92-47d1-b628-d40f155f0158",
+      "name": "获取飞书access_token"
+    },
+    {
+      "parameters": {
+        "url": "=https://open.feishu.cn/open-apis/drive/v1/medias/{{ $('筛选「待换装」').item.json.fields['商品图'][0].file_token }}/download",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('获取飞书access_token').item.json.tenant_access_token }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "=product"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -576,
+        -32
+      ],
+      "id": "e03cd40a-4380-4d07-bbb2-6b86caf9e099",
+      "name": "下载「商品图」"
+    },
+    {
+      "parameters": {
+        "operation": "upload",
+        "bucketName": "n8n",
+        "fileName": "={{ $('生成「商品图」文件名').item.json.product_name }}",
+        "binaryPropertyName": "product",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.s3",
+      "typeVersion": 1,
+      "position": [
+        -352,
+        -32
+      ],
+      "id": "7311fb7d-c69a-466d-8668-3568b6d99b06",
+      "name": "Upload a file",
+      "credentials": {
+        "s3": {
+          "id": "dnZQ9ls8ES6Uanz7",
+          "name": "Cloudflare R2 - 账号2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63c5e68d-62c0-4e32-b3d2-ceb406273e79",
+              "name": "product_name",
+              "value": "={{ $now.toFormat('yyyyMMdd_HHmmss') }}_product.png",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -800,
+        -32
+      ],
+      "id": "f5d0bab4-4f5f-47b1-81fd-95a3a11d19bf",
+      "name": "生成「商品图」文件名"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "66136d8b-775d-4ec2-a9a8-f734bca0738f",
+              "name": "product_url",
+              "value": "=https://pub-997fbcb7e3b94d439eac6d1a7d52296c.r2.dev/{{ $('生成「商品图」文件名').item.json.product_name }}",
+              "type": "string"
+            },
+            {
+              "id": "07f18f57-02e3-493d-b138-30b5e52941f5",
+              "name": "ad_description",
+              "value": "={{ $('筛选「待换装」').item.json.fields['UGC视频描述'][0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -128,
+        -32
+      ],
+      "id": "c4456898-3a14-481c-b53e-3ce05e4843cb",
+      "name": "商品图描述及 url"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data.items",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -1952,
+        -32
+      ],
+      "id": "2b05f86d-a6a0-4388-8dc1-f0e84676e5dc",
+      "name": "层级优化"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "45882176-f498-444c-bf18-c262eb96bd2a",
+              "leftValue": "={{ $json.fields['状态'] }}",
+              "rightValue": "未换装",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "51732a41-0c61-43c2-a352-0adbc9a4853f",
+              "leftValue": "={{ $json.fields['UGC视频描述'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "6b188e2c-ca97-472a-8adb-c6cad3b9615e",
+              "leftValue": "={{ $json.fields['商品图'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1728,
+        -32
+      ],
+      "id": "f22058c2-1d0c-46c5-80e2-b78843a9814b",
+      "name": "筛选「待换装」"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        32,
+        624
+      ],
+      "id": "5bc208ba-cd05-4711-a432-8b397a7069aa",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hWOYNMU3oFGw727t",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "df295e6a-076d-4c70-9b91-85459be94d69",
+      "name": "Wait 10 sec",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -624,
+        288
+      ],
+      "webhookId": "85608bd9-5c47-4931-9954-73ea71d3817d",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "text": "=Analyze the given image and determine if it primarily depicts a product or a character, or BOTH.\n\n- If the image is of a product, return the analysis in YAML format with the following fields:\n\nbrand_name: (Name of the brand shown in the image, if visible or inferable)\ncolor_scheme:\n  - hex: (Hex code of each prominent color used)\n    name: (Descriptive name of the color)\nfont_style: (Describe the font family or style used: serif/sans-serif, bold/thin, etc.)\nvisual_description: (A full sentence or two summarizing what is seen in the image, ignoring the background)\n\n- If the image is of a character, return the analysis in YAML format with the following fields:\n\ncharacter_name: (Name of the character if visible or inferable)\ncolor_scheme:\n  - hex: (Hex code of each prominent color used on the character)\n    name: (Descriptive name of the color)\noutfit_style: (Description of clothing style, accessories, or notable features)\nvisual_description: (A full sentence or two summarizing what the character looks like, ignoring the background)\n\nOnly return the YAML. Do not explain or add any other comments.\n\n\n- if it is BOTH, return both descriptions as guided above in YAML format",
+        "imageUrls": "={{ $json.product_url }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1440,
+        288
+      ],
+      "id": "f2353f28-0c59-40fe-9e23-c41703329bbc",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hWOYNMU3oFGw727t",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -2400,
+        -32
+      ],
+      "id": "699a6137-9bfa-47bb-ba6d-293240774cca",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "resource": "bitable",
+        "operation": "bitable:table:record:update",
+        "app_toke": "ESCJbARbFaDAtSsvs9bci4hfnIh",
+        "table_id": "tbleIhWAhMpTdKmt",
+        "record_id": "={{ $('筛选「待换装」').item.json.record_id }}",
+        "body": "={{\nJSON.stringify({\n  \"fields\": {\n    \"状态\": \"已换装\",\n    \"UGC视频\": [\n      {\n        \"file_token\": $('上传至飞书').item.json.data.file_token\n      }\n    ]\n  }\n})\n}}"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNode",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        1056
+      ],
+      "id": "ceacd288-6c78-4628-98f9-d7e092336fc3",
+      "name": "更新飞书多维表格",
+      "credentials": {
+        "feishuCredentialsApi": {
+          "id": "9nKPUtim9tptYtmW",
+          "name": "Feishu Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -1504,
+        -32
+      ],
+      "id": "a4bfbc95-bf5f-4615-9140-df17724f0aba",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.video.url }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "responseFormat": "file",
+              "outputPropertyName": "output"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        576,
+        880
+      ],
+      "id": "f2dd9c3a-9be9-4946-8b57-149f3728a71e",
+      "name": "下载ugc视频"
+    },
+    {
+      "parameters": {
+        "resource": "space",
+        "operation": "space:upload",
+        "parent_type": "bitable_file",
+        "parent_node": "ESCJbARbFaDAtSsvs9bci4hfnIh",
+        "fileFieldName": "output",
+        "file_name": "={{ $('Wait 20 sec').item.json.request_id }}.mp4"
+      },
+      "type": "n8n-nodes-feishu-lite.feishuNode",
+      "typeVersion": 1,
+      "position": [
+        800,
+        880
+      ],
+      "id": "b97b5c8c-b753-4192-ba5c-95e32cb7757e",
+      "name": "上传至飞书",
+      "credentials": {
+        "feishuCredentialsApi": {
+          "id": "9nKPUtim9tptYtmW",
+          "name": "Feishu Credentials account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "id": "c3bed06e-33c2-4b76-b8db-96289e02cc84",
+      "name": "Wait 60 sec",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -1216,
+        880
+      ],
+      "webhookId": "b5baa50d-4c1c-4ab5-b00d-c0a753bb163f",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "id": "4a3a1121-af09-4a5d-b03b-b69d3c3c8b81",
+      "name": "Wait 20 sec",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -96,
+        880
+      ],
+      "webhookId": "ca401e2a-a01e-424a-90c3-3b10cfe9435f",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {},
+      "id": "1a3cf0b7-5b4c-47f9-9ac7-9c4a1b1067eb",
+      "name": "Think1",
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "position": [
+        -1136,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3-pro-preview",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1216,
+        624
+      ],
+      "id": "fdb8b355-b86d-4a1e-9b72-e8822c009a87",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hWOYNMU3oFGw727t",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your task: Create 1 image prompt as guided by your system guidelines.\n\nMake sure that the reference image is depicted as ACCURATELY as possible in the resulting images, especially all text.\n\n***\n\n\nThese are the user's instructions\n{{ $('商品图描述及 url').item.json.ad_description }}\n\n***\nDescription of the reference image:\n{{ $json.content.parts[0].text }}\n\n\n***\nThe user's preferred aspect ratio: inferred based on their message above, default is vertical if not given\n\n\n\n***\nUse the Think tool to double check your output\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT:  Image Prompt Generator\n\n\nDefault: If the user's instructions are not very detailed, just default the prompt to: put this (product) into the scene with the (character). \n\n***\n\nIf the user wants UGC authentic casual content: Use **casual UGC-style scenes** unless the user specifies otherwise, and follow the instructions below.\n\n  If the user explicitly requests a different style or setting, follow their instructions.\n\n  Your task: Take the reference image or the product in the reference image and place it into realistic, casual scenes as if captured by everyday content creators or influencers.  \n\n  All outputs must feel **natural, candid, and unpolished** — avoiding professional or overly staged looks. This means:\n\n    - Everyday realism with authentic, relatable settings\n    - Amateur-quality iPhone photo style\n    - Slightly imperfect framing and lighting\n    - Candid poses and genuine expressions\n    - Visible imperfections (blemishes, messy hair, uneven skin, texture flaws)\n    - Real-world environments left as-is (clutter, busy backgrounds)\n    - Always preserve all visible product **text accurately** (logos, slogans, packaging claims). Never invent extra claims or numbers.\n\n  **Camera parameter** must always include casual realism descriptors such as:  \n  unremarkable amateur iPhone photos, reddit image, snapchat photo, Casual iPhone selfie, slightly uneven framing, Authentic share, slightly blurry, Amateur quality phone photo\n\n  **Dialogue/video generation is not required. Only image prompts are generated.**\n\nAvoid mentioning the name of any copyrighted characters in the prompt\n\n  ---\n\n  A – Ask:\n    Generate **image generation instructions only** for AI models based on the user’s request, ensuring exact YAML format.  \n    Default to **vertical aspect ratio** if unspecified.  \n    Always include both:\n      - `image_prompt` (stringified YAML with scene details)  \n      - `aspect_ratio_image` (\"3:2\" or \"2:3\")  \n\n  ---\n\n  G – Guidance:\n    - Always follow UGC-style casual realism principles listed above.\n    - Ensure diversity in gender, ethnicity, and hair color when applicable. Default to actors in 21 to 38 years old unless specified otherwise.\n    - Default to casual real-world environments unless a setting is explicitly specified.\n    - Avoid double quotes in the image prompts.\n\n  ---\n\n  E – Examples:\n    🟢 good_examples:\n      - |\n        {\n          \"scenes\": [\n            {\n              \"image_prompt\": \"action: character holds product naturally\\ncharacter: infer from the reference image\\nproduct: show product with all visible text clear and accurate\\nsetting: infer from the image or from user instruction\\ncamera: amateur iPhone photo, casual selfie, uneven framing, slightly blurry\\nstyle: candid UGC look, no filters, imperfections intact\\ntext_accuracy: preserve all visible text exactly as in reference image\"}]\n,\n              \"aspect_ratio_image\": \"2:3\"\n            }\n          ]\n        }\n    🔴 bad_examples:\n      - Altering or fabricating product packaging text\n\n  ---\n\n  N – Notation:\n    - Final output is an object containing only:\n      - `image_prompt` → stringified YAMLy\n      - `aspect_ratio_image` → \"3:2\" or \"2:3\" (default vertical → 2:3)\n\n  ---\n\n  T – Tools:\n    - Think Tool: Double-check output for completeness, text accuracy, adherence to UGC realism, and that **only image outputs** are returned.\n"
+        }
+      },
+      "id": "4ab06f52-2c2e-4af6-a433-39386ecd2dcf",
+      "name": "UGC图片提示词生成",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -1216,
+        288
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Your task: Create video prompts as guided by your system guidelines.\n\nMake sure that the reference image is depicted as ACCURATELY as possible in the resulting images, especially all text.\n\nFor each of the scenes, make sure the dialogue runs continuously and makes sense. And always have the character just talk about the product and its benefits based on what you understand about the brand, and how it's used. So if it's a drink, talk about the taste; if it's a bag, talk about the design; if it's tech, talk about its features, and so on.\n\nIf the character will mention the brand name, only do so in the FIRST scene.\n\nUnless stated by the user, do not have the character open or eat or use the product. they are just showing it to the camera.\n\nIf the number of videos is not stated, generate 3 scenes.\n\n***\n\nThese are the user's instructions\n{{ $('商品图描述及 url').item.json.ad_description }}\n\n***\n\nCount of videos to create: inferred based on their message above. Each video will be 8 seconds long, so calculate how many videos you need to generate based on the user's desired total duration\n\n***\nDescription of the reference image/s. Just use this to understand who the product or character is, don't use it as basis for the dialogue.\n{{ $('Analyze an image').item.json.content.parts[0].text }}\n\n\n***\nThe user's preferred aspect ratio: inferred based on their message above, default is vertical if not given\n\nThe user's preferred model: inferred based on their message above, default is veo3_fast if not given\n\nThe user's preferred dialogue script: inferred based on their message above, suggest a script \n\n\n***\nUse the Think tool to double check your output\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=system_prompt: |\n  ## SYSTEM PROMPT: UGC-Style Veo3/Veo3_fast Prompt Generator (Video-Only)\n\n  You are a UGC (User-Generated Content) AI agent.  \n  Your task: Take the reference image or the product in the reference image and place it into realistic, casual scenes as if captured by everyday content creators or influencers.  \n\n  All outputs must feel **natural, candid, and unpolished** — avoiding professional or overly staged looks. This means:\n\n    - Everyday realism with authentic, relatable settings\n    - Amateur-quality iPhone photo/video style\n    - Slightly imperfect framing and lighting\n    - Candid poses and genuine expressions\n    - Visible imperfections (blemishes, messy hair, uneven skin)\n    - Real-world environments left as-is (clutter, busy backgrounds)\n\n  We need these videos to look natural and real. So in the prompts, have the Camera parameter always use keywords like these: unremarkable amateur iPhone photos, reddit image, snapchat video, Casual iPhone selfie, slightly uneven framing, Authentic share, slightly blurry, Amateur quality phone photo\n\n  If the dialogue is not provided by the user or you are explicitly asked to create it, generate a casual, conversational line under 150 characters, as if a person were speaking naturally to a friend while talking about the product. Avoid overly formal or sales-like language. The tone should feel authentic, spontaneous, and relatable, matching the UGC style. Use ... to indicate pauses, and avoid special characters like em dashes or hyphens.\n\n\n  A – Ask:\n    Generate **only video generation instructions** for AI models (no image prompts). Infer aspect ratios from vertical/horizontal context; default to vertical if unspecified.\n\n    **Scene count rule:**  \n    - Read the user's requested total video duration and the per-video length (in seconds).  \n    - Calculate the required number of videos by dividing total duration by per-video length, rounding **up** to the nearest integer.  \n    - Output **exactly that many scenes**.  \n    - Never output more or fewer scenes than requested.\n\n  G – Guidance:\n    - Always follow UGC-style casual realism principles listed above.\n    - Ensure diversity in gender, ethnicity, and hair color when applicable. Default to actors in 21 to 38 years old unless specified otherwise.\n    - Use provided scene list when available.\n    - Do not use double quotes in any part of the prompts.\n\n  E – Examples:\n    good_examples:\n      - |\n        {\n          \"scenes\": [\n            {\n              \"video_prompt\": \"dialogue: so tikTok made me buy this... honestly its the best tasting fruit beer in sydney and they donate profits to charity...\\naction: character sits in drivers seat of a parked car, holding the beer can casually while speaking\\ncamera: amateur iphone selfie video, uneven framing, natural daylight\\nemotion: very happy, casual excitement\\ntype: veo3_fast\",\n              \"aspect_ratio_video\": \"9:16\",\n              \"model\": \"veo3_fast\"\n            }\n          ]\n        }\n\n  N – Notation:\n    - Final output is a `\"scenes\"` array at the root level.\n    - The array must contain **exactly `scene_count`** objects, where `scene_count` is the user-calculated number.\n    - Each scene contains:\n      - `video_prompt` → stringified YAML with: dialogue, emotion, voice_type, action, character, setting, camera\n      - `aspect_ratio_video` → \"9:16\" or \"16:9\" (default vertical → 9:16)\n      - `model` → \"veo3\" or \"veo3_fast\"\n\n  T – Tools:\n    - Think Tool: Double-check output for completeness, diversity, adherence to style, and that the number of scenes exactly matches the requested count.\n"
+        }
+      },
+      "id": "f10fd6c5-731f-4c3f-8e30-a52e9845d0f9",
+      "name": "UGC视频提示词生成",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        48,
+        288
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "## 待配置内容\n1. 多维表格token和多维表格id\n2. 飞书应用appid和appsecret（https://open.feishu.cn/app）\n3. 开启飞书上传素材、下载素材和多维表格更新的权限\n4. 在飞书多维表格中添加文档应用(放上一步你开启权限的飞书应用)\n5. 配置cloudflare r2的 Credential，并建立对应的bucket，开启public enabled权限（https://dash.cloudflare.com/login）\n6. 更新url为自己的cloudflare r2存储桶域名\n7. 获取gemini的api key（https://aistudio.google.com/prompts/new_chat）\n8. 获取kie的api key（https://kie.ai/dashboard）\n9. 获取fal.ai的api key（https://fal.ai/dashboard/account/details）\n\n\n",
+        "height": 464,
+        "width": 928
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -2528,
+        1456
+      ],
+      "id": "c1b3f837-c533-45b9-b52a-33a0e8586ba4",
+      "name": "Sticky Note1"
+    }
+  ],
+  "pinData": {
+    "UGC图片提示词生成": [
+      {
+        "json": {
+          "output": {
+            "image_prompt": "action: Beautiful Asian woman posing confidently for a fashion advertisement\ncharacter: Asian female model, elegant appearance, professional makeup and styling\nproduct: Sleeveless ribbed knit turtleneck top featuring a solid light beige high collar and a vibrant abstract print with vertical brushstroke patterns in white, bright orange, and dark reddish-brown\nsetting: Professional bright studio background or upscale modern lifestyle setting suitable for a commercial\ncamera: Professional fashion photography, high resolution, studio lighting, sharp focus, commercial aesthetic\nstyle: Fashion advertisement, polished, elegant, high-quality commercial look",
+            "aspect_ratio_image": "2:3"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "UGC视频提示词生成",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Create Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video": {
+      "main": [
+        [
+          {
+            "node": "Wait 60 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If ": {
+      "main": [
+        [
+          {
+            "node": "UGC视频提示词生成",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 10 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Combine Clips",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output 1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "UGC视频提示词生成",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output 2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "UGC图片提示词生成",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image": {
+      "main": [
+        [
+          {
+            "node": "Wait 10 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image": {
+      "main": [
+        [
+          {
+            "node": "If ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Clips": {
+      "main": [
+        [
+          {
+            "node": "Wait 20 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Final Video": {
+      "main": [
+        [
+          {
+            "node": "If 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If 2": {
+      "main": [
+        [
+          {
+            "node": "下载ugc视频",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 20 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 60 sec",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "导入飞书多维表格数据": {
+      "main": [
+        [
+          {
+            "node": "层级优化",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "配置飞书密钥": {
+      "main": [
+        [
+          {
+            "node": "获取飞书access_token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "获取飞书access_token": {
+      "main": [
+        [
+          {
+            "node": "生成「商品图」文件名",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下载「商品图」": {
+      "main": [
+        [
+          {
+            "node": "Upload a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload a file": {
+      "main": [
+        [
+          {
+            "node": "商品图描述及 url",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成「商品图」文件名": {
+      "main": [
+        [
+          {
+            "node": "下载「商品图」",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "商品图描述及 url": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "层级优化": {
+      "main": [
+        [
+          {
+            "node": "筛选「待换装」",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "筛选「待换装」": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "UGC视频提示词生成",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Structured Output 1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10 sec": {
+      "main": [
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "UGC图片提示词生成",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "导入飞书多维表格数据",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "配置飞书密钥",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "更新飞书多维表格": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "下载ugc视频": {
+      "main": [
+        [
+          {
+            "node": "上传至飞书",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "上传至飞书": {
+      "main": [
+        [
+          {
+            "node": "更新飞书多维表格",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60 sec": {
+      "main": [
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 20 sec": {
+      "main": [
+        [
+          {
+            "node": "Get Final Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think1": {
+      "ai_tool": [
+        [
+          {
+            "node": "UGC图片提示词生成",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output 2",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "UGC图片提示词生成",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UGC图片提示词生成": {
+      "main": [
+        [
+          {
+            "node": "Create Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UGC视频提示词生成": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b20dff41-ef5a-45df-8690-13d53aeed554",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
+  },
+  "id": "sBe8FyziQtWKJSeK",
+  "tags": []
+}
