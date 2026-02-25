@@ -257,28 +257,6 @@
     },
     {
       "parameters": {
-        "url": "={{ $('Combine Clips').first().json.response_url }}",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "options": {}
-      },
-      "id": "5f49c6aa-ab4a-4e96-9a51-c4ad01bef358",
-      "name": "Get Final Video",
-      "type": "n8n-nodes-base.httpRequest",
-      "position": [
-        128,
-        800
-      ],
-      "typeVersion": 4.2,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "uM5ASWztKOvh6IVt",
-          "name": "Fal API Key"
-        }
-      }
-    },
-    {
-      "parameters": {
         "conditions": {
           "options": {
             "version": 2,
@@ -286,19 +264,18 @@
             "caseSensitive": true,
             "typeValidation": "strict"
           },
-          "combinator": "and",
           "conditions": [
             {
               "id": "4c895d90-e8bd-42cf-ab58-511c85e8c782",
               "operator": {
                 "type": "string",
-                "operation": "notEmpty",
-                "singleValue": true
+                "operation": "equals"
               },
-              "leftValue": "={{ $json.video.url }}",
-              "rightValue": 1
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED"
             }
-          ]
+          ],
+          "combinator": "and"
         },
         "options": {}
       },
@@ -717,7 +694,7 @@
       "type": "n8n-nodes-feishu-lite.feishuNode",
       "typeVersion": 1,
       "position": [
-        1024,
+        1152,
         1056
       ],
       "id": "ceacd288-6c78-4628-98f9-d7e092336fc3",
@@ -758,7 +735,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        576,
+        784,
         880
       ],
       "id": "f2dd9c3a-9be9-4946-8b57-149f3728a71e",
@@ -776,7 +753,7 @@
       "type": "n8n-nodes-feishu-lite.feishuNode",
       "typeVersion": 1,
       "position": [
-        800,
+        976,
         880
       ],
       "id": "b97b5c8c-b753-4192-ba5c-95e32cb7757e",
@@ -804,7 +781,7 @@
     },
     {
       "parameters": {
-        "amount": 10
+        "amount": 20
       },
       "id": "4a3a1121-af09-4a5d-b03b-b69d3c3c8b81",
       "name": "Wait 20 sec",
@@ -897,23 +874,53 @@
       ],
       "id": "c1b3f837-c533-45b9-b52a-33a0e8586ba4",
       "name": "Sticky Note1"
-    }
-  ],
-  "pinData": {
-    "UGC图片提示词生成": [
-      {
-        "json": {
-          "output": {
-            "image_prompt": "action: Beautiful Asian woman posing confidently for a fashion advertisement\ncharacter: Asian female model, elegant appearance, professional makeup and styling\nproduct: Sleeveless ribbed knit turtleneck top featuring a solid light beige high collar and a vibrant abstract print with vertical brushstroke patterns in white, bright orange, and dark reddish-brown\nsetting: Professional bright studio background or upscale modern lifestyle setting suitable for a commercial\ncamera: Professional fashion photography, high resolution, studio lighting, sharp focus, commercial aesthetic\nstyle: Fashion advertisement, polished, elegant, high-quality commercial look",
-            "aspect_ratio_image": "2:3"
-          }
-        },
-        "pairedItem": {
-          "item": 0
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Combine Clips').item.json.status_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "5f49c6aa-ab4a-4e96-9a51-c4ad01bef358",
+      "name": "查询视频状态",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        128,
+        800
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uM5ASWztKOvh6IVt",
+          "name": "Fal API Key"
         }
       }
-    ]
-  },
+    },
+    {
+      "parameters": {
+        "url": "={{ $('查询视频状态').item.json.response_url }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "459897f2-9960-434e-8595-966f04768d5d",
+      "name": "Get Final Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        592,
+        880
+      ],
+      "typeVersion": 4.2,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "uM5ASWztKOvh6IVt",
+          "name": "Fal API Key"
+        }
+      }
+    }
+  ],
+  "pinData": {},
   "connections": {
     "Think": {
       "ai_tool": [
@@ -1043,22 +1050,11 @@
         ]
       ]
     },
-    "Get Final Video": {
-      "main": [
-        [
-          {
-            "node": "If 2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "If 2": {
       "main": [
         [
           {
-            "node": "下载ugc视频",
+            "node": "Get Final Video",
             "type": "main",
             "index": 0
           }
@@ -1298,7 +1294,7 @@
       "main": [
         [
           {
-            "node": "Get Final Video",
+            "node": "查询视频状态",
             "type": "main",
             "index": 0
           }
@@ -1353,13 +1349,35 @@
           }
         ]
       ]
+    },
+    "查询视频状态": {
+      "main": [
+        [
+          {
+            "node": "If 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Final Video": {
+      "main": [
+        [
+          {
+            "node": "下载ugc视频",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "b20dff41-ef5a-45df-8690-13d53aeed554",
+  "versionId": "9355d042-6687-483a-9dab-06a78bf9a12a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "2ee50f33ef81e2a7b10e470da77043b19a690ac83f438ce1fd68e8ccca48efc3"
