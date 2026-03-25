@@ -16,6 +16,8 @@ description: 'n8n + 飞书 + Nanobanana Pro：自动生成真人试穿效果图'
 <VideoPlayer src="c61fabf743b4fdd45d1c85639e5a541c" />
 <VideoPlayer src="06d1a9b384e69190249fa8e19ce72474" />
 
+> **更正说明**：视频约 19 分钟处演示的 URL 拼接有误，我当时误用了 `S3 API`。正确做法应该是到存储桶设置中找到 `Public Development URL`，并基于它来拼接图片的公网地址。拼接完成后，务必先把最终 URL 放到浏览器中打开验证，确认该链接可以被公开访问和读取，再继续后续配置。
+
 ### 3. 效果展示
 
 - ![效果示例](https://imagedelivery.net/mQBskkipT64lJRbOwQ2jCg/cd60b959-3f4a-4d46-96e5-09360ce2fc00/public)
