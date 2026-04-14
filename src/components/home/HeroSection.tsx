@@ -144,7 +144,7 @@ const HeroSection = ({ id }: HeroSectionProps) => {
         onClose={() => setShowQr(false)}
         title="添加微信领取资料包"
         subtitle="长按/扫码二维码，备注「n8n资料包」"
-        note="若二维码失效，请通过微信「15355407564」添加"
+        note="若二维码失效，请通过微信「15905196940」添加"
       />
     </section>
   );

@@ -16,7 +16,7 @@ export default function ContactModal({
     onClose,
     title = "添加微信咨询",
     subtitle = "长按/扫码二维码，直接添加微信",
-    note = "若二维码失效，请通过微信「15355407564」添加" // Default note based on Footer content
+    note = "若二维码失效，请通过微信「15905196940」添加" // Default note based on Footer content
 }: ContactModalProps) {
     return (
         <AnimatePresence>
@@ -49,7 +49,7 @@ export default function ContactModal({
                             <div className="mx-auto w-56 h-56 rounded-xl overflow-hidden bg-white/5 border border-white/10 shadow-inner">
                                 {/* Ensure this path is correct or generic */}
                                 <img
-                                    src="/qr/wechat-hero.png"
+                                    src="/qr/wechat-hero.jpg"
                                     alt="微信二维码"
                                     className="w-full h-full object-cover"
                                 />

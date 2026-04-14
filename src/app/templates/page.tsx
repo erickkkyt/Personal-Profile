@@ -104,12 +104,12 @@ export default function TemplatesPage() {
               <p className="text-sm text-gray-300">扫码或长按识别二维码，备注「咨询」</p>
               <div className="mx-auto w-56 h-56 rounded-xl overflow-hidden bg-white/5 border border-white/10 shadow-inner">
                 <img
-                  src="/qr/wechat-hero.png"
+                  src="/qr/wechat-hero.jpg"
                   alt="微信二维码"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="text-xs text-gray-400">若二维码失效，请通过微信「n8n_kkkk」添加</p>
+              <p className="text-xs text-gray-400">若二维码失效，请通过微信「kkkk_n8n」添加</p>
             </div>
           </div>
         </div>

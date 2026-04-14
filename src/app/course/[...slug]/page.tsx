@@ -161,7 +161,7 @@ export default async function CoursePage({ params }: { params: { slug: string[] 
                         <div className="absolute inset-0 z-20 flex items-center justify-center pt-8 pb-12">
                             <PaywallCta
                                 loginHref={`/login?next=${encodeURIComponent(nextPath)}`}
-                                wechatImage="/qr/wechat-hero.png"
+                                wechatImage="/qr/wechat-hero.jpg"
                             />
                         </div>
                     </>

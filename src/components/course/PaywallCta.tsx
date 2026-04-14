@@ -74,7 +74,7 @@ export function PaywallCta({ loginHref, wechatImage }: Props) {
                   className="absolute inset-0 w-full h-full object-cover -translate-y-[32px]"
                 />
               </div>
-              <p className="text-xs text-gray-500">若二维码失效，请通过微信「n8n_kkkk」添加</p>
+              <p className="text-xs text-gray-500">若二维码失效，请通过微信「kkkk_n8n」添加</p>
             </div>
           </div>
         </div>
